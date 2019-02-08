@@ -1,7 +1,7 @@
 package org.hisp.dhis.smscompression;
 
 public class Consts {
-	public static int VALUEID_BITLEN = 5;
+	public static int VARLEN_BITLEN = 5;
 	public static int CHAR_BITLEN = 8;
 	public static int EPOCH_DATE_BITLEN = 32;
 	public static int SUBM_TYPE_BITLEN = 4;
