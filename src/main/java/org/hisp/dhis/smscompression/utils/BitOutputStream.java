@@ -10,8 +10,7 @@ import java.util.Objects;
  * The bits are written in big endian. Mutable and not thread-safe.
  * @see BitInputStream
  */
-public final class BitOutputStream implements AutoCloseable {
-		
+public final class BitOutputStream implements AutoCloseable {		
 	private OutputStream output;
 	private int currentByte;
 	private int numBitsFilled;
