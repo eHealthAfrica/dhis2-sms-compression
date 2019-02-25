@@ -7,6 +7,9 @@ import java.util.List;
 public class Metadata {
 	public static class ID {
 		String id;
+		public ID (String id) {
+			this.id = id;
+		}
 	}
 	
 	public Date lastSyncDate;
