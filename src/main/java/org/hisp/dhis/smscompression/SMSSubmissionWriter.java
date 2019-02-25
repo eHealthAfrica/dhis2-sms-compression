@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.hisp.dhis.smscompression.Consts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AttributeValue;
+import org.hisp.dhis.smscompression.models.DataValue;
 import org.hisp.dhis.smscompression.models.Metadata;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
@@ -85,4 +86,8 @@ public class SMSSubmissionWriter {
 	public void writeAttributeValues(List<AttributeValue> values) throws IOException {
 		ValueUtil.writeAttributeValues(values, meta, outStream);		
 	}
+	
+	public void writeDataValues(List<DataValue> values) throws IOException {
+		ValueUtil.writeDataValues(values, meta, outStream);		
+	}	
 }

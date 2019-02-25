@@ -11,6 +11,7 @@ import java.util.List;
 import org.hisp.dhis.smscompression.Consts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.AttributeValue;
+import org.hisp.dhis.smscompression.models.DataValue;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
 import org.hisp.dhis.smscompression.models.Metadata;
@@ -105,5 +106,9 @@ public class SMSSubmissionReader {
 	public List<AttributeValue> readAttributeValues(Metadata meta) throws IOException {
 		return ValueUtil.readAttributeValues(meta, inStream); 
 	}
+	
+	public List<DataValue> readDataValues(Metadata meta) throws IOException {
+		return ValueUtil.readDataValues(meta, inStream); 
+	}	
 		
 }

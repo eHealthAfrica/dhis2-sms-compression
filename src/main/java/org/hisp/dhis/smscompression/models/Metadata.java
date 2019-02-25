@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Metadata {
-	private static class ID {
+	public static class ID {
 		String id;
 	}
 	
@@ -15,6 +15,8 @@ public class Metadata {
 	public ID[] trackedEntityAttributes;
 	public ID[] programs;
 	public ID[] organisationUnits;
+	public ID[] dataElements;
+	public ID[] categoryOptionCombos;
 	 
 	public List<String> getUsers() {
 		return getIDs(users);
@@ -35,7 +37,15 @@ public class Metadata {
 	public List<String> getOrganisationUnits() {
 		return getIDs(organisationUnits);
 	}
+
+	public List<String> getDataElements() {
+		return getIDs(dataElements);
+	}
 	
+	public List<String> getCategoryOptionCombos() {
+		return getIDs(categoryOptionCombos);
+	}	
+		
 	private List<String> getIDs (ID[] ids) {
 		if (ids == null) return null;
 		ArrayList<String> idList = new ArrayList<>();
