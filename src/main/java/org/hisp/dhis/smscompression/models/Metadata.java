@@ -13,13 +13,13 @@ public class Metadata {
 	}
 	
 	public Date lastSyncDate;
-	public ID[] users;
-	public ID[] trackedEntityTypes;
-	public ID[] trackedEntityAttributes;
-	public ID[] programs;
-	public ID[] organisationUnits;
-	public ID[] dataElements;
-	public ID[] categoryOptionCombos;
+	public List<ID> users;
+	public List<ID> trackedEntityTypes;
+	public List<ID> trackedEntityAttributes;
+	public List<ID> programs;
+	public List<ID> organisationUnits;
+	public List<ID> dataElements;
+	public List<ID> categoryOptionCombos;
 	 
 	public List<String> getUsers() {
 		return getIDs(users);
@@ -49,7 +49,7 @@ public class Metadata {
 		return getIDs(categoryOptionCombos);
 	}	
 		
-	private List<String> getIDs (ID[] ids) {
+	private List<String> getIDs (List<ID> ids) {
 		if (ids == null) return null;
 		ArrayList<String> idList = new ArrayList<>();
 		for (ID id : ids) {
