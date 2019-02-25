@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Metadata {
-	private static class ID {
+	public static class ID {
 		String id;
 	}
 	
