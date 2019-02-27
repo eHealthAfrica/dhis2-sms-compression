@@ -30,6 +30,7 @@ public class TestEncoding {
 			subm.setOrgUnit("dar4XkzRmN0");
 			subm.setTrackerProgram("RUOa08S569l");
 			subm.setTrackedEntityType("lUKxRSOYxEZ");
+			subm.setTrackedEntityInstance("T2bRuLEGoVN");
 			subm.setEnrollment("p7M1gUFK37W");
 			subm.setTimestamp(meta.lastSyncDate);
 			ArrayList<AttributeValue> values = new ArrayList<>();
