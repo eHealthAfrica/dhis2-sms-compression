@@ -20,7 +20,7 @@ public class TestDecoding {
 	@Test
 	public void testDecodeEnrollment() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String sms = "SiFcVHTsu3CdBalEvuenk1Ehu9bwXAbeYkAIcFGJvveU7bcYi7OjzHWBqePUDHgXFR07Dv0hhcm9sZAD+jsrkwtjIAIFNtaXRoAA";
+		String sms = "GyFcVHTsu3CdBalEvuenk1Ehu9bwXAbeYkAIcFGJvveU7bcYi7OjdClb4VOQyfXzHWBqePUDHgXFR07Dv0hhcm9sZAD+jsrkwtjIAIFNtaXRoAA=";
 		byte[] smsBytes = Base64.getDecoder().decode(sms);
 
 		try {

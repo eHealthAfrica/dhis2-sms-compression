@@ -11,6 +11,7 @@ import org.hisp.dhis.smscompression.Consts.SubmissionType;
 public class EnrollmentSMSSubmission extends SMSSubmission {
 	protected String trackerProgram;
 	protected String trackedEntityType;
+	protected String trackedEntityInstance;
 	protected String enrollment;
 	protected Date timestamp;
 	protected List<AttributeValue> values;
@@ -31,6 +32,14 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 		this.trackedEntityType = trackedEntityType;
 	}
 
+	public String getTrackedEntityInstance() {
+		return trackedEntityInstance;
+	}
+
+	public void setTrackedEntityInstance(String trackedEntityInstance) {
+		this.trackedEntityInstance = trackedEntityInstance;
+	}
+	
 	public String getEnrollment() {
 		return enrollment;
 	}
@@ -58,6 +67,7 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {				
 		writer.writeNewID(trackerProgram);
 		writer.writeNewID(trackedEntityType);
+		writer.writeNewID(trackedEntityInstance);
 		writer.writeNewID(enrollment);
 		writer.writeDate(timestamp);
 		writer.writeAttributeValues(values);
@@ -66,6 +76,7 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
 		this.trackerProgram = reader.readNewID();
 		this.trackedEntityType = reader.readNewID();
+		this.trackedEntityInstance = reader.readNewID();
 		this.enrollment = reader.readNewID();
 		this.timestamp = reader.readDate();
 		this.values = reader.readAttributeValues(meta);
