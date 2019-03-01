@@ -50,24 +50,77 @@ public class TestEncoding {
 	}
 	
 	@Test
-	public void testEncodeTrackerEvent() {
+	public void testEncodeTrackerEventeHA() {
 		Gson gson = new Gson();
 		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_eha.json"));
 			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
 			TrackerEventSMSSubmission subm = new TrackerEventSMSSubmission();
 			
-			subm.setUserID("kt2T1Qb4lkU");
-			subm.setOrgUnit("dar4XkzRmN0");
-			subm.setProgramStage("X6vKrn3IfAA");
-			subm.setAttributeOptionCombo("dHyUZSrJlR8");
-			subm.setTrackedEntityInstance("T2bRuLEGoVN");
-			subm.setEvent("p7M1gUFK37W");
+			// Jasper Timm
+			subm.setUserID("BfbaQwtjEko");
+			// Gbo Chiefdom
+			subm.setOrgUnit("Lb571MsRIkS");
+			// Liberia Case Details
+			subm.setProgramStage("QftwC9Td4f9");
+			// Default catOptionCombo
+			subm.setAttributeOptionCombo("DAv5bv9oqMW");
+			// Test Person
+			subm.setTrackedEntityInstance("X0jDYqFOUZc");
+			// New UID
+			subm.setEvent("r7M1gUFK37v");
 			subm.setTimestamp(meta.lastSyncDate);
 			ArrayList<DataValue> values = new ArrayList<>();
-			values.add(new DataValue("sqGRzCziswD", "FTRrcoaog83", "Jimmy"));
-			values.add(new DataValue("sqGRzCziswD", "P3jJH5Tu5VC", "James"));
-			values.add(new DataValue("sqGRzCziswD", "FQ2o8UBlcrS", "John"));
+			// LR IDSR ID
+			values.add(new DataValue("DAv5bv9oqMW", "YvAtvSRhME2", "123456"));
+			// LR Patient Record ID
+			values.add(new DataValue("DAv5bv9oqMW", "oJ5sQEzA2Ot", "PA1111"));
+			// LR Person Collecting Specimen Name
+			values.add(new DataValue("DAv5bv9oqMW", "uPKpHhvtmWD", "Mustafa Conteh"));
+			// LR Reporting Person Name"
+			values.add(new DataValue("DAv5bv9oqMW", "nxmNRfqRCYj", "Foday Sesay"));			
+			subm.setValues(values);			
+			
+			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
+			byte[] compressSubm = writer.compress(subm);
+			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
+			System.out.println("Tracker Event submission in Base64 is: " + subm64);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testEncodeTrackerEventPlayground() {
+		Gson gson = new Gson();
+		try {
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_play.json"));
+			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
+			TrackerEventSMSSubmission subm = new TrackerEventSMSSubmission();
+			
+			// Jasper Timm
+			subm.setUserID("V3qn98bKsr6");
+			// Ngelehun CHC
+			subm.setOrgUnit("DiszpKrYNg8");
+			// Birth
+			subm.setProgramStage("A03MvHHogjR");
+			// Default catOptionCombo
+			subm.setAttributeOptionCombo("HllvX50cXC0");
+			// Test Person
+			subm.setTrackedEntityInstance("DacGG5vK1K6");
+			// New UID
+			subm.setEvent("r7M1gUFK37v");
+			subm.setTimestamp(meta.lastSyncDate);
+			ArrayList<DataValue> values = new ArrayList<>();
+			// Apgar score
+			values.add(new DataValue("HllvX50cXC0", "a3kGcGDCuk6", "10"));
+			// Weight (g)
+			values.add(new DataValue("HllvX50cXC0", "UXz7xuGCEhU", "500"));
+			// ARV at birth"
+			values.add(new DataValue("HllvX50cXC0", "wQLfBvPrXqq", "Others"));
+			// Infant feeding
+			values.add(new DataValue("HllvX50cXC0", "X8zyunlgUfM", "Exclusive"));			
 			subm.setValues(values);			
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);

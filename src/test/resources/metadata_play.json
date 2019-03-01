@@ -5,6 +5,71 @@
             "id": "HllvX50cXC0"
         }
     ],
+    "dataElements": [
+        {
+            "id": "uf3svrmp8Oj"
+        },
+        {
+            "id": "H6uSAMO5WLD"
+        },
+        {
+            "id": "a3kGcGDCuk6"
+        },
+        {
+            "id": "wQLfBvPrXqq"
+        },
+        {
+            "id": "bx6fsa0t90x"
+        },
+        {
+            "id": "sj3j9Hwc7so"
+        },
+        {
+            "id": "pOe0ogW4OWd"
+        },
+        {
+            "id": "hDZbpskhqDd"
+        },
+        {
+            "id": "X8zyunlgUfM"
+        },
+        {
+            "id": "cYGaxwK615G"
+        },
+        {
+            "id": "GQY2lXrypjO"
+        },
+        {
+            "id": "lNNb3truQoi"
+        },
+        {
+            "id": "FqlgKAG8HOu"
+        },
+        {
+            "id": "ebaJjqltK5N"
+        },
+        {
+            "id": "vTUhAUZFoys"
+        },
+        {
+            "id": "BeynU4L6VCQ"
+        },
+        {
+            "id": "aei1xRjSU2l"
+        },
+        {
+            "id": "OuJ6sgPyAbC"
+        },
+        {
+            "id": "HLmTEmupdX0"
+        },
+        {
+            "id": "UXz7xuGCEhU"
+        },
+        {
+            "id": "rxBfISxXS2U"
+        }
+    ],    
     "trackedEntityTypes": [
         {
             "id": "nEenWmSyUEp"
@@ -4103,71 +4168,6 @@
         },
         {
             "id": "N3PZBUlN8vq"
-        }
-    ],
-    "dataElements": [
-        {
-            "id": "uf3svrmp8Oj"
-        },
-        {
-            "id": "H6uSAMO5WLD"
-        },
-        {
-            "id": "a3kGcGDCuk6"
-        },
-        {
-            "id": "wQLfBvPrXqq"
-        },
-        {
-            "id": "bx6fsa0t90x"
-        },
-        {
-            "id": "sj3j9Hwc7so"
-        },
-        {
-            "id": "pOe0ogW4OWd"
-        },
-        {
-            "id": "hDZbpskhqDd"
-        },
-        {
-            "id": "X8zyunlgUfM"
-        },
-        {
-            "id": "cYGaxwK615G"
-        },
-        {
-            "id": "GQY2lXrypjO"
-        },
-        {
-            "id": "lNNb3truQoi"
-        },
-        {
-            "id": "FqlgKAG8HOu"
-        },
-        {
-            "id": "ebaJjqltK5N"
-        },
-        {
-            "id": "vTUhAUZFoys"
-        },
-        {
-            "id": "BeynU4L6VCQ"
-        },
-        {
-            "id": "aei1xRjSU2l"
-        },
-        {
-            "id": "OuJ6sgPyAbC"
-        },
-        {
-            "id": "HLmTEmupdX0"
-        },
-        {
-            "id": "UXz7xuGCEhU"
-        },
-        {
-            "id": "rxBfISxXS2U"
         }
     ],
     "programs": [

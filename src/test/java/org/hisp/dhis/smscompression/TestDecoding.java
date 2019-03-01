@@ -27,8 +27,7 @@ public class TestDecoding {
 			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
 			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
 			SMSSubmissionReader reader = new SMSSubmissionReader();
-			SMSSubmissionHeader header = reader.readHeader(smsBytes);
-			EnrollmentSMSSubmission subm = (EnrollmentSMSSubmission) reader.readSubmission(header, meta);
+			EnrollmentSMSSubmission subm = (EnrollmentSMSSubmission) reader.readSubmission(smsBytes, meta);
 			System.out.println("Decoded SMS for Enrollment is: " + gson.toJson(subm));			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -37,17 +36,16 @@ public class TestDecoding {
 	}
 
 	@Test
-	public void testDecodeTrackerEvent() {
+	public void testDecodeTrackerEventeHA() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String sms = "z1FcVHTsu3CdBalEvuenk1Ehu9bwXAhG5U1xDSpKKnR8ejc1TvbIdClb4VOQyfXzHWBqePUDHgXFR07HUAgeuaZKaW1teQCTiHpTC2srmATWpVKb2huAAA==";
+		String sms = "nVFcVHTsLplka63tOuyVlFHBW2bSucap36MJdnEpJNK5Fl5Jy0WghAtNi0PYejm1HWBqePUDH5XFR07GPO1oW5iZGZoamwBAHqggmJiYmIB28ia6ubowszCQIbe3OjK0AGH2IzeyMLyQKbK5sLyAAA==";
 		byte[] smsBytes = Base64.getDecoder().decode(sms);
 
 		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_eha.json"));
 			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
 			SMSSubmissionReader reader = new SMSSubmissionReader();
-			SMSSubmissionHeader header = reader.readHeader(smsBytes);
-			TrackerEventSMSSubmission subm = (TrackerEventSMSSubmission) reader.readSubmission(header, meta);
+			TrackerEventSMSSubmission subm = (TrackerEventSMSSubmission) reader.readSubmission(smsBytes, meta);
 			System.out.println("Decoded SMS for TrackerEvent is: " + gson.toJson(subm));			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -55,4 +53,21 @@ public class TestDecoding {
 		}		
 	}	
 	
+	@Test
+	public void testDecodeTrackerEventPlayground() {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String sms = "lFFceV7sfD0xJIlU21GNs29zU1iXqIKADW5RRyqtbRvv5hFAmhMANkmQQF5UBUG1HWBqePUDH5XHle7AL1iYmABBOamBgAVnJ7o0Mrk5gHNKK8MbY6ubS7MoAA==";
+		byte[] smsBytes = Base64.getDecoder().decode(sms);
+
+		try {
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_play.json"));
+			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
+			SMSSubmissionReader reader = new SMSSubmissionReader();
+			TrackerEventSMSSubmission subm = (TrackerEventSMSSubmission) reader.readSubmission(smsBytes, meta);
+			System.out.println("Decoded SMS for TrackerEvent is: " + gson.toJson(subm));			
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}		
+	}
 }

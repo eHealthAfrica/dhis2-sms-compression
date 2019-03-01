@@ -39,7 +39,8 @@ public class SMSSubmissionReader {
 		return header;
 	}
 	
-	public SMSSubmission readSubmission(SMSSubmissionHeader header, Metadata meta) throws Exception {
+	public SMSSubmission readSubmission(byte[] smsBytes, Metadata meta) throws Exception {
+		SMSSubmissionHeader header = readHeader(smsBytes);
 		SMSSubmission subm = null;
 		
 		switch(header.getType()) {
