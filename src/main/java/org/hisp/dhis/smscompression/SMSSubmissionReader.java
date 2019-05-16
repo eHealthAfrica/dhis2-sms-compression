@@ -110,6 +110,15 @@ public class SMSSubmissionReader {
 	
 	public List<DataValue> readDataValues(Metadata meta) throws IOException {
 		return ValueUtil.readDataValues(meta, inStream); 
-	}	
-		
+	}
+	
+	public boolean readBool() throws IOException {
+		int intVal = inStream.read(1);
+		return intVal == 1;
+	}
+	
+	//TODO: Update this once we have a better impl of period
+	public String readPeriod() throws IOException {
+		return ValueUtil.readString(inStream);
+	}
 }
