@@ -29,7 +29,7 @@ public class IDUtil {
 					idList.add(newHash);
 				}
 			}
-			// Prevent indefinite loop if something goes wrong
+			// Prevent infinite loop if something goes wrong
 			if (len > 32) return -1;
 		} while(coll);
 		return len;
