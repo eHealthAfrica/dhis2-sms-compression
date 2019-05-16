@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.Base64;
 
 import org.apache.commons.io.IOUtils;
+import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.AttributeValue;
 import org.hisp.dhis.smscompression.models.DataValue;
+import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
 import org.hisp.dhis.smscompression.models.Metadata;
+import org.hisp.dhis.smscompression.models.RelationshipSMSSubmission;
+import org.hisp.dhis.smscompression.models.SimpleEventSMSSubmission;
 import org.hisp.dhis.smscompression.models.TrackerEventSMSSubmission;
 import org.junit.Test;
 
@@ -18,6 +22,122 @@ import junit.framework.Assert;
 
 public class TestEncoding {
 
+	@Test
+	public void testEncodeDelete() {
+		Gson gson = new Gson();
+		try {
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
+			DeleteSMSSubmission subm = new DeleteSMSSubmission();
+			
+			subm.setUserID("kt2T1Qb4lkU");
+			subm.setOrgUnit("dar4XkzRmN0");
+			subm.setUid("r7M1gUFK37v");
+			
+			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
+			byte[] compressSubm = writer.compress(subm);
+			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
+			System.out.println("Delete submission in Base64 is: " + subm64);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testEncodeRelationship() {
+		Gson gson = new Gson();
+		try {
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
+			RelationshipSMSSubmission subm = new RelationshipSMSSubmission();
+			
+			subm.setUserID("kt2T1Qb4lkU");
+			subm.setOrgUnit("dar4XkzRmN0");
+			subm.setRelationshipType("RUOa08S569l");
+			subm.setRelationship("uf3svrmp8Oj");
+			subm.setFrom("H6uSAMO5WLD");
+			subm.setTo("a3kGcGDCuk6");
+			
+			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
+			byte[] compressSubm = writer.compress(subm);
+			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
+			System.out.println("Relationship submission in Base64 is: " + subm64);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testEncodeSimpleEvent() {
+		Gson gson = new Gson();
+		try {
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
+			SimpleEventSMSSubmission subm = new SimpleEventSMSSubmission();
+			
+			// Jasper Timm
+			subm.setUserID("V3qn98bKsr6");
+			// Ngelehun CHC
+			subm.setOrgUnit("DiszpKrYNg8");
+			subm.setEventProgram("RUOa08S569l");
+			// Default catOptionCombo
+			subm.setAttributeOptionCombo("HllvX50cXC0");
+			// New UID
+			subm.setEvent("r7M1gUFK37v");
+			subm.setTimestamp(meta.lastSyncDate);
+			ArrayList<DataValue> values = new ArrayList<>();
+			// Apgar score
+			values.add(new DataValue("HllvX50cXC0", "a3kGcGDCuk6", "10"));
+			// Weight (g)
+			values.add(new DataValue("HllvX50cXC0", "UXz7xuGCEhU", "500"));
+			// ARV at birth"
+			values.add(new DataValue("HllvX50cXC0", "wQLfBvPrXqq", "Others"));
+			// Infant feeding
+			values.add(new DataValue("HllvX50cXC0", "X8zyunlgUfM", "Exclusive"));			
+			subm.setValues(values);			
+			
+			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
+			byte[] compressSubm = writer.compress(subm);
+			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
+			System.out.println("Simple Event submission in Base64 is: " + subm64);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testEncodeAggregateDataset() {
+		Gson gson = new Gson();
+		try {
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			Metadata meta = gson.fromJson(metadataJson, Metadata.class);
+			AggregateDatasetSMSSubmission subm = new AggregateDatasetSMSSubmission();
+			
+			subm.setUserID("kt2T1Qb4lkU");
+			subm.setOrgUnit("dar4XkzRmN0");
+			subm.setDataSet("RUOa08S569l");
+			subm.setComplete(true);
+			subm.setAttributeOptionCombo("HllvX50cXC0");
+			subm.setPeriod("2019W10");
+			ArrayList<DataValue> values = new ArrayList<>();
+			values.add(new DataValue("HllvX50cXC0", "uf3svrmp8Oj", "Harold"));
+			values.add(new DataValue("HllvX50cXC0", "H6uSAMO5WLD", "Gerald"));
+			values.add(new DataValue("HllvX50cXC0", "a3kGcGDCuk6", "Smith"));
+			subm.setValues(values);			
+			
+			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
+			byte[] compressSubm = writer.compress(subm);
+			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
+			System.out.println("Aggregate Dataset submission in Base64 is: " + subm64);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+	
 	@Test
 	public void testEncodeEnrollment() {
 		Gson gson = new Gson();
