@@ -11,12 +11,54 @@ public class RelationshipSMSSubmission extends SMSSubmission {
 	protected String from;
 	protected String to;
 	
-	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) {
-		
+	/* Getters and Setters */
+	
+	public String getRelationshipType() {
+		return relationshipType;
+	}
+
+	public void setRelationshipType(String relationshipType) {
+		this.relationshipType = relationshipType;
+	}
+
+	public String getRelationship() {
+		return relationship;
+	}
+
+	public void setRelationship(String relationship) {
+		this.relationship = relationship;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+	/* Implementation of abstract methods */
+	
+	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {
+		writer.writeNewID(relationshipType);
+		writer.writeNewID(relationship);
+		writer.writeNewID(from);
+		writer.writeNewID(to);
 	}
 	
-	public void readSubm(Metadata meta, SMSSubmissionReader reader) {
-		
+	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
+		this.relationshipType = reader.readNewID();
+		this.relationship = reader.readNewID();
+		this.from = reader.readNewID();
+		this.to = reader.readNewID();
 	}
 	
 	public int getCurrentVersion() {

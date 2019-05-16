@@ -89,5 +89,15 @@ public class SMSSubmissionWriter {
 	
 	public void writeDataValues(List<DataValue> values) throws IOException {
 		ValueUtil.writeDataValues(values, meta, outStream);		
-	}	
+	}
+	
+	public void writeBool(boolean val) throws IOException {
+		int intVal = val ? 1 : 0;
+		outStream.write(intVal, 1);
+	}
+	
+	//TODO: We should consider a better implementation for period than just String
+	public void writePeriod(String period) throws IOException {
+		ValueUtil.writeString(period, outStream);
+	}
 }
