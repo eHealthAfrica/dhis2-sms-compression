@@ -32,10 +32,11 @@ public class SMSSubmissionReader {
 		
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(smsBytes);
 		this.inStream = new BitInputStream(byteStream);
-		this.inStream.read(Consts.CRC_BITLEN); // skip CRC
+		inStream.read(Consts.CRC_BITLEN); // skip CRC
 		
 		SMSSubmissionHeader header = new SMSSubmissionHeader();
 		header.readHeader(this);
+		
 		return header;
 	}
 	
@@ -66,7 +67,7 @@ public class SMSSubmissionReader {
 			throw new Exception("Unknown SMS Submission Type");
 		}
 		
-		subm.read(meta, this);
+		subm.read(meta, this, header);
 		inStream.close();
 		return subm;
 	}
@@ -120,5 +121,9 @@ public class SMSSubmissionReader {
 	//TODO: Update this once we have a better impl of period
 	public String readPeriod() throws IOException {
 		return ValueUtil.readString(inStream);
+	}
+	
+	public int readSubmissionID() throws IOException {
+		return inStream.read(Consts.SUBM_ID_BITLEN);
 	}
 }
