@@ -72,7 +72,7 @@ public class AggregateDatasetSMSSubmission extends SMSSubmission {
 		this.complete = reader.readBool();
 		this.attributeOptionCombo = reader.readNewID();
 		this.period = reader.readPeriod();
-		this.values = reader.readDataValues(meta);
+		this.values = reader.readDataValues(meta);		
 	}
 	
 	public int getCurrentVersion() {

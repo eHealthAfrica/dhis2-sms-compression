@@ -7,6 +7,19 @@ import org.hisp.dhis.smscompression.SMSSubmissionWriter;
 import org.hisp.dhis.smscompression.Consts.SubmissionType;
 
 public class SMSSubmissionHeader {
+	protected SubmissionType type;
+	protected int version;
+	protected Date lastSyncDate;
+	protected int submissionID;
+	
+	public int getSubmissionID() {
+		return submissionID;
+	}
+
+	public void setSubmissionID(int submissionID) {
+		this.submissionID = submissionID;
+	}
+
 	public SubmissionType getType() {
 		return type;
 	}
@@ -30,20 +43,25 @@ public class SMSSubmissionHeader {
 	public void setLastSyncDate(Date lastSyncDate) {
 		this.lastSyncDate = lastSyncDate;
 	}
-
-	protected SubmissionType type;
-	protected int version;
-	protected Date lastSyncDate;
+	
+	public void validateHeaer() throws Exception {
+		//TODO: More validation here
+		if (submissionID < 0 || submissionID > 255) {
+			throw new Exception("Ensure the Submission ID has been set for this submission");
+		}
+	}
 	
 	public void writeHeader(SMSSubmissionWriter writer) throws Exception {
 		writer.writeType(type);
 		writer.writeVersion(version);
 		writer.writeDate(lastSyncDate);
+		writer.writeSubmissionID(submissionID);
 	}
 	
 	public void readHeader(SMSSubmissionReader reader) throws Exception {
 		this.type = reader.readType();
 		this.version = reader.readVersion();
 		this.lastSyncDate = reader.readDate();
+		this.submissionID = reader.readSubmissionID();
 	}	
 }

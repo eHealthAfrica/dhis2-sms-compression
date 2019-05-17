@@ -12,16 +12,30 @@ import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
 import org.hisp.dhis.smscompression.models.Metadata;
 import org.hisp.dhis.smscompression.models.RelationshipSMSSubmission;
+import org.hisp.dhis.smscompression.models.SMSSubmission;
+import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
 import org.hisp.dhis.smscompression.models.SimpleEventSMSSubmission;
 import org.hisp.dhis.smscompression.models.TrackerEventSMSSubmission;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import junit.framework.Assert;
 
-public class TestEncoding {
+public class TestEncodeDecode {
 
+	public void printDecoded(String subm64, Metadata meta) throws Exception {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		SMSSubmissionReader reader = new SMSSubmissionReader();
+		byte[] smsBytes = Base64.getDecoder().decode(subm64);
+		SMSSubmissionHeader header = reader.readHeader(smsBytes);
+		System.out.println("Decoded header is: " + gson.toJson(header));
+		
+		SMSSubmission decodedSubm = reader.readSubmission(smsBytes, meta);
+		System.out.println("Decoded submission is: " + gson.toJson(decodedSubm));
+	}
+	
 	@Test
 	public void testEncodeDelete() {
 		Gson gson = new Gson();
@@ -33,11 +47,14 @@ public class TestEncoding {
 			subm.setUserID("kt2T1Qb4lkU");
 			subm.setOrgUnit("dar4XkzRmN0");
 			subm.setUid("r7M1gUFK37v");
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Delete submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
@@ -58,11 +75,14 @@ public class TestEncoding {
 			subm.setRelationship("uf3svrmp8Oj");
 			subm.setFrom("H6uSAMO5WLD");
 			subm.setTo("a3kGcGDCuk6");
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Relationship submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
@@ -96,12 +116,15 @@ public class TestEncoding {
 			values.add(new DataValue("HllvX50cXC0", "wQLfBvPrXqq", "Others"));
 			// Infant feeding
 			values.add(new DataValue("HllvX50cXC0", "X8zyunlgUfM", "Exclusive"));			
-			subm.setValues(values);			
+			subm.setValues(values);
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Simple Event submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
@@ -126,12 +149,15 @@ public class TestEncoding {
 			values.add(new DataValue("HllvX50cXC0", "uf3svrmp8Oj", "Harold"));
 			values.add(new DataValue("HllvX50cXC0", "H6uSAMO5WLD", "Gerald"));
 			values.add(new DataValue("HllvX50cXC0", "a3kGcGDCuk6", "Smith"));
-			subm.setValues(values);			
+			subm.setValues(values);
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Aggregate Dataset submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
@@ -157,12 +183,15 @@ public class TestEncoding {
 			values.add(new AttributeValue("X6vKrn3IfAA", "Harold"));
 			values.add(new AttributeValue("dHyUZSrJlR8", "Gerald"));
 			values.add(new AttributeValue("T2bRuLEGoVN", "Smith"));
-			subm.setValues(values);			
+			subm.setValues(values);
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Enrollment submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
@@ -199,12 +228,15 @@ public class TestEncoding {
 			values.add(new DataValue("DAv5bv9oqMW", "uPKpHhvtmWD", "Mustafa Conteh"));
 			// LR Reporting Person Name"
 			values.add(new DataValue("DAv5bv9oqMW", "nxmNRfqRCYj", "Foday Sesay"));			
-			subm.setValues(values);			
+			subm.setValues(values);
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Tracker Event submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
@@ -241,12 +273,15 @@ public class TestEncoding {
 			values.add(new DataValue("HllvX50cXC0", "wQLfBvPrXqq", "Others"));
 			// Infant feeding
 			values.add(new DataValue("HllvX50cXC0", "X8zyunlgUfM", "Exclusive"));			
-			subm.setValues(values);			
+			subm.setValues(values);
+			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
 			byte[] compressSubm = writer.compress(subm);
 			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
 			System.out.println("Tracker Event submission in Base64 is: " + subm64);
+			
+			printDecoded(subm64, meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());

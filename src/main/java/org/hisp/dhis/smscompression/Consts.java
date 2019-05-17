@@ -7,6 +7,7 @@ public class Consts {
 	public static int SUBM_TYPE_BITLEN = 4;
 	public static int VERSION_BITLEN = 4;
 	public static int CRC_BITLEN = 8;
+	public static int SUBM_ID_BITLEN = 8;
 	
 	public enum SubmissionType {
 		AGGREGATE_DATASET,
