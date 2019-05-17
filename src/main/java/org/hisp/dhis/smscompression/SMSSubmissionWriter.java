@@ -60,7 +60,7 @@ public class SMSSubmissionWriter {
 		}
 				
 		byte[] crcSubm = new byte[subm.length + 1];
-		System.arraycopy(subm, 0, crcSubm, 1, subm.length - 1);
+		System.arraycopy(subm, 0, crcSubm, 1, subm.length);
 		crcSubm[0] = crc;
 		
 		return crcSubm;
