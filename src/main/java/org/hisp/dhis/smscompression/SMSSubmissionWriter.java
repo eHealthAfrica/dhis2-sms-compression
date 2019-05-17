@@ -12,7 +12,6 @@ import org.hisp.dhis.smscompression.models.AttributeValue;
 import org.hisp.dhis.smscompression.models.DataValue;
 import org.hisp.dhis.smscompression.models.Metadata;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
-import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
 import org.hisp.dhis.smscompression.utils.BitOutputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
 import org.hisp.dhis.smscompression.utils.ValueUtil;
@@ -23,18 +22,18 @@ public class SMSSubmissionWriter {
 	Metadata meta;
 	
 	public SMSSubmissionWriter(Metadata meta) {
+		//TODO: Check metadata looks valid here
+		this.meta = meta;
+	}
+	
+	public void setMetadata (Metadata meta) {
+		//TODO: Check metadata looks valid here
 		this.meta = meta;
 	}
 	
 	public byte[] compress(SMSSubmission subm) throws Exception {
 		this.byteStream = new ByteArrayOutputStream();
 		this.outStream = new BitOutputStream(byteStream);
-		
-		SMSSubmissionHeader header = new SMSSubmissionHeader();
-		header.setType(subm.getType());
-		header.setVersion(subm.getCurrentVersion());
-		header.setLastSyncDate(meta.lastSyncDate);
-		header.writeHeader(this);
 		
 		subm.write(meta, this);
 		
@@ -99,5 +98,9 @@ public class SMSSubmissionWriter {
 	//TODO: We should consider a better implementation for period than just String
 	public void writePeriod(String period) throws IOException {
 		ValueUtil.writeString(period, outStream);
+	}
+	
+	public void writeSubmissionID(int submissionID) throws IOException {
+		outStream.write(submissionID, Consts.SUBM_ID_BITLEN);
 	}
 }
