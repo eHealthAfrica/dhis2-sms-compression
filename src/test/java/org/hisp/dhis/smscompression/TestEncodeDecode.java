@@ -134,20 +134,30 @@ public class TestEncodeDecode {
 	public void testEncodeAggregateDataset() {
 		Gson gson = new Gson();
 		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_play.json"));
 			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
 			AggregateDatasetSMSSubmission subm = new AggregateDatasetSMSSubmission();
 			
-			subm.setUserID("kt2T1Qb4lkU");
-			subm.setOrgUnit("dar4XkzRmN0");
-			subm.setDataSet("RUOa08S569l");
+			//Tom Wakiki (system)
+			subm.setUserID("GOLswS44mh8");
+			//Ngelehun CHC
+			subm.setOrgUnit("DiszpKrYNg8");
+			//IDSR Weekly
+			subm.setDataSet("Nyh6laLdBEJ");
 			subm.setComplete(true);
 			subm.setAttributeOptionCombo("HllvX50cXC0");
-			subm.setPeriod("2019W10");
+			subm.setPeriod("2019W15");
 			ArrayList<SMSDataValue> values = new ArrayList<>();
-			values.add(new SMSDataValue("HllvX50cXC0", "uf3svrmp8Oj", "Harold"));
-			values.add(new SMSDataValue("HllvX50cXC0", "H6uSAMO5WLD", "Gerald"));
-			values.add(new SMSDataValue("HllvX50cXC0", "a3kGcGDCuk6", "Smith"));
+			//Yellow Fever
+			values.add(new SMSDataValue("HllvX50cXC0", "noIzB569hTM", "11"));
+			//Malaria
+			values.add(new SMSDataValue("HllvX50cXC0", "vq2qO3eTrNi", "24"));
+			//Plague
+			values.add(new SMSDataValue("HllvX50cXC0", "HS9zqaBdOQ4", "99"));
+			//Measles
+			values.add(new SMSDataValue("HllvX50cXC0", "YazgqXbizv1", "3"));
+			//Cholera
+			values.add(new SMSDataValue("HllvX50cXC0", "UsSUX0cpKsH", "1"));
 			subm.setValues(values);
 			subm.setSubmissionID(1);
 			
