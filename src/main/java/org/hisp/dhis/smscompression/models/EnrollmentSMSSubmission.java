@@ -3,10 +3,10 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.Consts;
+import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 public class EnrollmentSMSSubmission extends SMSSubmission {
 	protected String trackerProgram;
@@ -14,7 +14,7 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 	protected String trackedEntityInstance;
 	protected String enrollment;
 	protected Date timestamp;
-	protected List<AttributeValue> values;
+	protected List<SMSAttributeValue> values;
 	
 	public String getTrackerProgram() {
 		return trackerProgram;
@@ -56,15 +56,15 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 		this.timestamp = timestamp;
 	}
 
-	public List<AttributeValue> getValues() {
+	public List<SMSAttributeValue> getValues() {
 		return values;
 	}
 
-	public void setValues(List<AttributeValue> values) {
+	public void setValues(List<SMSAttributeValue> values) {
 		this.values = values;
 	}
 	
-	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {				
+	public void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {				
 		writer.writeNewID(trackerProgram);
 		writer.writeNewID(trackedEntityType);
 		writer.writeNewID(trackedEntityInstance);
@@ -73,7 +73,7 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 		writer.writeAttributeValues(values);
 	}
 	
-	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
+	public void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception {
 		this.trackerProgram = reader.readNewID();
 		this.trackedEntityType = reader.readNewID();
 		this.trackedEntityInstance = reader.readNewID();
@@ -87,7 +87,7 @@ public class EnrollmentSMSSubmission extends SMSSubmission {
 	}
 	
 	public SubmissionType getType() {
-		return Consts.SubmissionType.ENROLLMENT;
+		return SMSConsts.SubmissionType.ENROLLMENT;
 	}
 	
 }

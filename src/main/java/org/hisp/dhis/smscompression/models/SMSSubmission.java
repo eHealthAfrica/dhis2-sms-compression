@@ -3,7 +3,7 @@ package org.hisp.dhis.smscompression.models;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
 
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 public abstract class SMSSubmission {
 	protected SMSSubmissionHeader header;
@@ -12,8 +12,8 @@ public abstract class SMSSubmission {
 		
 	public abstract int getCurrentVersion();
 	public abstract SubmissionType getType();
-	public abstract void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception;
-	public abstract void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception;
+	public abstract void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception;
+	public abstract void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception;
 
 	public SMSSubmission() {
 		this.header = new SMSSubmissionHeader();
@@ -54,7 +54,7 @@ public abstract class SMSSubmission {
 		}
 	}
 	
-	public void write(Metadata meta, SMSSubmissionWriter writer) throws Exception {
+	public void write(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {
 		//Ensure we set the lastSyncDate in the subm header
 		header.setLastSyncDate(meta.lastSyncDate);
 
@@ -65,7 +65,7 @@ public abstract class SMSSubmission {
 		writeSubm(meta, writer);
 	}
 	
-	public void read(Metadata meta, SMSSubmissionReader reader, SMSSubmissionHeader header) throws Exception {
+	public void read(SMSMetadata meta, SMSSubmissionReader reader, SMSSubmissionHeader header) throws Exception {
 		this.header = header;
 		this.userID = reader.readNewID();
 		this.orgUnit = reader.readNewID();
