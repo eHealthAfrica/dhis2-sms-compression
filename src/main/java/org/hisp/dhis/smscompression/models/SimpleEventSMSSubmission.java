@@ -3,10 +3,10 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.Consts;
+import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 
 public class SimpleEventSMSSubmission extends SMSSubmission {
@@ -14,7 +14,7 @@ public class SimpleEventSMSSubmission extends SMSSubmission {
 	protected String attributeOptionCombo;
 	protected String event;
 	protected Date timestamp;
-	protected List<DataValue> values;
+	protected List<SMSDataValue> values;
 	
 	/* Getters and Setters */
 	
@@ -50,17 +50,17 @@ public class SimpleEventSMSSubmission extends SMSSubmission {
 		this.timestamp = timestamp;
 	}
 
-	public List<DataValue> getValues() {
+	public List<SMSDataValue> getValues() {
 		return values;
 	}
 
-	public void setValues(List<DataValue> values) {
+	public void setValues(List<SMSDataValue> values) {
 		this.values = values;
 	}
 	
 	/* Implementation of abstract methods */
 	
-	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {
+	public void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {
 		writer.writeNewID(eventProgram);
 		writer.writeNewID(attributeOptionCombo);
 		writer.writeNewID(event);
@@ -68,7 +68,7 @@ public class SimpleEventSMSSubmission extends SMSSubmission {
 		writer.writeDataValues(values);		
 	}
 
-	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
+	public void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception {
 		this.eventProgram = reader.readNewID();
 		this.attributeOptionCombo = reader.readNewID();
 		this.event = reader.readNewID();
@@ -81,6 +81,6 @@ public class SimpleEventSMSSubmission extends SMSSubmission {
 	}
 	
 	public SubmissionType getType() {
-		return Consts.SubmissionType.SIMPLE_EVENT;
+		return SMSConsts.SubmissionType.SIMPLE_EVENT;
 	}	
 }

@@ -7,10 +7,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
-import org.hisp.dhis.smscompression.models.AttributeValue;
-import org.hisp.dhis.smscompression.models.DataValue;
-import org.hisp.dhis.smscompression.models.Metadata;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
+import org.hisp.dhis.smscompression.models.SMSAttributeValue;
+import org.hisp.dhis.smscompression.models.SMSDataValue;
+import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.utils.BitOutputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
@@ -19,14 +19,14 @@ import org.hisp.dhis.smscompression.utils.ValueUtil;
 public class SMSSubmissionWriter {
 	ByteArrayOutputStream byteStream;
 	BitOutputStream outStream;
-	Metadata meta;
+	SMSMetadata meta;
 	
-	public SMSSubmissionWriter(Metadata meta) {
+	public SMSSubmissionWriter(SMSMetadata meta) {
 		//TODO: Check metadata looks valid here
 		this.meta = meta;
 	}
 	
-	public void setMetadata (Metadata meta) {
+	public void setMetadata (SMSMetadata meta) {
 		//TODO: Check metadata looks valid here
 		this.meta = meta;
 	}
@@ -66,27 +66,27 @@ public class SMSSubmissionWriter {
 	}
 	
 	public void writeType(SubmissionType type) throws IOException {
-		outStream.write(type.ordinal(), Consts.SUBM_TYPE_BITLEN);
+		outStream.write(type.ordinal(), SMSConsts.SUBM_TYPE_BITLEN);
 	}
 	
 	public void writeVersion(int version) throws IOException {
-		outStream.write(version, Consts.VERSION_BITLEN);		
+		outStream.write(version, SMSConsts.VERSION_BITLEN);		
 	}
 	
 	public void writeDate(Date date) throws IOException {
 		long epochSecs = date.getTime() / 1000;			
-		outStream.write((int)epochSecs, Consts.EPOCH_DATE_BITLEN);		
+		outStream.write((int)epochSecs, SMSConsts.EPOCH_DATE_BITLEN);		
 	}
 	
 	public void writeNewID(String id) throws Exception {
 		IDUtil.writeNewID(id, outStream);
 	}
 	
-	public void writeAttributeValues(List<AttributeValue> values) throws IOException {
+	public void writeAttributeValues(List<SMSAttributeValue> values) throws IOException {
 		ValueUtil.writeAttributeValues(values, meta, outStream);		
 	}
 	
-	public void writeDataValues(List<DataValue> values) throws IOException {
+	public void writeDataValues(List<SMSDataValue> values) throws IOException {
 		ValueUtil.writeDataValues(values, meta, outStream);		
 	}
 	
@@ -101,6 +101,6 @@ public class SMSSubmissionWriter {
 	}
 	
 	public void writeSubmissionID(int submissionID) throws IOException {
-		outStream.write(submissionID, Consts.SUBM_ID_BITLEN);
+		outStream.write(submissionID, SMSConsts.SUBM_ID_BITLEN);
 	}
 }

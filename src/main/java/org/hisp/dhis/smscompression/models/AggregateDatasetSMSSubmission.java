@@ -2,10 +2,10 @@ package org.hisp.dhis.smscompression.models;
 
 import java.util.List;
 
-import org.hisp.dhis.smscompression.Consts;
+import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 
 public class AggregateDatasetSMSSubmission extends SMSSubmission {
@@ -13,7 +13,7 @@ public class AggregateDatasetSMSSubmission extends SMSSubmission {
 	protected boolean complete;
 	protected String attributeOptionCombo;
 	protected String period;
-	protected List<DataValue> values;
+	protected List<SMSDataValue> values;
 	
 	/* Getters and Setters */
 	
@@ -49,17 +49,17 @@ public class AggregateDatasetSMSSubmission extends SMSSubmission {
 		this.period = period;
 	}
 
-	public List<DataValue> getValues() {
+	public List<SMSDataValue> getValues() {
 		return values;
 	}
 
-	public void setValues(List<DataValue> values) {
+	public void setValues(List<SMSDataValue> values) {
 		this.values = values;
 	}
 	
 	/* Implementation of abstract methods */
 	
-	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {
+	public void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {
 		writer.writeNewID(dataSet);
 		writer.writeBool(complete);
 		writer.writeNewID(attributeOptionCombo);
@@ -67,7 +67,7 @@ public class AggregateDatasetSMSSubmission extends SMSSubmission {
 		writer.writeDataValues(values);			
 	}
 
-	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
+	public void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception {
 		this.dataSet = reader.readNewID();
 		this.complete = reader.readBool();
 		this.attributeOptionCombo = reader.readNewID();
@@ -80,6 +80,6 @@ public class AggregateDatasetSMSSubmission extends SMSSubmission {
 	}
 	
 	public SubmissionType getType() {
-		return Consts.SubmissionType.AGGREGATE_DATASET;
+		return SMSConsts.SubmissionType.AGGREGATE_DATASET;
 	}	
 }

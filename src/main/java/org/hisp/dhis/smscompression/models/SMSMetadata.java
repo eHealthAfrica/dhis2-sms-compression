@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Metadata {
+public class SMSMetadata {
 	public static class ID {
 		String id;
 		public ID (String id) {

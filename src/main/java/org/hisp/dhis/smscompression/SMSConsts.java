@@ -1,6 +1,6 @@
 package org.hisp.dhis.smscompression;
 
-public class Consts {
+public class SMSConsts {
 	public static int VARLEN_BITLEN = 5;
 	public static int CHAR_BITLEN = 8;
 	public static int EPOCH_DATE_BITLEN = 32;

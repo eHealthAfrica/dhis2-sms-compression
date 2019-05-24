@@ -1,11 +1,11 @@
 package org.hisp.dhis.smscompression.models;
 
-public class DataValue {
+public class SMSDataValue {
 	protected String categoryOptionCombo;
 	protected String dataElement;
 	protected String value;
 
-	public DataValue(String categoryOptionCombo, String dataElement, String value) {
+	public SMSDataValue(String categoryOptionCombo, String dataElement, String value) {
 		this.categoryOptionCombo = categoryOptionCombo;
 		this.dataElement = dataElement;
 		this.value = value;
