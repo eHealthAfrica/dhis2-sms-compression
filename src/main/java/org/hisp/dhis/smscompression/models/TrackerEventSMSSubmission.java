@@ -3,10 +3,10 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.Consts;
+import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 public class TrackerEventSMSSubmission extends SMSSubmission {
 	protected String programStage;
@@ -14,7 +14,7 @@ public class TrackerEventSMSSubmission extends SMSSubmission {
 	protected String trackedEntityInstance;
 	protected String event;
 	protected Date timestamp;
-	protected List<DataValue> values;
+	protected List<SMSDataValue> values;
 	
 	/* Getters and Setters */
 	
@@ -58,17 +58,17 @@ public class TrackerEventSMSSubmission extends SMSSubmission {
 		this.timestamp = timestamp;
 	}
 
-	public List<DataValue> getValues() {
+	public List<SMSDataValue> getValues() {
 		return values;
 	}
 
-	public void setValues(List<DataValue> values) {
+	public void setValues(List<SMSDataValue> values) {
 		this.values = values;
 	}
 	
 	/* Implementation of abstract methods */
 	
-	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {		
+	public void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {		
 		writer.writeNewID(programStage);
 		writer.writeNewID(attributeOptionCombo);
 		writer.writeNewID(trackedEntityInstance);
@@ -77,7 +77,7 @@ public class TrackerEventSMSSubmission extends SMSSubmission {
 		writer.writeDataValues(values);
 	}
 	
-	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
+	public void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception {
 		this.programStage = reader.readNewID();
 		this.attributeOptionCombo = reader.readNewID();
 		this.trackedEntityInstance = reader.readNewID();
@@ -91,6 +91,6 @@ public class TrackerEventSMSSubmission extends SMSSubmission {
 	}
 	
 	public SubmissionType getType() {
-		return Consts.SubmissionType.TRACKER_EVENT;
+		return SMSConsts.SubmissionType.TRACKER_EVENT;
 	}	
 }

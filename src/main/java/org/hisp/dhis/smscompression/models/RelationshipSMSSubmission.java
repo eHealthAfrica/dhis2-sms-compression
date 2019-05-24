@@ -1,9 +1,9 @@
 package org.hisp.dhis.smscompression.models;
 
-import org.hisp.dhis.smscompression.Consts;
+import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 public class RelationshipSMSSubmission extends SMSSubmission {
 	protected String relationshipType;
@@ -47,14 +47,14 @@ public class RelationshipSMSSubmission extends SMSSubmission {
 
 	/* Implementation of abstract methods */
 	
-	public void writeSubm(Metadata meta, SMSSubmissionWriter writer) throws Exception {
+	public void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {
 		writer.writeNewID(relationshipType);
 		writer.writeNewID(relationship);
 		writer.writeNewID(from);
 		writer.writeNewID(to);
 	}
 	
-	public void readSubm(Metadata meta, SMSSubmissionReader reader) throws Exception {
+	public void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception {
 		this.relationshipType = reader.readNewID();
 		this.relationship = reader.readNewID();
 		this.from = reader.readNewID();
@@ -66,6 +66,6 @@ public class RelationshipSMSSubmission extends SMSSubmission {
 	}
 	
 	public SubmissionType getType() {
-		return Consts.SubmissionType.RELATIONSHIP;
+		return SMSConsts.SubmissionType.RELATIONSHIP;
 	}	
 }

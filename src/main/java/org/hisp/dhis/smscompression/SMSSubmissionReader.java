@@ -8,13 +8,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
-import org.hisp.dhis.smscompression.models.AttributeValue;
-import org.hisp.dhis.smscompression.models.DataValue;
+import org.hisp.dhis.smscompression.models.SMSAttributeValue;
+import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
-import org.hisp.dhis.smscompression.models.Metadata;
+import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.RelationshipSMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
@@ -32,7 +32,7 @@ public class SMSSubmissionReader {
 		
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(smsBytes);
 		this.inStream = new BitInputStream(byteStream);
-		inStream.read(Consts.CRC_BITLEN); // skip CRC
+		inStream.read(SMSConsts.CRC_BITLEN); // skip CRC
 		
 		SMSSubmissionHeader header = new SMSSubmissionHeader();
 		header.readHeader(this);
@@ -40,7 +40,7 @@ public class SMSSubmissionReader {
 		return header;
 	}
 	
-	public SMSSubmission readSubmission(byte[] smsBytes, Metadata meta) throws Exception {
+	public SMSSubmission readSubmission(byte[] smsBytes, SMSMetadata meta) throws Exception {
 		SMSSubmissionHeader header = readHeader(smsBytes);
 		SMSSubmission subm = null;
 		
@@ -87,16 +87,16 @@ public class SMSSubmissionReader {
 	}
 	
 	public SubmissionType readType() throws IOException {
-		int submType = inStream.read(Consts.SUBM_TYPE_BITLEN);
-		return Consts.SubmissionType.values()[submType];
+		int submType = inStream.read(SMSConsts.SUBM_TYPE_BITLEN);
+		return SMSConsts.SubmissionType.values()[submType];
 	}
 	
 	public int readVersion() throws IOException {
-		return inStream.read(Consts.VERSION_BITLEN);		
+		return inStream.read(SMSConsts.VERSION_BITLEN);		
 	}
 	
 	public Date readDate() throws IOException {
-		long epochSecs = inStream.read(Consts.EPOCH_DATE_BITLEN);
+		long epochSecs = inStream.read(SMSConsts.EPOCH_DATE_BITLEN);
 		Date dateVal = new Date(epochSecs * 1000);
 		return dateVal;
 	}
@@ -105,11 +105,11 @@ public class SMSSubmissionReader {
 		return IDUtil.readNewID(inStream);
 	}
 	
-	public List<AttributeValue> readAttributeValues(Metadata meta) throws IOException {
+	public List<SMSAttributeValue> readAttributeValues(SMSMetadata meta) throws IOException {
 		return ValueUtil.readAttributeValues(meta, inStream); 
 	}
 	
-	public List<DataValue> readDataValues(Metadata meta) throws IOException {
+	public List<SMSDataValue> readDataValues(SMSMetadata meta) throws IOException {
 		return ValueUtil.readDataValues(meta, inStream); 
 	}
 	
@@ -124,6 +124,6 @@ public class SMSSubmissionReader {
 	}
 	
 	public int readSubmissionID() throws IOException {
-		return inStream.read(Consts.SUBM_ID_BITLEN);
+		return inStream.read(SMSConsts.SUBM_ID_BITLEN);
 	}
 }

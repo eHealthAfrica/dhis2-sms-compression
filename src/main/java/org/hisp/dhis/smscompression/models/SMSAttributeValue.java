@@ -1,10 +1,10 @@
 package org.hisp.dhis.smscompression.models;
 
-public class AttributeValue {
+public class SMSAttributeValue {
 	protected String attribute;
 	protected String value;
 	
-	public AttributeValue(String attribute, String value) {
+	public SMSAttributeValue(String attribute, String value) {
 		this.attribute = attribute;
 		this.value = value;
 	}

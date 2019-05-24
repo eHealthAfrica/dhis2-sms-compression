@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.Consts.SubmissionType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 public class SMSSubmissionHeader {
 	protected SubmissionType type;

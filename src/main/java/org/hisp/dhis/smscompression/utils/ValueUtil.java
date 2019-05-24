@@ -9,26 +9,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hisp.dhis.smscompression.Consts;
-import org.hisp.dhis.smscompression.models.AttributeValue;
-import org.hisp.dhis.smscompression.models.DataValue;
-import org.hisp.dhis.smscompression.models.Metadata;
+import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.models.SMSAttributeValue;
+import org.hisp.dhis.smscompression.models.SMSDataValue;
+import org.hisp.dhis.smscompression.models.SMSMetadata;
 
 public class ValueUtil {
 
-	public static void writeAttributeValues(List<AttributeValue> values, Metadata meta, BitOutputStream outStream) throws IOException {
+	public static void writeAttributeValues(List<SMSAttributeValue> values, SMSMetadata meta, BitOutputStream outStream) throws IOException {
 		int attributeBitLen = IDUtil.getBitLengthForList(meta.getTrackedEntityAttributes());
-		outStream.write(attributeBitLen, Consts.VARLEN_BITLEN);
-		for (AttributeValue val : values) {
+		outStream.write(attributeBitLen, SMSConsts.VARLEN_BITLEN);
+		for (SMSAttributeValue val : values) {
 			int idHash = BinaryUtils.hash(val.getAttribute(), attributeBitLen);
 			outStream.write(idHash, attributeBitLen);
 			writeString(val.getValue(), outStream);
 		}
 	}	
 
-	public static List<AttributeValue> readAttributeValues(Metadata meta, BitInputStream inStream) throws IOException {
-		ArrayList<AttributeValue> values = new ArrayList<>();		
-		int attributeBitLen = inStream.read(Consts.VARLEN_BITLEN);
+	public static List<SMSAttributeValue> readAttributeValues(SMSMetadata meta, BitInputStream inStream) throws IOException {
+		ArrayList<SMSAttributeValue> values = new ArrayList<>();		
+		int attributeBitLen = inStream.read(SMSConsts.VARLEN_BITLEN);
 		Map<Integer, String> idLookup = IDUtil.getIDLookup(meta.getTrackedEntityAttributes(), attributeBitLen);
 
 		while(true) {
@@ -36,7 +36,7 @@ public class ValueUtil {
 				int idHash = inStream.read(attributeBitLen);
 				String id = idLookup.get(idHash);
 				String val = readString(inStream);
-				values.add(new AttributeValue(id, val));
+				values.add(new SMSAttributeValue(id, val));
 			} catch (EOFException e) {
 				break;				
 			}
@@ -46,16 +46,16 @@ public class ValueUtil {
 	
 	public static void writeString(String s, BitOutputStream outStream) throws IOException {
 		for (char c : s.toCharArray()) {
-			outStream.write(c, Consts.CHAR_BITLEN);
+			outStream.write(c, SMSConsts.CHAR_BITLEN);
 		}
 		// Null terminator
-		outStream.write(0, Consts.CHAR_BITLEN);
+		outStream.write(0, SMSConsts.CHAR_BITLEN);
 	}
 	
 	public static String readString(BitInputStream inStream) throws IOException {
 		String s = "";
 		do {
-			int i = inStream.read(Consts.CHAR_BITLEN);
+			int i = inStream.read(SMSConsts.CHAR_BITLEN);
 			if (i == 0) break;
 			s += (char) i;
 		} while(true);
@@ -64,45 +64,46 @@ public class ValueUtil {
 	
 	public static void writeDate(Date d, BitOutputStream outStream) throws IOException {
 		long epochSecs = d.getTime() / 1000;			
-		outStream.write((int)epochSecs, Consts.EPOCH_DATE_BITLEN);
+		outStream.write((int)epochSecs, SMSConsts.EPOCH_DATE_BITLEN);
 	}
 	
 	public static Date readDate(BitInputStream inStream) throws IOException {
-		long epochSecs = inStream.read(Consts.EPOCH_DATE_BITLEN);
+		long epochSecs = inStream.read(SMSConsts.EPOCH_DATE_BITLEN);
 		Date dateVal = new Date(epochSecs * 1000);
 		return dateVal;
 	}
 	
-	public static Map<String, List<DataValue>> groupDataValues(List<DataValue> values) {
-		HashMap<String, List<DataValue>> map = new HashMap<>();
-		for (DataValue val : values) {
+	public static Map<String, List<SMSDataValue>> groupDataValues(List<SMSDataValue> values) {
+		HashMap<String, List<SMSDataValue>> map = new HashMap<>();
+		for (SMSDataValue val : values) {
 			String catOptionCombo = val.getCategoryOptionCombo();
 			if (!map.containsKey(catOptionCombo)) {
-				ArrayList<DataValue> list = new ArrayList<>();
+				ArrayList<SMSDataValue> list = new ArrayList<>();
 				map.put(catOptionCombo, list);
 			}
-			List<DataValue> list = map.get(catOptionCombo);
+			List<SMSDataValue> list = map.get(catOptionCombo);
 			list.add(val);
 		}
 		return map;
 	}
 	
-	public static void writeDataValues(List<DataValue> values, Metadata meta, BitOutputStream outStream) throws IOException {
+	//TODO: No error handling for missing IDs at the moment
+	public static void writeDataValues(List<SMSDataValue> values, SMSMetadata meta, BitOutputStream outStream) throws IOException {
 		int catOptionComboBitLen = IDUtil.getBitLengthForList(meta.getCategoryOptionCombos());
-		outStream.write(catOptionComboBitLen, Consts.VARLEN_BITLEN);		
+		outStream.write(catOptionComboBitLen, SMSConsts.VARLEN_BITLEN);		
 		int dataElementBitLen = IDUtil.getBitLengthForList(meta.getDataElements());
-		outStream.write(dataElementBitLen, Consts.VARLEN_BITLEN);
+		outStream.write(dataElementBitLen, SMSConsts.VARLEN_BITLEN);
 		
-		Map<String, List<DataValue>> valMap = groupDataValues(values);
+		Map<String, List<SMSDataValue>> valMap = groupDataValues(values);
 		
 		for (Iterator<String> keyIter = valMap.keySet().iterator(); keyIter.hasNext();) {
 			String catOptionCombo = keyIter.next();
 			int catOptionComboHash = BinaryUtils.hash(catOptionCombo, catOptionComboBitLen);
 			outStream.write(catOptionComboHash, catOptionComboBitLen);
-			List<DataValue> vals = valMap.get(catOptionCombo);
+			List<SMSDataValue> vals = valMap.get(catOptionCombo);
 			
-			for (Iterator<DataValue> valIter = vals.iterator(); valIter.hasNext();) {
-				DataValue val = valIter.next();
+			for (Iterator<SMSDataValue> valIter = vals.iterator(); valIter.hasNext();) {
+				SMSDataValue val = valIter.next();
 				int deHash = BinaryUtils.hash(val.getDataElement(), dataElementBitLen);
 				outStream.write(deHash, dataElementBitLen);
 				writeString(val.getValue(), outStream);
@@ -116,12 +117,12 @@ public class ValueUtil {
 		}
 	}	
 	
-	public static List<DataValue> readDataValues(Metadata meta, BitInputStream inStream) throws IOException {
-		int catOptionComboBitLen = inStream.read(Consts.VARLEN_BITLEN);
-		int dataElementBitLen = inStream.read(Consts.VARLEN_BITLEN);
+	public static List<SMSDataValue> readDataValues(SMSMetadata meta, BitInputStream inStream) throws IOException {
+		int catOptionComboBitLen = inStream.read(SMSConsts.VARLEN_BITLEN);
+		int dataElementBitLen = inStream.read(SMSConsts.VARLEN_BITLEN);
 		Map<Integer, String> cocIDLookup = IDUtil.getIDLookup(meta.getCategoryOptionCombos(), catOptionComboBitLen);
 		Map<Integer, String> deIDLookup = IDUtil.getIDLookup(meta.getDataElements(), dataElementBitLen);
-		ArrayList<DataValue> values = new ArrayList<>();
+		ArrayList<SMSDataValue> values = new ArrayList<>();
 		
 		while(true) {
 			try {
@@ -132,7 +133,7 @@ public class ValueUtil {
 						int dataElementHash = inStream.read(dataElementBitLen);
 						String dataElement = deIDLookup.get(dataElementHash);
 						String value = readString(inStream);						
-						values.add(new DataValue(catOptionCombo, dataElement, value));
+						values.add(new SMSDataValue(catOptionCombo, dataElement, value));
 					}
 				}
 			} catch (EOFException e) {
