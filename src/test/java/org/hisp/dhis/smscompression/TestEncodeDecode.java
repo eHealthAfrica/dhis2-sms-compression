@@ -44,9 +44,12 @@ public class TestEncodeDecode {
 			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
 			DeleteSMSSubmission subm = new DeleteSMSSubmission();
 			
-			subm.setUserID("kt2T1Qb4lkU");
-			subm.setOrgUnit("dar4XkzRmN0");
-			subm.setUid("r7M1gUFK37v");
+			//Tom Wakiki (system)
+			subm.setUserID("GOLswS44mh8");
+			//Ngelehun CHC
+			subm.setOrgUnit("DiszpKrYNg8");
+			//Generated UID of test event
+			subm.setUid("Jpr20TLJ7Z1");
 			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
@@ -69,12 +72,18 @@ public class TestEncodeDecode {
 			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
 			RelationshipSMSSubmission subm = new RelationshipSMSSubmission();
 			
-			subm.setUserID("kt2T1Qb4lkU");
-			subm.setOrgUnit("dar4XkzRmN0");
-			subm.setRelationshipType("RUOa08S569l");
-			subm.setRelationship("uf3svrmp8Oj");
-			subm.setFrom("H6uSAMO5WLD");
-			subm.setTo("a3kGcGDCuk6");
+			//Tom Wakiki (system)
+			subm.setUserID("GOLswS44mh8");
+			//Ngelehun CHC
+			subm.setOrgUnit("DiszpKrYNg8");
+			//Sibling_a-to-b_(Person-Person)
+			subm.setRelationshipType("XdP5nraLPZ0");
+			//Generated UID for new relationship
+			subm.setRelationship("uf3svrmpzOj");
+			//Gloria Murray (Person)
+			subm.setFrom("qv0j4JBXQX0");
+			//Jerald Wilson (Person)
+			subm.setTo("LSEjy8nA3kY");
 			subm.setSubmissionID(1);
 			
 			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
@@ -134,7 +143,7 @@ public class TestEncodeDecode {
 	public void testEncodeAggregateDataset() {
 		Gson gson = new Gson();
 		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_play.json"));
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
 			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
 			AggregateDatasetSMSSubmission subm = new AggregateDatasetSMSSubmission();
 			
@@ -146,7 +155,7 @@ public class TestEncodeDecode {
 			subm.setDataSet("Nyh6laLdBEJ");
 			subm.setComplete(true);
 			subm.setAttributeOptionCombo("HllvX50cXC0");
-			subm.setPeriod("2019W15");
+			subm.setPeriod("2019W16");
 			ArrayList<SMSDataValue> values = new ArrayList<>();
 			//Yellow Fever
 			values.add(new SMSDataValue("HllvX50cXC0", "noIzB569hTM", "11"));
@@ -158,6 +167,9 @@ public class TestEncodeDecode {
 			values.add(new SMSDataValue("HllvX50cXC0", "YazgqXbizv1", "3"));
 			//Cholera
 			values.add(new SMSDataValue("HllvX50cXC0", "UsSUX0cpKsH", "1"));
+			//Fake Data Element, doesn't exist server side
+			values.add(new SMSDataValue("HllvX50cXC0", "xxxxxxxxxxx", "1"));
+			
 			subm.setValues(values);
 			subm.setSubmissionID(1);
 			
@@ -177,7 +189,7 @@ public class TestEncodeDecode {
 	public void testEncodeEnrollment() {
 		Gson gson = new Gson();
 		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_play.json"));
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
 			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
 			EnrollmentSMSSubmission subm = new EnrollmentSMSSubmission();
 			
@@ -223,55 +235,10 @@ public class TestEncodeDecode {
 	}
 	
 	@Test
-	public void testEncodeTrackerEventeHA() {
+	public void testEncodeTrackerEvent() {
 		Gson gson = new Gson();
 		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_eha.json"));
-			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
-			TrackerEventSMSSubmission subm = new TrackerEventSMSSubmission();
-			
-			// Jasper Timm
-			subm.setUserID("BfbaQwtjEko");
-			// Gbo Chiefdom
-			subm.setOrgUnit("Lb571MsRIkS");
-			// Liberia Case Details
-			subm.setProgramStage("QftwC9Td4f9");
-			// Default catOptionCombo
-			subm.setAttributeOptionCombo("DAv5bv9oqMW");
-			// Test Person
-			subm.setTrackedEntityInstance("ArQlnv8qbih");
-			// New UID
-			subm.setEvent("r7M1gUFK37v");
-			subm.setTimestamp(meta.lastSyncDate);
-			ArrayList<SMSDataValue> values = new ArrayList<>();
-			// LR IDSR ID
-			values.add(new SMSDataValue("DAv5bv9oqMW", "YvAtvSRhME2", "123456"));
-			// LR Patient Record ID
-			values.add(new SMSDataValue("DAv5bv9oqMW", "oJ5sQEzA2Ot", "PA1111"));
-			// LR Person Collecting Specimen Name
-			values.add(new SMSDataValue("DAv5bv9oqMW", "uPKpHhvtmWD", "Mustafa Conteh"));
-			// LR Reporting Person Name"
-			values.add(new SMSDataValue("DAv5bv9oqMW", "nxmNRfqRCYj", "Foday Sesay"));			
-			subm.setValues(values);
-			subm.setSubmissionID(1);
-			
-			SMSSubmissionWriter writer = new SMSSubmissionWriter(meta);
-			byte[] compressSubm = writer.compress(subm);
-			String subm64 = Base64.getEncoder().encodeToString(compressSubm);			
-			System.out.println("Tracker Event submission in Base64 is: " + subm64);
-			
-			printDecoded(subm64, meta);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.fail(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testEncodeTrackerEventPlayground() {
-		Gson gson = new Gson();
-		try {
-			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata_play.json"));
+			String metadataJson = IOUtils.toString(new FileReader("src/test/resources/metadata.json"));
 			SMSMetadata meta = gson.fromJson(metadataJson, SMSMetadata.class);
 			TrackerEventSMSSubmission subm = new TrackerEventSMSSubmission();
 			
