@@ -44,7 +44,7 @@ public class TrackerEventSMSSubmission
 
     protected String attributeOptionCombo;
 
-    protected String trackedEntityInstance;
+    protected String enrollment;
 
     protected String event;
 
@@ -74,14 +74,14 @@ public class TrackerEventSMSSubmission
         this.attributeOptionCombo = attributeOptionCombo;
     }
 
-    public String getTrackedEntityInstance()
+    public String getEnrollment()
     {
-        return trackedEntityInstance;
+        return enrollment;
     }
 
-    public void setTrackedEntityInstance( String trackedEntityInstance )
+    public void setEnrollment( String enrollment )
     {
-        this.trackedEntityInstance = trackedEntityInstance;
+        this.enrollment = enrollment;
     }
 
     public String getEvent()
@@ -121,7 +121,7 @@ public class TrackerEventSMSSubmission
     {
         writer.writeNewID( programStage );
         writer.writeNewID( attributeOptionCombo );
-        writer.writeNewID( trackedEntityInstance );
+        writer.writeNewID( enrollment );
         writer.writeNewID( event );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
@@ -132,7 +132,7 @@ public class TrackerEventSMSSubmission
     {
         this.programStage = reader.readNewID();
         this.attributeOptionCombo = reader.readNewID();
-        this.trackedEntityInstance = reader.readNewID();
+        this.enrollment = reader.readNewID();
         this.event = reader.readNewID();
         this.timestamp = reader.readDate();
         this.values = reader.readDataValues( meta );
