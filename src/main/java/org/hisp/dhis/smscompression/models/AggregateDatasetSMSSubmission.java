@@ -1,85 +1,149 @@
 package org.hisp.dhis.smscompression.models;
 
+/*
+ * Copyright (c) 2004-2019, University of Oslo
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * Neither the name of the HISP project nor the names of its contributors may
+ * be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
-import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
+public class AggregateDatasetSMSSubmission
+    extends
+    SMSSubmission
+{
+    protected String orgUnit;
 
-public class AggregateDatasetSMSSubmission extends SMSSubmission {
-	protected String dataSet;
-	protected boolean complete;
-	protected String attributeOptionCombo;
-	protected String period;
-	protected List<SMSDataValue> values;
-	
-	/* Getters and Setters */
-	
-	public String getDataSet() {
-		return dataSet;
-	}
+    protected String dataSet;
 
-	public void setDataSet(String dataSet) {
-		this.dataSet = dataSet;
-	}
+    protected boolean complete;
 
-	public boolean isComplete() {
-		return complete;
-	}
+    protected String attributeOptionCombo;
 
-	public void setComplete(boolean complete) {
-		this.complete = complete;
-	}
+    protected String period;
 
-	public String getAttributeOptionCombo() {
-		return attributeOptionCombo;
-	}
+    protected List<SMSDataValue> values;
 
-	public void setAttributeOptionCombo(String attributeOptionCombo) {
-		this.attributeOptionCombo = attributeOptionCombo;
-	}
+    /* Getters and Setters */
 
-	public String getPeriod() {
-		return period;
-	}
+    public String getOrgUnit()
+    {
+        return orgUnit;
+    }
 
-	public void setPeriod(String period) {
-		this.period = period;
-	}
+    public void setOrgUnit( String orgUnit )
+    {
+        this.orgUnit = orgUnit;
+    }
 
-	public List<SMSDataValue> getValues() {
-		return values;
-	}
+    public String getDataSet()
+    {
+        return dataSet;
+    }
 
-	public void setValues(List<SMSDataValue> values) {
-		this.values = values;
-	}
-	
-	/* Implementation of abstract methods */
-	
-	public void writeSubm(SMSMetadata meta, SMSSubmissionWriter writer) throws Exception {
-		writer.writeNewID(dataSet);
-		writer.writeBool(complete);
-		writer.writeNewID(attributeOptionCombo);
-		writer.writePeriod(period);
-		writer.writeDataValues(values);			
-	}
+    public void setDataSet( String dataSet )
+    {
+        this.dataSet = dataSet;
+    }
 
-	public void readSubm(SMSMetadata meta, SMSSubmissionReader reader) throws Exception {
-		this.dataSet = reader.readNewID();
-		this.complete = reader.readBool();
-		this.attributeOptionCombo = reader.readNewID();
-		this.period = reader.readPeriod();
-		this.values = reader.readDataValues(meta);		
-	}
-	
-	public int getCurrentVersion() {
-		return 1;
-	}
-	
-	public SubmissionType getType() {
-		return SMSConsts.SubmissionType.AGGREGATE_DATASET;
-	}	
+    public boolean isComplete()
+    {
+        return complete;
+    }
+
+    public void setComplete( boolean complete )
+    {
+        this.complete = complete;
+    }
+
+    public String getAttributeOptionCombo()
+    {
+        return attributeOptionCombo;
+    }
+
+    public void setAttributeOptionCombo( String attributeOptionCombo )
+    {
+        this.attributeOptionCombo = attributeOptionCombo;
+    }
+
+    public String getPeriod()
+    {
+        return period;
+    }
+
+    public void setPeriod( String period )
+    {
+        this.period = period;
+    }
+
+    public List<SMSDataValue> getValues()
+    {
+        return values;
+    }
+
+    public void setValues( List<SMSDataValue> values )
+    {
+        this.values = values;
+    }
+
+    /* Implementation of abstract methods */
+
+    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+        throws Exception
+    {
+        writer.writeNewID( orgUnit );
+        writer.writeNewID( dataSet );
+        writer.writeBool( complete );
+        writer.writeNewID( attributeOptionCombo );
+        writer.writePeriod( period );
+        writer.writeDataValues( values );
+    }
+
+    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+        throws Exception
+    {
+        this.orgUnit = reader.readNewID();
+        this.dataSet = reader.readNewID();
+        this.complete = reader.readBool();
+        this.attributeOptionCombo = reader.readNewID();
+        this.period = reader.readPeriod();
+        this.values = reader.readDataValues( meta );
+    }
+
+    public int getCurrentVersion()
+    {
+        return 1;
+    }
+
+    public SubmissionType getType()
+    {
+        return SMSConsts.SubmissionType.AGGREGATE_DATASET;
+    }
 }
