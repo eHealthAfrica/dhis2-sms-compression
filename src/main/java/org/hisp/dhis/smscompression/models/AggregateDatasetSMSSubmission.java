@@ -39,6 +39,8 @@ public class AggregateDatasetSMSSubmission
     extends
     SMSSubmission
 {
+    protected String orgUnit;
+
     protected String dataSet;
 
     protected boolean complete;
@@ -50,6 +52,16 @@ public class AggregateDatasetSMSSubmission
     protected List<SMSDataValue> values;
 
     /* Getters and Setters */
+
+    public String getOrgUnit()
+    {
+        return orgUnit;
+    }
+
+    public void setOrgUnit( String orgUnit )
+    {
+        this.orgUnit = orgUnit;
+    }
 
     public String getDataSet()
     {
@@ -106,6 +118,7 @@ public class AggregateDatasetSMSSubmission
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
+        writer.writeNewID( orgUnit );
         writer.writeNewID( dataSet );
         writer.writeBool( complete );
         writer.writeNewID( attributeOptionCombo );
@@ -116,6 +129,7 @@ public class AggregateDatasetSMSSubmission
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
+        this.orgUnit = reader.readNewID();
         this.dataSet = reader.readNewID();
         this.complete = reader.readBool();
         this.attributeOptionCombo = reader.readNewID();

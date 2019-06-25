@@ -40,6 +40,8 @@ public class EnrollmentSMSSubmission
     extends
     SMSSubmission
 {
+    protected String orgUnit;
+
     protected String trackerProgram;
 
     protected String trackedEntityType;
@@ -51,6 +53,16 @@ public class EnrollmentSMSSubmission
     protected Date timestamp;
 
     protected List<SMSAttributeValue> values;
+
+    public String getOrgUnit()
+    {
+        return orgUnit;
+    }
+
+    public void setOrgUnit( String orgUnit )
+    {
+        this.orgUnit = orgUnit;
+    }
 
     public String getTrackerProgram()
     {
@@ -115,6 +127,7 @@ public class EnrollmentSMSSubmission
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
+        writer.writeNewID( orgUnit );
         writer.writeNewID( trackerProgram );
         writer.writeNewID( trackedEntityType );
         writer.writeNewID( trackedEntityInstance );
@@ -126,6 +139,7 @@ public class EnrollmentSMSSubmission
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
+        this.orgUnit = reader.readNewID();
         this.trackerProgram = reader.readNewID();
         this.trackedEntityType = reader.readNewID();
         this.trackedEntityInstance = reader.readNewID();

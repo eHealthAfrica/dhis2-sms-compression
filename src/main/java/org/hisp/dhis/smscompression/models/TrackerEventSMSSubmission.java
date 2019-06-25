@@ -40,6 +40,8 @@ public class TrackerEventSMSSubmission
     extends
     SMSSubmission
 {
+    protected String orgUnit;
+
     protected String programStage;
 
     protected String attributeOptionCombo;
@@ -53,6 +55,16 @@ public class TrackerEventSMSSubmission
     protected List<SMSDataValue> values;
 
     /* Getters and Setters */
+
+    public String getOrgUnit()
+    {
+        return orgUnit;
+    }
+
+    public void setOrgUnit( String orgUnit )
+    {
+        this.orgUnit = orgUnit;
+    }
 
     public String getProgramStage()
     {
@@ -119,6 +131,7 @@ public class TrackerEventSMSSubmission
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
+        writer.writeNewID( orgUnit );
         writer.writeNewID( programStage );
         writer.writeNewID( attributeOptionCombo );
         writer.writeNewID( enrollment );
@@ -130,6 +143,7 @@ public class TrackerEventSMSSubmission
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
+        this.orgUnit = reader.readNewID();
         this.programStage = reader.readNewID();
         this.attributeOptionCombo = reader.readNewID();
         this.enrollment = reader.readNewID();
