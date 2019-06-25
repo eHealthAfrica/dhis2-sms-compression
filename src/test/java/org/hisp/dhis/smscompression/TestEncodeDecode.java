@@ -304,7 +304,7 @@ public class TestEncodeDecode
             // Default catOptionCombo
             subm.setAttributeOptionCombo( "HllvX50cXC0" );
             // Test Person
-            subm.setTrackedEntityInstance( "DacGG5vK1K6" );
+            subm.setEnrollment( "DacGG5vK1K6" );
             // New UID
             subm.setEvent( "r7M1gUFK37v" );
             subm.setTimestamp( meta.lastSyncDate );
