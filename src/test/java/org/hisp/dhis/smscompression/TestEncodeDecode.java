@@ -79,8 +79,6 @@ public class TestEncodeDecode
 
             // Tom Wakiki (system)
             subm.setUserID( "GOLswS44mh8" );
-            // Ngelehun CHC
-            subm.setOrgUnit( "DiszpKrYNg8" );
             // Generated UID of test event
             subm.setUid( "Jpr20TLJ7Z1" );
             subm.setSubmissionID( 1 );
@@ -111,8 +109,6 @@ public class TestEncodeDecode
 
             // Tom Wakiki (system)
             subm.setUserID( "GOLswS44mh8" );
-            // Ngelehun CHC
-            subm.setOrgUnit( "DiszpKrYNg8" );
             // Sibling_a-to-b_(Person-Person)
             subm.setRelationshipType( "XdP5nraLPZ0" );
             // Generated UID for new relationship

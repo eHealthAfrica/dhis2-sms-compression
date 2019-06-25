@@ -40,6 +40,8 @@ public class SimpleEventSMSSubmission
     extends
     SMSSubmission
 {
+    protected String orgUnit;
+
     protected String eventProgram;
 
     protected String attributeOptionCombo;
@@ -51,6 +53,16 @@ public class SimpleEventSMSSubmission
     protected List<SMSDataValue> values;
 
     /* Getters and Setters */
+
+    public String getOrgUnit()
+    {
+        return orgUnit;
+    }
+
+    public void setOrgUnit( String orgUnit )
+    {
+        this.orgUnit = orgUnit;
+    }
 
     public String getEventProgram()
     {
@@ -107,6 +119,7 @@ public class SimpleEventSMSSubmission
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
+        writer.writeNewID( orgUnit );
         writer.writeNewID( eventProgram );
         writer.writeNewID( attributeOptionCombo );
         writer.writeNewID( event );
@@ -117,6 +130,7 @@ public class SimpleEventSMSSubmission
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
+        this.orgUnit = reader.readNewID();
         this.eventProgram = reader.readNewID();
         this.attributeOptionCombo = reader.readNewID();
         this.event = reader.readNewID();

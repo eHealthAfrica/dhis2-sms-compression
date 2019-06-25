@@ -39,8 +39,6 @@ public abstract class SMSSubmission
 
     protected String userID;
 
-    protected String orgUnit;
-
     public abstract int getCurrentVersion();
 
     public abstract SubmissionType getType();
@@ -80,25 +78,15 @@ public abstract class SMSSubmission
         this.userID = userID;
     }
 
-    public String getOrgUnit()
-    {
-        return orgUnit;
-    }
-
-    public void setOrgUnit( String orgUnit )
-    {
-        this.orgUnit = orgUnit;
-    }
-
     public void validateSubmission()
         throws Exception
     {
         header.validateHeaer();
-        // TODO: do better validation here
-        if ( userID.isEmpty() || orgUnit.isEmpty() )
+        if ( userID.isEmpty() )
         {
-            throw new Exception( "Ensure the UserID and OrgUnitID is set in the submission" );
+            throw new Exception( "Ensure the UserID is set in the submission" );
         }
+        // TODO: We should run validations on each submission here
     }
 
     public void write( SMSMetadata meta, SMSSubmissionWriter writer )
@@ -110,7 +98,6 @@ public abstract class SMSSubmission
         validateSubmission();
         header.writeHeader( writer );
         writer.writeNewID( userID );
-        writer.writeNewID( orgUnit );
         writeSubm( meta, writer );
     }
 
@@ -119,7 +106,6 @@ public abstract class SMSSubmission
     {
         this.header = header;
         this.userID = reader.readNewID();
-        this.orgUnit = reader.readNewID();
         readSubm( meta, reader );
     }
 }
