@@ -44,6 +44,8 @@ public class TrackerEventSMSSubmission
 
     protected String programStage;
 
+    protected boolean complete;
+
     protected String attributeOptionCombo;
 
     protected String enrollment;
@@ -74,6 +76,16 @@ public class TrackerEventSMSSubmission
     public void setProgramStage( String programStage )
     {
         this.programStage = programStage;
+    }
+
+    public boolean isComplete()
+    {
+        return complete;
+    }
+
+    public void setComplete( boolean complete )
+    {
+        this.complete = complete;
     }
 
     public String getAttributeOptionCombo()

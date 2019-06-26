@@ -44,6 +44,8 @@ public class SimpleEventSMSSubmission
 
     protected String eventProgram;
 
+    protected boolean complete;
+
     protected String attributeOptionCombo;
 
     protected String event;
@@ -72,6 +74,16 @@ public class SimpleEventSMSSubmission
     public void setEventProgram( String eventProgram )
     {
         this.eventProgram = eventProgram;
+    }
+
+    public boolean isComplete()
+    {
+        return complete;
+    }
+
+    public void setComplete( boolean complete )
+    {
+        this.complete = complete;
     }
 
     public String getAttributeOptionCombo()
