@@ -133,6 +133,7 @@ public class SimpleEventSMSSubmission
     {
         writer.writeNewID( orgUnit );
         writer.writeNewID( eventProgram );
+        writer.writeBool( complete );
         writer.writeNewID( attributeOptionCombo );
         writer.writeNewID( event );
         writer.writeDate( timestamp );
@@ -144,6 +145,7 @@ public class SimpleEventSMSSubmission
     {
         this.orgUnit = reader.readNewID();
         this.eventProgram = reader.readNewID();
+        this.complete = reader.readBool();
         this.attributeOptionCombo = reader.readNewID();
         this.event = reader.readNewID();
         this.timestamp = reader.readDate();
