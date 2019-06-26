@@ -153,6 +153,7 @@ public class TestEncodeDecode
             subm.setAttributeOptionCombo( "HllvX50cXC0" );
             // New UID
             subm.setEvent( "l7M1gUFK37v" );
+            subm.setComplete( true );
             subm.setTimestamp( meta.lastSyncDate );
             ArrayList<SMSDataValue> values = new ArrayList<>();
             // WHOMCH Smoking
@@ -303,6 +304,7 @@ public class TestEncodeDecode
             subm.setEnrollment( "DacGG5vK1K6" );
             // New UID
             subm.setEvent( "r7M1gUFK37v" );
+            subm.setComplete( true );
             subm.setTimestamp( meta.lastSyncDate );
             ArrayList<SMSDataValue> values = new ArrayList<>();
             // Apgar score

@@ -145,6 +145,7 @@ public class TrackerEventSMSSubmission
     {
         writer.writeNewID( orgUnit );
         writer.writeNewID( programStage );
+        writer.writeBool( complete );
         writer.writeNewID( attributeOptionCombo );
         writer.writeNewID( enrollment );
         writer.writeNewID( event );
@@ -157,6 +158,7 @@ public class TrackerEventSMSSubmission
     {
         this.orgUnit = reader.readNewID();
         this.programStage = reader.readNewID();
+        this.complete = reader.readBool();
         this.attributeOptionCombo = reader.readNewID();
         this.enrollment = reader.readNewID();
         this.event = reader.readNewID();
