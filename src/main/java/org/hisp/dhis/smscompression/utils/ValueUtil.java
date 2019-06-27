@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.models.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
@@ -49,7 +50,7 @@ public class ValueUtil
         BitOutputStream outStream )
         throws IOException
     {
-        int attributeBitLen = IDUtil.getBitLengthForList( meta.getTrackedEntityAttributes() );
+        int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ) );
         outStream.write( attributeBitLen, SMSConsts.VARLEN_BITLEN );
         for ( SMSAttributeValue val : values )
         {
@@ -64,7 +65,8 @@ public class ValueUtil
     {
         ArrayList<SMSAttributeValue> values = new ArrayList<>();
         int attributeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
-        Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getTrackedEntityAttributes(), attributeBitLen );
+        Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
+            attributeBitLen );
 
         while ( true )
         {
@@ -145,9 +147,9 @@ public class ValueUtil
     public static void writeDataValues( List<SMSDataValue> values, SMSMetadata meta, BitOutputStream outStream )
         throws IOException
     {
-        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getCategoryOptionCombos() );
+        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ) );
         outStream.write( catOptionComboBitLen, SMSConsts.VARLEN_BITLEN );
-        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getDataElements() );
+        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ) );
         outStream.write( dataElementBitLen, SMSConsts.VARLEN_BITLEN );
 
         Map<String, List<SMSDataValue>> valMap = groupDataValues( values );
@@ -180,8 +182,10 @@ public class ValueUtil
     {
         int catOptionComboBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
         int dataElementBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
-        Map<Integer, String> cocIDLookup = IDUtil.getIDLookup( meta.getCategoryOptionCombos(), catOptionComboBitLen );
-        Map<Integer, String> deIDLookup = IDUtil.getIDLookup( meta.getDataElements(), dataElementBitLen );
+        Map<Integer, String> cocIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
+            catOptionComboBitLen );
+        Map<Integer, String> deIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.DATA_ELEMENT ),
+            dataElementBitLen );
         ArrayList<SMSDataValue> values = new ArrayList<>();
 
         while ( true )
