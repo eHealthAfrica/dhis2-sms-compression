@@ -1,5 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'maven'
+plugins {
+  id 'com.gradle.build-scan' version '1.16'
+  id 'java'
+  id 'maven'
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
