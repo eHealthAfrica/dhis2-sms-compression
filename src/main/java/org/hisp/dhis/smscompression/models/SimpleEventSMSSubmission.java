@@ -126,6 +126,20 @@ public class SimpleEventSMSSubmission
         this.values = values;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        SimpleEventSMSSubmission subm = (SimpleEventSMSSubmission) o;
+
+        return orgUnit.equals( subm.orgUnit ) && eventProgram.equals( subm.eventProgram ) && complete == subm.complete
+            && attributeOptionCombo.equals( subm.attributeOptionCombo ) && event.equals( subm.event )
+            && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+    }
+
     /* Implementation of abstract methods */
 
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )

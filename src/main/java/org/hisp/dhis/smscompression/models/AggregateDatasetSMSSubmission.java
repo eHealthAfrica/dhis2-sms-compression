@@ -113,6 +113,22 @@ public class AggregateDatasetSMSSubmission
         this.values = values;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        AggregateDatasetSMSSubmission subm = (AggregateDatasetSMSSubmission) o;
+
+        values.equals( subm.values );
+
+        return orgUnit.equals( subm.orgUnit ) && dataSet.equals( subm.dataSet ) && complete == subm.complete
+            && attributeOptionCombo.equals( subm.attributeOptionCombo ) && period.equals( subm.period )
+            && values.equals( subm.values );
+    }
+
     /* Implementation of abstract methods */
 
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )

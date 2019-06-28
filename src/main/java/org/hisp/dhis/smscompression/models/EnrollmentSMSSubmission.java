@@ -124,6 +124,21 @@ public class EnrollmentSMSSubmission
         this.values = values;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        EnrollmentSMSSubmission subm = (EnrollmentSMSSubmission) o;
+
+        return orgUnit.equals( subm.orgUnit ) && trackerProgram.equals( subm.trackerProgram )
+            && trackedEntityType.equals( subm.trackedEntityType )
+            && trackedEntityInstance.equals( subm.trackedEntityInstance ) && enrollment.equals( subm.enrollment )
+            && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+    }
+
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {

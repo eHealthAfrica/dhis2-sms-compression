@@ -1,5 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'maven'
+plugins {
+  id 'com.gradle.build-scan' version '1.16'
+  id 'java'
+  id 'maven'
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -18,4 +21,9 @@ dependencies {
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
+}
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }

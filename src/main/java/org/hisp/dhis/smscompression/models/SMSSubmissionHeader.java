@@ -84,6 +84,22 @@ public class SMSSubmissionHeader
         this.lastSyncDate = lastSyncDate;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSSubmissionHeader hdr = (SMSSubmissionHeader) o;
+        return type.equals( hdr.type ) && version == hdr.version && lastSyncDate.equals( hdr.lastSyncDate )
+            && submissionID == hdr.submissionID;
+    }
+
     public void validateHeaer()
         throws Exception
     {

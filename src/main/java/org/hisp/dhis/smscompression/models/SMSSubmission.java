@@ -58,13 +58,23 @@ public abstract class SMSSubmission
         header.setSubmissionID( -1 );
     }
 
-    public void setSubmissionID( int submissionID )
-        throws Exception
+    @Override
+    public boolean equals( Object o )
     {
-        if ( submissionID < 0 || submissionID > 255 )
+        if ( this == o )
         {
-            throw new Exception( "submission ID must be in the range 0 <= submission_id <= 255" );
+            return true;
         }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSSubmission subm = (SMSSubmission) o;
+        return userID.equals( subm.userID ) && header.equals( subm.header );
+    }
+
+    public void setSubmissionID( int submissionID )
+    {
         header.setSubmissionID( submissionID );
     }
 
