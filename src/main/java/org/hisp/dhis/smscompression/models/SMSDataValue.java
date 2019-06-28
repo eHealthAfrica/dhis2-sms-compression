@@ -57,4 +57,27 @@ public class SMSDataValue
     {
         return value;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSDataValue dv = (SMSDataValue) o;
+
+        return categoryOptionCombo.equals( dv.categoryOptionCombo ) && dataElement.equals( dv.dataElement )
+            && value.equals( dv.value );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 0;
+    }
 }

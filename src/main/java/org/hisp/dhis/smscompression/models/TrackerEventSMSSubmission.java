@@ -138,6 +138,20 @@ public class TrackerEventSMSSubmission
         this.values = values;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        TrackerEventSMSSubmission subm = (TrackerEventSMSSubmission) o;
+
+        return orgUnit.equals( subm.orgUnit ) && programStage.equals( subm.programStage ) && complete == subm.complete
+            && attributeOptionCombo.equals( subm.attributeOptionCombo ) && enrollment.equals( subm.enrollment )
+            && event.equals( subm.event ) && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+    }
+
     /* Implementation of abstract methods */
 
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
