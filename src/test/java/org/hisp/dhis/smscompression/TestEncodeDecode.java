@@ -89,6 +89,8 @@ public class TestEncodeDecode
             Assert.assertNotNull( header );
             RelationshipSMSSubmission decSubm = (RelationshipSMSSubmission) reader.readSubmission( decSubmBytes, meta );
 
+            origSubm.setFrom( "" );
+
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
