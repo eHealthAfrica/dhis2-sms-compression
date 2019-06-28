@@ -49,4 +49,26 @@ public class SMSAttributeValue
     {
         return this.value;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSAttributeValue dv = (SMSAttributeValue) o;
+
+        return attribute.equals( dv.attribute ) && value.equals( dv.value );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 0;
+    }
 }

@@ -87,6 +87,19 @@ public class RelationshipSMSSubmission
         this.to = to;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        RelationshipSMSSubmission subm = (RelationshipSMSSubmission) o;
+
+        return relationshipType.equals( subm.relationshipType ) && relationship.equals( subm.relationship )
+            && from.equals( subm.from ) && to.equals( subm.to );
+    }
+
     /* Implementation of abstract methods */
 
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )

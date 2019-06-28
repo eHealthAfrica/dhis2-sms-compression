@@ -51,6 +51,17 @@ public class DeleteSMSSubmission
         this.uid = uid;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        DeleteSMSSubmission subm = (DeleteSMSSubmission) o;
+        return uid.equals( subm.uid );
+    }
+
     /* Implementation of abstract methods */
 
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
