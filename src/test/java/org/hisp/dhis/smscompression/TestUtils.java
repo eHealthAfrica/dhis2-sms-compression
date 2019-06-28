@@ -204,6 +204,15 @@ public class TestUtils
         return Base64.getDecoder().decode( subm );
     }
 
+    public static void printBase64Subm( String subm, Class<?> submType )
+    {
+        System.out.println( submType );
+        System.out.println( "Base64 encoding is: " + subm );
+        System.out.println( "Char length: " + subm.length() );
+        System.out.println( "Num SMS: " + ((subm.length() / 160) + 1) );
+        System.out.println( "************************" );
+    }
+
     public static void checkSubmissionsAreEqual( SMSSubmission origSubm, SMSSubmission decSubm )
     {
         if ( !origSubm.equals( decSubm ) )
