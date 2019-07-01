@@ -133,7 +133,7 @@ public class AggregateDatasetSMSSubmission
     /* Implementation of abstract methods */
 
     @Override
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+    public void writeSubm( SMSSubmissionWriter writer )
         throws Exception
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
@@ -145,15 +145,15 @@ public class AggregateDatasetSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+    public void readSubm( SMSSubmissionReader reader )
         throws Exception
     {
-        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
-        this.dataSet = reader.readID( MetadataType.DATASET, meta );
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.dataSet = reader.readID( MetadataType.DATASET );
         this.complete = reader.readBool();
-        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO, meta );
+        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
         this.period = reader.readPeriod();
-        this.values = reader.readDataValues( meta );
+        this.values = reader.readDataValues();
     }
 
     @Override

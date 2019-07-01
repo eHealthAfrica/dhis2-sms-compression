@@ -64,23 +64,27 @@ public class DeleteSMSSubmission
 
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
         throws Exception
     {
         writer.writeNewID( uid );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+    @Override
+    public void readSubm( SMSSubmissionReader reader )
         throws Exception
     {
         this.uid = reader.readNewID();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.DELETE;

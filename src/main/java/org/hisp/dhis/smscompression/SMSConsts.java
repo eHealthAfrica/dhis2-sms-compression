@@ -30,19 +30,21 @@ package org.hisp.dhis.smscompression;
 
 public class SMSConsts
 {
-    public static int VARLEN_BITLEN = 6;
+    public static final int VARLEN_BITLEN = 6;
 
-    public static int CHAR_BITLEN = 8;
+    public static final int CHAR_BITLEN = 8;
 
-    public static int EPOCH_DATE_BITLEN = 32;
+    public static final int EPOCH_DATE_BITLEN = 32;
 
-    public static int SUBM_TYPE_BITLEN = 4;
+    public static final int SUBM_TYPE_BITLEN = 4;
 
-    public static int VERSION_BITLEN = 4;
+    public static final int VERSION_BITLEN = 4;
 
-    public static int CRC_BITLEN = 8;
+    public static final int CRC_BITLEN = 8;
 
-    public static int SUBM_ID_BITLEN = 8;
+    public static final int SUBM_ID_BITLEN = 8;
+
+    public static final int ID_LEN = 11;
 
     public enum SubmissionType
     {

@@ -141,7 +141,7 @@ public class EnrollmentSMSSubmission
     }
 
     @Override
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+    public void writeSubm( SMSSubmissionWriter writer )
         throws Exception
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
@@ -154,16 +154,16 @@ public class EnrollmentSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+    public void readSubm( SMSSubmissionReader reader )
         throws Exception
     {
-        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
-        this.trackerProgram = reader.readID( MetadataType.PROGRAM, meta );
-        this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE, meta );
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.trackerProgram = reader.readID( MetadataType.PROGRAM );
+        this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE );
         this.trackedEntityInstance = reader.readNewID();
         this.enrollment = reader.readNewID();
         this.timestamp = reader.readDate();
-        this.values = reader.readAttributeValues( meta );
+        this.values = reader.readAttributeValues();
     }
 
     @Override

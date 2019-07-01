@@ -41,8 +41,6 @@ import org.hisp.dhis.smscompression.models.SMSMetadata;
 public class IDUtil
 {
 
-    public static final int ID_LEN = 11;
-
     public static int getBitLengthForList( List<String> ids )
     {
         if ( !checkIDList( ids ) )
@@ -92,7 +90,7 @@ public class IDUtil
 
     public static boolean validID( String id )
     {
-        return id.matches( "^[A-z0-9]{" + ID_LEN + "}$" );
+        return id.matches( "^[A-z0-9]{" + SMSConsts.ID_LEN + "}$" );
     }
 
     public static int convertIDCharToInt( char c )
@@ -159,7 +157,7 @@ public class IDUtil
         throws Exception
     {
         String id = "";
-        while ( id.length() < ID_LEN )
+        while ( id.length() < SMSConsts.ID_LEN )
         {
             int i = inStream.read( 6 );
             id += convertIDIntToChar( i );

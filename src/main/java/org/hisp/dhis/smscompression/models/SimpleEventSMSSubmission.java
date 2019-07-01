@@ -144,7 +144,7 @@ public class SimpleEventSMSSubmission
     /* Implementation of abstract methods */
 
     @Override
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+    public void writeSubm( SMSSubmissionWriter writer )
         throws Exception
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
@@ -157,16 +157,16 @@ public class SimpleEventSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+    public void readSubm( SMSSubmissionReader reader )
         throws Exception
     {
-        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
-        this.eventProgram = reader.readID( MetadataType.PROGRAM, meta );
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.eventProgram = reader.readID( MetadataType.PROGRAM );
         this.complete = reader.readBool();
-        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO, meta );
+        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
         this.event = reader.readNewID();
         this.timestamp = reader.readDate();
-        this.values = reader.readDataValues( meta );
+        this.values = reader.readDataValues();
     }
 
     @Override

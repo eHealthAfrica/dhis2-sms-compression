@@ -102,7 +102,8 @@ public class RelationshipSMSSubmission
 
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
         throws Exception
     {
         writer.writeNewID( relationshipType );
@@ -111,7 +112,8 @@ public class RelationshipSMSSubmission
         writer.writeNewID( to );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+    @Override
+    public void readSubm( SMSSubmissionReader reader )
         throws Exception
     {
         this.relationshipType = reader.readNewID();
@@ -120,11 +122,13 @@ public class RelationshipSMSSubmission
         this.to = reader.readNewID();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.RELATIONSHIP;

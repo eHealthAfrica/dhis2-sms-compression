@@ -55,7 +55,9 @@ import org.hisp.dhis.smscompression.utils.ValueUtil;
 
 public class SMSSubmissionReader
 {
-    protected BitInputStream inStream;
+    BitInputStream inStream;
+
+    SMSMetadata meta;
 
     public SMSSubmissionHeader readHeader( byte[] smsBytes )
         throws Exception
@@ -76,6 +78,7 @@ public class SMSSubmissionReader
     public SMSSubmission readSubmission( byte[] smsBytes, SMSMetadata meta )
         throws Exception
     {
+        this.meta = meta;
         SMSSubmissionHeader header = readHeader( smsBytes );
         SMSSubmission subm = null;
 
@@ -103,7 +106,7 @@ public class SMSSubmissionReader
             throw new Exception( "Unknown SMS Submission Type" );
         }
 
-        subm.read( meta, this, header );
+        subm.read( this, header );
         inStream.close();
         return subm;
     }
@@ -153,19 +156,19 @@ public class SMSSubmissionReader
         return IDUtil.readNewID( inStream );
     }
 
-    public String readID( MetadataType type, SMSMetadata meta )
+    public String readID( MetadataType type )
         throws Exception
     {
         return IDUtil.readID( type, meta, inStream );
     }
 
-    public List<SMSAttributeValue> readAttributeValues( SMSMetadata meta )
+    public List<SMSAttributeValue> readAttributeValues()
         throws IOException
     {
         return ValueUtil.readAttributeValues( meta, inStream );
     }
 
-    public List<SMSDataValue> readDataValues( SMSMetadata meta )
+    public List<SMSDataValue> readDataValues()
         throws IOException
     {
         return ValueUtil.readDataValues( meta, inStream );

@@ -1,5 +1,6 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
 /*
@@ -43,10 +44,10 @@ public abstract class SMSSubmission
 
     public abstract SubmissionType getType();
 
-    public abstract void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
+    public abstract void writeSubm( SMSSubmissionWriter writer )
         throws Exception;
 
-    public abstract void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
+    public abstract void readSubm( SMSSubmissionReader reader )
         throws Exception;
 
     public SMSSubmission()
@@ -107,15 +108,15 @@ public abstract class SMSSubmission
 
         validateSubmission();
         header.writeHeader( writer );
-        writer.writeNewID( userID );
-        writeSubm( meta, writer );
+        writer.writeID( userID, MetadataType.USER );
+        writeSubm( writer );
     }
 
-    public void read( SMSMetadata meta, SMSSubmissionReader reader, SMSSubmissionHeader header )
+    public void read( SMSSubmissionReader reader, SMSSubmissionHeader header )
         throws Exception
     {
         this.header = header;
-        this.userID = reader.readNewID();
-        readSubm( meta, reader );
+        this.userID = reader.readID( MetadataType.USER );
+        readSubm( reader );
     }
 }
