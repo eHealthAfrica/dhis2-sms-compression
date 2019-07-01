@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
@@ -140,10 +141,10 @@ public class IDUtil
     // Must only include chars in the range a-Z0-9, as we encode each
     // char to 6 bits (64 vals)
     public static void writeNewID( String id, BitOutputStream outStream )
-        throws Exception
+        throws SMSCompressionException
     {
         if ( !validID( id ) )
-            throw new Exception( "Invalid ID" );
+            throw new SMSCompressionException( "Invalid ID" );
         for ( char c : id.toCharArray() )
         {
             outStream.write( convertIDCharToInt( c ), 6 );
@@ -154,7 +155,7 @@ public class IDUtil
     // Must only include chars in the range a-Z0-9, as we encode each
     // char to 6 bits (64 vals)
     public static String readNewID( BitInputStream inStream )
-        throws Exception
+        throws SMSCompressionException
     {
         String id = "";
         while ( id.length() < SMSConsts.ID_LEN )
@@ -166,7 +167,7 @@ public class IDUtil
     }
 
     public static String readID( MetadataType type, SMSMetadata meta, BitInputStream inStream )
-        throws Exception
+        throws SMSCompressionException
     {
         int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
         Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
@@ -186,10 +187,10 @@ public class IDUtil
     }
 
     public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream )
-        throws Exception
+        throws SMSCompressionException
     {
         if ( !validID( id ) )
-            throw new Exception( "Invalid ID" );
+            throw new SMSCompressionException( "Invalid ID" );
 
         int typeBitLen = IDUtil.getBitLengthForList( meta.getType( type ) );
         outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );

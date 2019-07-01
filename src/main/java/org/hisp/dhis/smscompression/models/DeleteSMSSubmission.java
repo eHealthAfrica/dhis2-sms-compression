@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -66,14 +68,14 @@ public class DeleteSMSSubmission
 
     @Override
     public void writeSubm( SMSSubmissionWriter writer )
-        throws Exception
+        throws SMSCompressionException
     {
         writer.writeNewID( uid );
     }
 
     @Override
     public void readSubm( SMSSubmissionReader reader )
-        throws Exception
+        throws SMSCompressionException
     {
         this.uid = reader.readNewID();
     }

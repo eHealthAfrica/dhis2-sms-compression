@@ -31,6 +31,7 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
@@ -145,7 +146,7 @@ public class SimpleEventSMSSubmission
 
     @Override
     public void writeSubm( SMSSubmissionWriter writer )
-        throws Exception
+        throws SMSCompressionException
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
         writer.writeID( eventProgram, MetadataType.PROGRAM );
@@ -158,7 +159,7 @@ public class SimpleEventSMSSubmission
 
     @Override
     public void readSubm( SMSSubmissionReader reader )
-        throws Exception
+        throws SMSCompressionException
     {
         this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
         this.eventProgram = reader.readID( MetadataType.PROGRAM );

@@ -1,5 +1,6 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 
@@ -45,10 +46,10 @@ public abstract class SMSSubmission
     public abstract SubmissionType getType();
 
     public abstract void writeSubm( SMSSubmissionWriter writer )
-        throws Exception;
+        throws SMSCompressionException;
 
     public abstract void readSubm( SMSSubmissionReader reader )
-        throws Exception;
+        throws SMSCompressionException;
 
     public SMSSubmission()
     {
@@ -90,18 +91,18 @@ public abstract class SMSSubmission
     }
 
     public void validateSubmission()
-        throws Exception
+        throws SMSCompressionException
     {
         header.validateHeaer();
         if ( userID.isEmpty() )
         {
-            throw new Exception( "Ensure the UserID is set in the submission" );
+            throw new SMSCompressionException( "Ensure the UserID is set in the submission" );
         }
         // TODO: We should run validations on each submission here
     }
 
     public void write( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+        throws SMSCompressionException
     {
         // Ensure we set the lastSyncDate in the subm header
         header.setLastSyncDate( meta.lastSyncDate );
@@ -113,7 +114,7 @@ public abstract class SMSSubmission
     }
 
     public void read( SMSSubmissionReader reader, SMSSubmissionHeader header )
-        throws Exception
+        throws SMSCompressionException
     {
         this.header = header;
         this.userID = reader.readID( MetadataType.USER );

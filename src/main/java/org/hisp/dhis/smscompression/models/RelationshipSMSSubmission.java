@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -104,7 +106,7 @@ public class RelationshipSMSSubmission
 
     @Override
     public void writeSubm( SMSSubmissionWriter writer )
-        throws Exception
+        throws SMSCompressionException
     {
         writer.writeNewID( relationshipType );
         writer.writeNewID( relationship );
@@ -114,7 +116,7 @@ public class RelationshipSMSSubmission
 
     @Override
     public void readSubm( SMSSubmissionReader reader )
-        throws Exception
+        throws SMSCompressionException
     {
         this.relationshipType = reader.readNewID();
         this.relationship = reader.readNewID();

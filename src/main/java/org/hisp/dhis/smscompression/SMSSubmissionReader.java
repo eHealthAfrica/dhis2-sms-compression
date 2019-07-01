@@ -60,10 +60,10 @@ public class SMSSubmissionReader
     SMSMetadata meta;
 
     public SMSSubmissionHeader readHeader( byte[] smsBytes )
-        throws Exception
+        throws SMSCompressionException
     {
         if ( !checkCRC( smsBytes ) )
-            throw new Exception( "Invalid CRC" );
+            throw new SMSCompressionException( "Invalid CRC" );
 
         ByteArrayInputStream byteStream = new ByteArrayInputStream( smsBytes );
         this.inStream = new BitInputStream( byteStream );
@@ -76,7 +76,7 @@ public class SMSSubmissionReader
     }
 
     public SMSSubmission readSubmission( byte[] smsBytes, SMSMetadata meta )
-        throws Exception
+        throws SMSCompressionException
     {
         this.meta = meta;
         SMSSubmissionHeader header = readHeader( smsBytes );
@@ -103,11 +103,18 @@ public class SMSSubmissionReader
             subm = new TrackerEventSMSSubmission();
             break;
         default:
-            throw new Exception( "Unknown SMS Submission Type" );
+            throw new SMSCompressionException( "Unknown SMS Submission Type" );
         }
 
         subm.read( this, header );
-        inStream.close();
+        try
+        {
+            inStream.close();
+        }
+        catch ( IOException e )
+        {
+            throw new SMSCompressionException( e );
+        }
         return subm;
     }
 
@@ -130,20 +137,20 @@ public class SMSSubmissionReader
     }
 
     public SubmissionType readType()
-        throws IOException
+        throws SMSCompressionException
     {
         int submType = inStream.read( SMSConsts.SUBM_TYPE_BITLEN );
         return SMSConsts.SubmissionType.values()[submType];
     }
 
     public int readVersion()
-        throws IOException
+        throws SMSCompressionException
     {
         return inStream.read( SMSConsts.VERSION_BITLEN );
     }
 
     public Date readDate()
-        throws IOException
+        throws SMSCompressionException
     {
         long epochSecs = inStream.read( SMSConsts.EPOCH_DATE_BITLEN );
         Date dateVal = new Date( epochSecs * 1000 );
@@ -151,31 +158,31 @@ public class SMSSubmissionReader
     }
 
     public String readNewID()
-        throws Exception
+        throws SMSCompressionException
     {
         return IDUtil.readNewID( inStream );
     }
 
     public String readID( MetadataType type )
-        throws Exception
+        throws SMSCompressionException
     {
         return IDUtil.readID( type, meta, inStream );
     }
 
     public List<SMSAttributeValue> readAttributeValues()
-        throws IOException
+        throws SMSCompressionException
     {
         return ValueUtil.readAttributeValues( meta, inStream );
     }
 
     public List<SMSDataValue> readDataValues()
-        throws IOException
+        throws SMSCompressionException
     {
         return ValueUtil.readDataValues( meta, inStream );
     }
 
     public boolean readBool()
-        throws IOException
+        throws SMSCompressionException
     {
         int intVal = inStream.read( 1 );
         return intVal == 1;
@@ -183,13 +190,13 @@ public class SMSSubmissionReader
 
     // TODO: Update this once we have a better impl of period
     public String readPeriod()
-        throws IOException
+        throws SMSCompressionException
     {
         return ValueUtil.readString( inStream );
     }
 
     public int readSubmissionID()
-        throws IOException
+        throws SMSCompressionException
     {
         return inStream.read( SMSConsts.SUBM_ID_BITLEN );
     }
