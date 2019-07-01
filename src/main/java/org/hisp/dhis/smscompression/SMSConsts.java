@@ -30,7 +30,7 @@ package org.hisp.dhis.smscompression;
 
 public class SMSConsts
 {
-    public static int VARLEN_BITLEN = 5;
+    public static int VARLEN_BITLEN = 6;
 
     public static int CHAR_BITLEN = 8;
 

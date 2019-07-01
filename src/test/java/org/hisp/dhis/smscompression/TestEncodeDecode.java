@@ -36,6 +36,7 @@ import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
 import org.hisp.dhis.smscompression.models.RelationshipSMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
+import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
 import org.hisp.dhis.smscompression.models.SimpleEventSMSSubmission;
 import org.hisp.dhis.smscompression.models.TrackerEventSMSSubmission;
@@ -53,6 +54,24 @@ public class TestEncodeDecode
     SMSSubmissionWriter writer;
 
     SMSSubmissionReader reader;
+
+    public String compressSubm( SMSSubmission subm )
+        throws Exception
+    {
+        byte[] compressSubm = writer.compress( subm );
+        String comp64 = TestUtils.encBase64( compressSubm );
+        TestUtils.printBase64Subm( comp64, subm.getClass() );
+        return comp64;
+    }
+
+    public SMSSubmission decompressSubm( String comp64 )
+        throws Exception
+    {
+        byte[] decSubmBytes = TestUtils.decBase64( comp64 );
+        SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
+        Assert.assertNotNull( header );
+        return reader.readSubmission( decSubmBytes, meta );
+    }
 
     @Before
     public void init()
@@ -76,18 +95,9 @@ public class TestEncodeDecode
     {
         try
         {
-            // Encode
             RelationshipSMSSubmission origSubm = TestUtils.createRelationshipSubmission();
-            Assert.assertNotNull( origSubm );
-            byte[] compressSubm = writer.compress( origSubm );
-            String comp64 = TestUtils.encBase64( compressSubm );
-            System.out.println( "Relationship submission in Base64 is: " + comp64 );
-
-            // Decode
-            byte[] decSubmBytes = TestUtils.decBase64( comp64 );
-            SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
-            Assert.assertNotNull( header );
-            RelationshipSMSSubmission decSubm = (RelationshipSMSSubmission) reader.readSubmission( decSubmBytes, meta );
+            String comp64 = compressSubm( origSubm );
+            RelationshipSMSSubmission decSubm = (RelationshipSMSSubmission) decompressSubm( comp64 );
 
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
@@ -103,18 +113,9 @@ public class TestEncodeDecode
     {
         try
         {
-            // Encode
             DeleteSMSSubmission origSubm = TestUtils.createDeleteSubmission();
-            Assert.assertNotNull( origSubm );
-            byte[] compressSubm = writer.compress( origSubm );
-            String comp64 = TestUtils.encBase64( compressSubm );
-            System.out.println( "Delete submission in Base64 is: " + comp64 );
-
-            // Decode
-            byte[] decSubmBytes = TestUtils.decBase64( comp64 );
-            SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
-            Assert.assertNotNull( header );
-            DeleteSMSSubmission decSubm = (DeleteSMSSubmission) reader.readSubmission( decSubmBytes, meta );
+            String comp64 = compressSubm( origSubm );
+            DeleteSMSSubmission decSubm = (DeleteSMSSubmission) decompressSubm( comp64 );
 
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
@@ -130,18 +131,9 @@ public class TestEncodeDecode
     {
         try
         {
-            // Encode
             SimpleEventSMSSubmission origSubm = TestUtils.createSimpleEventSubmission();
-            Assert.assertNotNull( origSubm );
-            byte[] compressSubm = writer.compress( origSubm );
-            String comp64 = TestUtils.encBase64( compressSubm );
-            System.out.println( "Simple Event submission in Base64 is: " + comp64 );
-
-            // Decode
-            byte[] decSubmBytes = TestUtils.decBase64( comp64 );
-            SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
-            Assert.assertNotNull( header );
-            SimpleEventSMSSubmission decSubm = (SimpleEventSMSSubmission) reader.readSubmission( decSubmBytes, meta );
+            String comp64 = compressSubm( origSubm );
+            SimpleEventSMSSubmission decSubm = (SimpleEventSMSSubmission) decompressSubm( comp64 );
 
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
@@ -157,19 +149,9 @@ public class TestEncodeDecode
     {
         try
         {
-            // Encode
             AggregateDatasetSMSSubmission origSubm = TestUtils.createAggregateDatasetSubmission();
-            Assert.assertNotNull( origSubm );
-            byte[] compressSubm = writer.compress( origSubm );
-            String comp64 = TestUtils.encBase64( compressSubm );
-            System.out.println( "Aggregate Dataset submission in Base64 is: " + comp64 );
-
-            // Decode
-            byte[] decSubmBytes = TestUtils.decBase64( comp64 );
-            SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
-            Assert.assertNotNull( header );
-            AggregateDatasetSMSSubmission decSubm = (AggregateDatasetSMSSubmission) reader.readSubmission( decSubmBytes,
-                meta );
+            String comp64 = compressSubm( origSubm );
+            AggregateDatasetSMSSubmission decSubm = (AggregateDatasetSMSSubmission) decompressSubm( comp64 );
 
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
@@ -185,18 +167,9 @@ public class TestEncodeDecode
     {
         try
         {
-            // Encode
             EnrollmentSMSSubmission origSubm = TestUtils.createEnrollmentSubmission();
-            Assert.assertNotNull( origSubm );
-            byte[] compressSubm = writer.compress( origSubm );
-            String comp64 = TestUtils.encBase64( compressSubm );
-            System.out.println( "Enrollment submission in Base64 is: " + comp64 );
-
-            // Decode
-            byte[] decSubmBytes = TestUtils.decBase64( comp64 );
-            SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
-            Assert.assertNotNull( header );
-            EnrollmentSMSSubmission decSubm = (EnrollmentSMSSubmission) reader.readSubmission( decSubmBytes, meta );
+            String comp64 = compressSubm( origSubm );
+            EnrollmentSMSSubmission decSubm = (EnrollmentSMSSubmission) decompressSubm( comp64 );
 
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
@@ -212,18 +185,9 @@ public class TestEncodeDecode
     {
         try
         {
-            // Encode
             TrackerEventSMSSubmission origSubm = TestUtils.createTrackerEventSubmission();
-            Assert.assertNotNull( origSubm );
-            byte[] compressSubm = writer.compress( origSubm );
-            String comp64 = TestUtils.encBase64( compressSubm );
-            System.out.println( "Tracker Event submission in Base64 is: " + comp64 );
-
-            // Decode
-            byte[] decSubmBytes = TestUtils.decBase64( comp64 );
-            SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
-            Assert.assertNotNull( header );
-            TrackerEventSMSSubmission decSubm = (TrackerEventSMSSubmission) reader.readSubmission( decSubmBytes, meta );
+            String comp64 = compressSubm( origSubm );
+            TrackerEventSMSSubmission decSubm = (TrackerEventSMSSubmission) decompressSubm( comp64 );
 
             TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }

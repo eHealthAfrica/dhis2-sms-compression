@@ -142,9 +142,9 @@ public class EnrollmentSMSSubmission
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
-        writer.writeNewID( orgUnit );
-        writer.writeNewID( trackerProgram );
-        writer.writeNewID( trackedEntityType );
+        writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
+        writer.writeID( trackerProgram, MetadataType.PROGRAM );
+        writer.writeID( trackedEntityType, MetadataType.TRACKED_ENTITY_TYPE );
         writer.writeNewID( trackedEntityInstance );
         writer.writeNewID( enrollment );
         writer.writeDate( timestamp );
@@ -154,9 +154,9 @@ public class EnrollmentSMSSubmission
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
-        this.orgUnit = reader.readNewID();
-        this.trackerProgram = reader.readNewID();
-        this.trackedEntityType = reader.readNewID();
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
+        this.trackerProgram = reader.readID( MetadataType.PROGRAM, meta );
+        this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE, meta );
         this.trackedEntityInstance = reader.readNewID();
         this.enrollment = reader.readNewID();
         this.timestamp = reader.readDate();

@@ -60,39 +60,35 @@ public class SMSMetadata
 
     public List<ID> categoryOptionCombos;
 
-    public List<String> getUsers()
-    {
-        return getIDs( users );
-    }
+    public List<ID> dataSets;
 
-    public List<String> getTrackedEntityTypes()
-    {
-        return getIDs( trackedEntityTypes );
-    }
+    public List<ID> programStages;
 
-    public List<String> getTrackedEntityAttributes()
+    public List<String> getType( MetadataType type )
     {
-        return getIDs( trackedEntityAttributes );
-    }
-
-    public List<String> getPrograms()
-    {
-        return getIDs( programs );
-    }
-
-    public List<String> getOrganisationUnits()
-    {
-        return getIDs( organisationUnits );
-    }
-
-    public List<String> getDataElements()
-    {
-        return getIDs( dataElements );
-    }
-
-    public List<String> getCategoryOptionCombos()
-    {
-        return getIDs( categoryOptionCombos );
+        switch ( type )
+        {
+        case USER:
+            return getIDs( users );
+        case TRACKED_ENTITY_TYPE:
+            return getIDs( trackedEntityTypes );
+        case TRACKED_ENTITY_ATTRIBUTE:
+            return getIDs( trackedEntityAttributes );
+        case PROGRAM:
+            return getIDs( programs );
+        case ORGANISATION_UNIT:
+            return getIDs( organisationUnits );
+        case DATA_ELEMENT:
+            return getIDs( dataElements );
+        case CATEGORY_OPTION_COMBO:
+            return getIDs( categoryOptionCombos );
+        case DATASET:
+            return getIDs( dataSets );
+        case PROGRAM_STAGE:
+            return getIDs( programStages );
+        default:
+            return null;
+        }
     }
 
     private List<String> getIDs( List<ID> ids )

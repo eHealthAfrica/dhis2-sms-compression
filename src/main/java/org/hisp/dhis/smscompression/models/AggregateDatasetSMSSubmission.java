@@ -134,10 +134,10 @@ public class AggregateDatasetSMSSubmission
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
-        writer.writeNewID( orgUnit );
-        writer.writeNewID( dataSet );
+        writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
+        writer.writeID( dataSet, MetadataType.DATASET );
         writer.writeBool( complete );
-        writer.writeNewID( attributeOptionCombo );
+        writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
         writer.writePeriod( period );
         writer.writeDataValues( values );
     }
@@ -145,10 +145,10 @@ public class AggregateDatasetSMSSubmission
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
-        this.orgUnit = reader.readNewID();
-        this.dataSet = reader.readNewID();
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
+        this.dataSet = reader.readID( MetadataType.DATASET, meta );
         this.complete = reader.readBool();
-        this.attributeOptionCombo = reader.readNewID();
+        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO, meta );
         this.period = reader.readPeriod();
         this.values = reader.readDataValues( meta );
     }
