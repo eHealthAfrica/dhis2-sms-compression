@@ -34,6 +34,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.models.MetadataType;
+import org.hisp.dhis.smscompression.models.SMSMetadata;
+
 public class IDUtil
 {
 
@@ -163,6 +167,15 @@ public class IDUtil
         return id;
     }
 
+    public static String readID( MetadataType type, SMSMetadata meta, BitInputStream inStream )
+        throws Exception
+    {
+        int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+        Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
+        int idHash = inStream.read( typeBitLen );
+        return idLookup.get( idHash );
+    }
+
     public static Map<Integer, String> getIDLookup( List<String> idList, int hashLen )
     {
         HashMap<Integer, String> idLookup = new HashMap<>();
@@ -172,5 +185,17 @@ public class IDUtil
             idLookup.put( hash, id );
         }
         return idLookup;
+    }
+
+    public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream )
+        throws Exception
+    {
+        if ( !validID( id ) )
+            throw new Exception( "Invalid ID" );
+
+        int typeBitLen = IDUtil.getBitLengthForList( meta.getType( type ) );
+        outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );
+        int idHash = BinaryUtils.hash( id, typeBitLen );
+        outStream.write( idHash, typeBitLen );
     }
 }

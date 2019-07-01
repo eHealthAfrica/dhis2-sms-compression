@@ -40,6 +40,7 @@ import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
+import org.hisp.dhis.smscompression.models.MetadataType;
 import org.hisp.dhis.smscompression.models.RelationshipSMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
@@ -150,6 +151,12 @@ public class SMSSubmissionReader
         throws Exception
     {
         return IDUtil.readNewID( inStream );
+    }
+
+    public String readID( MetadataType type, SMSMetadata meta )
+        throws Exception
+    {
+        return IDUtil.readID( type, meta, inStream );
     }
 
     public List<SMSAttributeValue> readAttributeValues( SMSMetadata meta )

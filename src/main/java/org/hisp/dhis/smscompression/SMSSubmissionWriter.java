@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
+import org.hisp.dhis.smscompression.models.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
@@ -129,6 +130,12 @@ public class SMSSubmissionWriter
         throws Exception
     {
         IDUtil.writeNewID( id, outStream );
+    }
+
+    public void writeID( String id, MetadataType type )
+        throws Exception
+    {
+        IDUtil.writeID( id, type, meta, outStream );
     }
 
     public void writeAttributeValues( List<SMSAttributeValue> values )

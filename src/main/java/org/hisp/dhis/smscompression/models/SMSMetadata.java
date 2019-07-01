@@ -60,6 +60,10 @@ public class SMSMetadata
 
     public List<ID> categoryOptionCombos;
 
+    public List<ID> dataSets;
+
+    public List<ID> programStages;
+
     public List<String> getType( MetadataType type )
     {
         switch ( type )
@@ -78,6 +82,10 @@ public class SMSMetadata
             return getIDs( dataElements );
         case CATEGORY_OPTION_COMBO:
             return getIDs( categoryOptionCombos );
+        case DATASET:
+            return getIDs( dataSets );
+        case PROGRAM_STAGE:
+            return getIDs( programStages );
         default:
             return null;
         }

@@ -9,6 +9,8 @@ public enum MetadataType
     ORGANISATION_UNIT,
     DATA_ELEMENT,
     CATEGORY_OPTION_COMBO,
+    DATASET,
+    PROGRAM_STAGE,
 
     ;
 }
