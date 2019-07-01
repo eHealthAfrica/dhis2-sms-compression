@@ -35,8 +35,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
-import org.hisp.dhis.smscompression.models.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
@@ -54,12 +54,6 @@ public class SMSSubmissionWriter
     SMSMetadata meta;
 
     public SMSSubmissionWriter( SMSMetadata meta )
-    {
-        // TODO: Check metadata looks valid here
-        this.meta = meta;
-    }
-
-    public void setMetadata( SMSMetadata meta )
     {
         // TODO: Check metadata looks valid here
         this.meta = meta;

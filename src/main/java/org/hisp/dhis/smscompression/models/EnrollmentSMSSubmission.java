@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -139,6 +140,7 @@ public class EnrollmentSMSSubmission
             && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
     }
 
+    @Override
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
@@ -151,6 +153,7 @@ public class EnrollmentSMSSubmission
         writer.writeAttributeValues( values );
     }
 
+    @Override
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
@@ -163,11 +166,13 @@ public class EnrollmentSMSSubmission
         this.values = reader.readAttributeValues( meta );
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.ENROLLMENT;

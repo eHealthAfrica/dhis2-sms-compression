@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.smscompression.SMSConsts;
-import org.hisp.dhis.smscompression.models.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
 
 public class IDUtil
@@ -54,7 +54,7 @@ public class IDUtil
         do
         {
             coll = false;
-            ArrayList<Integer> idList = new ArrayList<Integer>();
+            ArrayList<Integer> idList = new ArrayList<>();
             for ( String id : ids )
             {
                 int newHash = BinaryUtils.hash( id, len );
@@ -79,7 +79,7 @@ public class IDUtil
 
     public static boolean checkIDList( List<String> ids )
     {
-        HashSet<String> set = new HashSet<String>( ids );
+        HashSet<String> set = new HashSet<>( ids );
         if ( set.size() != ids.size() )
             return false;
         for ( String id : ids )
@@ -97,7 +97,7 @@ public class IDUtil
 
     public static int convertIDCharToInt( char c )
     {
-        int i = (int) c;
+        int i = c;
 
         if ( c >= '0' && c <= '9' )
         {

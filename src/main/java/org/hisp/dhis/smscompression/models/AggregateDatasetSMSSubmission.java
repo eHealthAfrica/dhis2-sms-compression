@@ -31,6 +31,7 @@ package org.hisp.dhis.smscompression.models;
 import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -131,6 +132,7 @@ public class AggregateDatasetSMSSubmission
 
     /* Implementation of abstract methods */
 
+    @Override
     public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
         throws Exception
     {
@@ -142,6 +144,7 @@ public class AggregateDatasetSMSSubmission
         writer.writeDataValues( values );
     }
 
+    @Override
     public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
         throws Exception
     {
@@ -153,11 +156,13 @@ public class AggregateDatasetSMSSubmission
         this.values = reader.readDataValues( meta );
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.AGGREGATE_DATASET;

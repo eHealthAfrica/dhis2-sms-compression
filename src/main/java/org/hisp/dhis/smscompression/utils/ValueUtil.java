@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.smscompression.SMSConsts;
-import org.hisp.dhis.smscompression.models.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;

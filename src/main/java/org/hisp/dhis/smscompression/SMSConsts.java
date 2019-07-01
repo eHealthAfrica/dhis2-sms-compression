@@ -46,6 +46,24 @@ public class SMSConsts
 
     public enum SubmissionType
     {
-        AGGREGATE_DATASET, DELETE, ENROLLMENT, RELATIONSHIP, SIMPLE_EVENT, TRACKER_EVENT
+        AGGREGATE_DATASET, DELETE, ENROLLMENT, RELATIONSHIP, SIMPLE_EVENT, TRACKER_EVENT,
+
+        ;
+
+    }
+
+    public enum MetadataType
+    {
+        USER,
+        TRACKED_ENTITY_TYPE,
+        TRACKED_ENTITY_ATTRIBUTE,
+        PROGRAM,
+        ORGANISATION_UNIT,
+        DATA_ELEMENT,
+        CATEGORY_OPTION_COMBO,
+        DATASET,
+        PROGRAM_STAGE,
+
+        ;
     }
 }

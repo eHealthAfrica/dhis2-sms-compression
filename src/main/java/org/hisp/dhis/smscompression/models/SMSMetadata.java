@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+
 public class SMSMetadata
 {
     public static class ID
