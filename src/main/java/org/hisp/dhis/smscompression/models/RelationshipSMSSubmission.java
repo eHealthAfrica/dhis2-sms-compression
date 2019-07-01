@@ -1,7 +1,5 @@
 package org.hisp.dhis.smscompression.models;
 
-import org.hisp.dhis.smscompression.SMSCompressionException;
-
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -30,6 +28,7 @@ import org.hisp.dhis.smscompression.SMSCompressionException;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
