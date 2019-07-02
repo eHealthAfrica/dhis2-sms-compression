@@ -164,7 +164,7 @@ public class TestUtils
     {
         TrackerEventSMSSubmission subm = new TrackerEventSMSSubmission();
 
-        subm.setUserID( "V3qn98bKsr6" ); // Jasper Timm
+        subm.setUserID( "GOLswS44mh8" ); // Tom Wakiki (system)
         subm.setOrgUnit( "DiszpKrYNg8" ); // Ngelehun CHC
         subm.setProgramStage( "A03MvHHogjR" ); // Birth
         subm.setAttributeOptionCombo( "HllvX50cXC0" ); // Default catOptionCombo

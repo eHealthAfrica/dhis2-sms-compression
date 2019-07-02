@@ -28,6 +28,7 @@ package org.hisp.dhis.smscompression.models;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
@@ -64,23 +65,27 @@ public class DeleteSMSSubmission
 
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
         writer.writeNewID( uid );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader )
+        throws SMSCompressionException
     {
         this.uid = reader.readNewID();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.DELETE;

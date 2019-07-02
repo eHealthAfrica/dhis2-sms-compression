@@ -1,7 +1,5 @@
 package org.hisp.dhis.smscompression.models;
 
-import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
-
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -30,6 +28,9 @@ import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
 
@@ -43,11 +44,11 @@ public abstract class SMSSubmission
 
     public abstract SubmissionType getType();
 
-    public abstract void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception;
+    public abstract void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException;
 
-    public abstract void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception;
+    public abstract void readSubm( SMSSubmissionReader reader )
+        throws SMSCompressionException;
 
     public SMSSubmission()
     {
@@ -89,33 +90,33 @@ public abstract class SMSSubmission
     }
 
     public void validateSubmission()
-        throws Exception
+        throws SMSCompressionException
     {
         header.validateHeaer();
         if ( userID.isEmpty() )
         {
-            throw new Exception( "Ensure the UserID is set in the submission" );
+            throw new SMSCompressionException( "Ensure the UserID is set in the submission" );
         }
         // TODO: We should run validations on each submission here
     }
 
     public void write( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+        throws SMSCompressionException
     {
         // Ensure we set the lastSyncDate in the subm header
         header.setLastSyncDate( meta.lastSyncDate );
 
         validateSubmission();
         header.writeHeader( writer );
-        writer.writeNewID( userID );
-        writeSubm( meta, writer );
+        writer.writeID( userID, MetadataType.USER );
+        writeSubm( writer );
     }
 
-    public void read( SMSMetadata meta, SMSSubmissionReader reader, SMSSubmissionHeader header )
-        throws Exception
+    public void read( SMSSubmissionReader reader, SMSSubmissionHeader header )
+        throws SMSCompressionException
     {
         this.header = header;
-        this.userID = reader.readNewID();
-        readSubm( meta, reader );
+        this.userID = reader.readID( MetadataType.USER );
+        readSubm( reader );
     }
 }

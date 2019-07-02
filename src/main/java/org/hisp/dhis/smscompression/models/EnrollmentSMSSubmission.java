@@ -31,7 +31,9 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -139,8 +141,9 @@ public class EnrollmentSMSSubmission
             && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
     }
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
         writer.writeID( trackerProgram, MetadataType.PROGRAM );
@@ -151,23 +154,26 @@ public class EnrollmentSMSSubmission
         writer.writeAttributeValues( values );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader )
+        throws SMSCompressionException
     {
-        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
-        this.trackerProgram = reader.readID( MetadataType.PROGRAM, meta );
-        this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE, meta );
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.trackerProgram = reader.readID( MetadataType.PROGRAM );
+        this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE );
         this.trackedEntityInstance = reader.readNewID();
         this.enrollment = reader.readNewID();
         this.timestamp = reader.readDate();
-        this.values = reader.readAttributeValues( meta );
+        this.values = reader.readAttributeValues();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.ENROLLMENT;

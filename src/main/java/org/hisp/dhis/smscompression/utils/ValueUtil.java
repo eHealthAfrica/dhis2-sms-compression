@@ -28,8 +28,6 @@ package org.hisp.dhis.smscompression.utils;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.EOFException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,8 +35,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
-import org.hisp.dhis.smscompression.models.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
@@ -46,47 +45,52 @@ import org.hisp.dhis.smscompression.models.SMSMetadata;
 public class ValueUtil
 {
 
+    // TODO: Add handling to support New UIDs if the id isn't in Metadata
     public static void writeAttributeValues( List<SMSAttributeValue> values, SMSMetadata meta,
         BitOutputStream outStream )
-        throws IOException
+        throws SMSCompressionException
     {
-        int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ) );
+        int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
+            MetadataType.TRACKED_ENTITY_ATTRIBUTE );
         outStream.write( attributeBitLen, SMSConsts.VARLEN_BITLEN );
-        for ( SMSAttributeValue val : values )
+        for ( Iterator<SMSAttributeValue> valIter = values.iterator(); valIter.hasNext(); )
         {
+            SMSAttributeValue val = valIter.next();
             int idHash = BinaryUtils.hash( val.getAttribute(), attributeBitLen );
             outStream.write( idHash, attributeBitLen );
             writeString( val.getValue(), outStream );
+
+            int separator = valIter.hasNext() ? 1 : 0;
+            outStream.write( separator, 1 );
         }
     }
 
     public static List<SMSAttributeValue> readAttributeValues( SMSMetadata meta, BitInputStream inStream )
-        throws IOException
+        throws SMSCompressionException
     {
         ArrayList<SMSAttributeValue> values = new ArrayList<>();
         int attributeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
         Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
             attributeBitLen );
 
-        while ( true )
+        for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
         {
-            try
-            {
-                int idHash = inStream.read( attributeBitLen );
-                String id = idLookup.get( idHash );
-                String val = readString( inStream );
-                values.add( new SMSAttributeValue( id, val ) );
-            }
-            catch ( EOFException e )
-            {
-                break;
-            }
+            int idHash = inStream.read( attributeBitLen );
+            String id = idLookup.get( idHash );
+            // TODO: Should we be warning and is this the best way to do it?
+            if ( id == null )
+                System.out.println(
+                    "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
+
+            String val = readString( inStream );
+            values.add( new SMSAttributeValue( id, val ) );
         }
+
         return values;
     }
 
     public static void writeString( String s, BitOutputStream outStream )
-        throws IOException
+        throws SMSCompressionException
     {
         for ( char c : s.toCharArray() )
         {
@@ -97,7 +101,7 @@ public class ValueUtil
     }
 
     public static String readString( BitInputStream inStream )
-        throws IOException
+        throws SMSCompressionException
     {
         String s = "";
         do
@@ -112,14 +116,14 @@ public class ValueUtil
     }
 
     public static void writeDate( Date d, BitOutputStream outStream )
-        throws IOException
+        throws SMSCompressionException
     {
         long epochSecs = d.getTime() / 1000;
         outStream.write( (int) epochSecs, SMSConsts.EPOCH_DATE_BITLEN );
     }
 
     public static Date readDate( BitInputStream inStream )
-        throws IOException
+        throws SMSCompressionException
     {
         long epochSecs = inStream.read( SMSConsts.EPOCH_DATE_BITLEN );
         Date dateVal = new Date( epochSecs * 1000 );
@@ -143,13 +147,15 @@ public class ValueUtil
         return map;
     }
 
-    // TODO: No error handling for missing IDs at the moment
+    // TODO: Add handling to support New UIDs if the id isn't in Metadata
     public static void writeDataValues( List<SMSDataValue> values, SMSMetadata meta, BitOutputStream outStream )
-        throws IOException
+        throws SMSCompressionException
     {
-        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ) );
+        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
+            MetadataType.CATEGORY_OPTION_COMBO );
         outStream.write( catOptionComboBitLen, SMSConsts.VARLEN_BITLEN );
-        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ) );
+        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ),
+            MetadataType.DATA_ELEMENT );
         outStream.write( dataElementBitLen, SMSConsts.VARLEN_BITLEN );
 
         Map<String, List<SMSDataValue>> valMap = groupDataValues( values );
@@ -178,7 +184,7 @@ public class ValueUtil
     }
 
     public static List<SMSDataValue> readDataValues( SMSMetadata meta, BitInputStream inStream )
-        throws IOException
+        throws SMSCompressionException
     {
         int catOptionComboBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
         int dataElementBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
@@ -188,26 +194,26 @@ public class ValueUtil
             dataElementBitLen );
         ArrayList<SMSDataValue> values = new ArrayList<>();
 
-        while ( true )
+        for ( int cocSep = 1; cocSep == 1; cocSep = inStream.read( 1 ) )
         {
-            try
+            int catOptionComboHash = inStream.read( catOptionComboBitLen );
+            String catOptionCombo = cocIDLookup.get( catOptionComboHash );
+            // TODO: Should we be warning and is this the best way to do it?
+            if ( catOptionCombo == null )
+                System.out.println(
+                    "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for category option combo" );
+
+            for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
             {
-                for ( int cocSep = 1; cocSep == 1; cocSep = inStream.read( 1 ) )
-                {
-                    int catOptionComboHash = inStream.read( catOptionComboBitLen );
-                    String catOptionCombo = cocIDLookup.get( catOptionComboHash );
-                    for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
-                    {
-                        int dataElementHash = inStream.read( dataElementBitLen );
-                        String dataElement = deIDLookup.get( dataElementHash );
-                        String value = readString( inStream );
-                        values.add( new SMSDataValue( catOptionCombo, dataElement, value ) );
-                    }
-                }
-            }
-            catch ( EOFException e )
-            {
-                break;
+                int dataElementHash = inStream.read( dataElementBitLen );
+                String dataElement = deIDLookup.get( dataElementHash );
+                // TODO: Should we be warning and is this the best way to do it?
+                if ( dataElement == null )
+                    System.out.println(
+                        "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for data element" );
+
+                String value = readString( inStream );
+                values.add( new SMSDataValue( catOptionCombo, dataElement, value ) );
             }
         }
 

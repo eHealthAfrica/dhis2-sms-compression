@@ -31,7 +31,9 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -143,8 +145,8 @@ public class SimpleEventSMSSubmission
     /* Implementation of abstract methods */
 
     @Override
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
         writer.writeID( eventProgram, MetadataType.PROGRAM );
@@ -156,16 +158,16 @@ public class SimpleEventSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    public void readSubm( SMSSubmissionReader reader )
+        throws SMSCompressionException
     {
-        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT, meta );
-        this.eventProgram = reader.readID( MetadataType.PROGRAM, meta );
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.eventProgram = reader.readID( MetadataType.PROGRAM );
         this.complete = reader.readBool();
-        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO, meta );
+        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
         this.event = reader.readNewID();
         this.timestamp = reader.readDate();
-        this.values = reader.readDataValues( meta );
+        this.values = reader.readDataValues();
     }
 
     @Override
