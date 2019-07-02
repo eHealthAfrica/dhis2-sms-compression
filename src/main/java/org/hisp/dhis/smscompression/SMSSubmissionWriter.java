@@ -54,8 +54,9 @@ public class SMSSubmissionWriter
     SMSMetadata meta;
 
     public SMSSubmissionWriter( SMSMetadata meta )
+        throws SMSCompressionException
     {
-        // TODO: Check metadata looks valid here
+        meta.validate();
         this.meta = meta;
     }
 

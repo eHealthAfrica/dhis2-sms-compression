@@ -78,6 +78,7 @@ public class SMSSubmissionReader
     public SMSSubmission readSubmission( byte[] smsBytes, SMSMetadata meta )
         throws SMSCompressionException
     {
+        meta.validate();
         this.meta = meta;
         SMSSubmissionHeader header = readHeader( smsBytes );
         SMSSubmission subm = null;

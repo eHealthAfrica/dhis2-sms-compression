@@ -45,6 +45,7 @@ import org.hisp.dhis.smscompression.models.SMSMetadata;
 public class ValueUtil
 {
 
+    // TODO: Add handling to support New UIDs if the id isn't in Metadata
     public static void writeAttributeValues( List<SMSAttributeValue> values, SMSMetadata meta,
         BitOutputStream outStream )
         throws SMSCompressionException
@@ -76,6 +77,11 @@ public class ValueUtil
         {
             int idHash = inStream.read( attributeBitLen );
             String id = idLookup.get( idHash );
+            // TODO: Should we be warning and is this the best way to do it?
+            if ( id == null )
+                System.out.println(
+                    "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
+
             String val = readString( inStream );
             values.add( new SMSAttributeValue( id, val ) );
         }
@@ -141,7 +147,7 @@ public class ValueUtil
         return map;
     }
 
-    // TODO: No error handling for missing IDs at the moment
+    // TODO: Add handling to support New UIDs if the id isn't in Metadata
     public static void writeDataValues( List<SMSDataValue> values, SMSMetadata meta, BitOutputStream outStream )
         throws SMSCompressionException
     {
@@ -192,10 +198,20 @@ public class ValueUtil
         {
             int catOptionComboHash = inStream.read( catOptionComboBitLen );
             String catOptionCombo = cocIDLookup.get( catOptionComboHash );
+            // TODO: Should we be warning and is this the best way to do it?
+            if ( catOptionCombo == null )
+                System.out.println(
+                    "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for category option combo" );
+
             for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
             {
                 int dataElementHash = inStream.read( dataElementBitLen );
                 String dataElement = deIDLookup.get( dataElementHash );
+                // TODO: Should we be warning and is this the best way to do it?
+                if ( dataElement == null )
+                    System.out.println(
+                        "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for data element" );
+
                 String value = readString( inStream );
                 values.add( new SMSDataValue( catOptionCombo, dataElement, value ) );
             }

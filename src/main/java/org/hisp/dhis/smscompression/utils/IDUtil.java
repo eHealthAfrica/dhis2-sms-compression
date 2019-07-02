@@ -30,7 +30,6 @@ package org.hisp.dhis.smscompression.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +44,6 @@ public class IDUtil
     public static int getBitLengthForList( List<String> ids, MetadataType type )
         throws SMSCompressionException
     {
-        String typeMsg = String.format( "Error Hashing MetadataType: %s. ", type );
-        checkIDList( ids, typeMsg );
-
         // Start with the shortest length that will fit all IDs
         int len = BinaryUtils.log2( ids.size() );
 
@@ -74,28 +70,10 @@ public class IDUtil
             // This is the max bit length we can support if we still
             // have a collision we can't support this UID list
             if ( len > (Math.pow( 2, SMSConsts.VARLEN_BITLEN )) )
-                throw new SMSCompressionException( typeMsg + "Group too large to support" );
+                throw new SMSCompressionException( "Error hashing: Group too large to support" );
         }
         while ( collision );
         return len;
-    }
-
-    public static boolean checkIDList( List<String> ids, String typeMsg )
-        throws SMSCompressionException
-    {
-        if ( ids.isEmpty() )
-            throw new SMSCompressionException( typeMsg + "Empty list given" );
-
-        HashSet<String> set = new HashSet<>();
-        for ( String id : ids )
-        {
-            if ( !set.add( id ) )
-                throw new SMSCompressionException( typeMsg + "List of UIDs in Metadata contains duplicate: " + id );
-            if ( !validID( id ) )
-                throw new SMSCompressionException( typeMsg + "Invalid format UID found in Metadata UID List: " + id );
-        }
-
-        return true;
     }
 
     public static boolean validID( String id )
@@ -177,7 +155,11 @@ public class IDUtil
         int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
         Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
         int idHash = inStream.read( typeBitLen );
-        return idLookup.get( idHash );
+        String id = idLookup.get( idHash );
+        // TODO: Should we be warning and is this the best way to do it?
+        if ( id == null )
+            System.out.println( "WARNING: SMSCompression(readID) - Cannot find UID in submission for: " + type );
+        return id;
     }
 
     public static Map<Integer, String> getIDLookup( List<String> idList, int hashLen )
@@ -197,7 +179,7 @@ public class IDUtil
         if ( !validID( id ) )
             throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + id );
 
-        // TODO: Check id is in metadata list
+        // TODO: Add handling to support New UIDs if the id isn't in Metadata
 
         int typeBitLen = IDUtil.getBitLengthForList( meta.getType( type ), type );
         outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );

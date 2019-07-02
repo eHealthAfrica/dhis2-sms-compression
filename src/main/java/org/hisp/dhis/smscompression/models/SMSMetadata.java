@@ -30,9 +30,12 @@ package org.hisp.dhis.smscompression.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+import org.hisp.dhis.smscompression.utils.IDUtil;
 
 public class SMSMetadata
 {
@@ -65,6 +68,31 @@ public class SMSMetadata
     public List<ID> dataSets;
 
     public List<ID> programStages;
+
+    public void validate()
+        throws SMSCompressionException
+    {
+        for ( MetadataType type : MetadataType.values() )
+        {
+            checkIDList( getType( type ), type );
+        }
+    }
+
+    public static boolean checkIDList( List<String> ids, MetadataType type )
+        throws SMSCompressionException
+    {
+        String typeMsg = "Metadata error[" + type + "]:";
+        HashSet<String> set = new HashSet<>();
+        for ( String id : ids )
+        {
+            if ( !set.add( id ) )
+                throw new SMSCompressionException( typeMsg + "List of UIDs in Metadata contains duplicate: " + id );
+            if ( !IDUtil.validID( id ) )
+                throw new SMSCompressionException( typeMsg + "Invalid format UID found in Metadata UID List: " + id );
+        }
+
+        return true;
+    }
 
     public List<String> getType( MetadataType type )
     {
