@@ -63,7 +63,7 @@ public class SMSSubmissionReader
         throws SMSCompressionException
     {
         if ( !checkCRC( smsBytes ) )
-            throw new SMSCompressionException( "Invalid CRC" );
+            throw new SMSCompressionException( "Invalid CRC - CRC in header does not match submission" );
 
         ByteArrayInputStream byteStream = new ByteArrayInputStream( smsBytes );
         this.inStream = new BitInputStream( byteStream );
@@ -103,7 +103,7 @@ public class SMSSubmissionReader
             subm = new TrackerEventSMSSubmission();
             break;
         default:
-            throw new SMSCompressionException( "Unknown SMS Submission Type" );
+            throw new SMSCompressionException( "Unknown SMS Submission Type: " + header.getType() );
         }
 
         subm.read( this, header );

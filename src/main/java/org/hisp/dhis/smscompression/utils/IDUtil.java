@@ -42,17 +42,20 @@ import org.hisp.dhis.smscompression.models.SMSMetadata;
 public class IDUtil
 {
 
-    public static int getBitLengthForList( List<String> ids )
+    public static int getBitLengthForList( List<String> ids, MetadataType type )
+        throws SMSCompressionException
     {
-        if ( !checkIDList( ids ) )
-            return -1;
+        String typeMsg = String.format( "Error Hashing MetadataType: %s. ", type );
+        checkIDList( ids, typeMsg );
 
+        // Start with the shortest length that will fit all IDs
         int len = BinaryUtils.log2( ids.size() );
 
-        boolean coll = false;
+        // Track whether we have a hash collision (duplicate) for this length
+        boolean collision = false;
         do
         {
-            coll = false;
+            collision = false;
             ArrayList<Integer> idList = new ArrayList<>();
             for ( String id : ids )
             {
@@ -60,7 +63,7 @@ public class IDUtil
                 if ( idList.contains( newHash ) )
                 {
                     len++;
-                    coll = true;
+                    collision = true;
                     break;
                 }
                 else
@@ -68,24 +71,30 @@ public class IDUtil
                     idList.add( newHash );
                 }
             }
-            // Prevent infinite loop if something goes wrong
-            if ( len > 32 )
-                return -1;
+            // This is the max bit length we can support if we still
+            // have a collision we can't support this UID list
+            if ( len > (Math.pow( 2, SMSConsts.VARLEN_BITLEN )) )
+                throw new SMSCompressionException( typeMsg + "Group too large to support" );
         }
-        while ( coll );
+        while ( collision );
         return len;
     }
 
-    public static boolean checkIDList( List<String> ids )
+    public static boolean checkIDList( List<String> ids, String typeMsg )
+        throws SMSCompressionException
     {
-        HashSet<String> set = new HashSet<>( ids );
-        if ( set.size() != ids.size() )
-            return false;
+        if ( ids.isEmpty() )
+            throw new SMSCompressionException( typeMsg + "Empty list given" );
+
+        HashSet<String> set = new HashSet<>();
         for ( String id : ids )
         {
+            if ( !set.add( id ) )
+                throw new SMSCompressionException( typeMsg + "List of UIDs in Metadata contains duplicate: " + id );
             if ( !validID( id ) )
-                return false;
+                throw new SMSCompressionException( typeMsg + "Invalid format UID found in Metadata UID List: " + id );
         }
+
         return true;
     }
 
@@ -109,10 +118,6 @@ public class IDUtil
         else if ( c >= 'a' && c <= 'z' )
         {
             i -= '0' + ('A' - '9' - 1) + ('a' - 'Z' - 1);
-        }
-        else
-        {
-            return -1;
         }
 
         return i;
@@ -144,7 +149,7 @@ public class IDUtil
         throws SMSCompressionException
     {
         if ( !validID( id ) )
-            throw new SMSCompressionException( "Invalid ID" );
+            throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + id );
         for ( char c : id.toCharArray() )
         {
             outStream.write( convertIDCharToInt( c ), 6 );
@@ -190,9 +195,11 @@ public class IDUtil
         throws SMSCompressionException
     {
         if ( !validID( id ) )
-            throw new SMSCompressionException( "Invalid ID" );
+            throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + id );
 
-        int typeBitLen = IDUtil.getBitLengthForList( meta.getType( type ) );
+        // TODO: Check id is in metadata list
+
+        int typeBitLen = IDUtil.getBitLengthForList( meta.getType( type ), type );
         outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );
         int idHash = BinaryUtils.hash( id, typeBitLen );
         outStream.write( idHash, typeBitLen );

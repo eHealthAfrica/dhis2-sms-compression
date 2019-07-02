@@ -49,7 +49,8 @@ public class ValueUtil
         BitOutputStream outStream )
         throws SMSCompressionException
     {
-        int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ) );
+        int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
+            MetadataType.TRACKED_ENTITY_ATTRIBUTE );
         outStream.write( attributeBitLen, SMSConsts.VARLEN_BITLEN );
         for ( Iterator<SMSAttributeValue> valIter = values.iterator(); valIter.hasNext(); )
         {
@@ -144,9 +145,11 @@ public class ValueUtil
     public static void writeDataValues( List<SMSDataValue> values, SMSMetadata meta, BitOutputStream outStream )
         throws SMSCompressionException
     {
-        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ) );
+        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
+            MetadataType.CATEGORY_OPTION_COMBO );
         outStream.write( catOptionComboBitLen, SMSConsts.VARLEN_BITLEN );
-        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ) );
+        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ),
+            MetadataType.DATA_ELEMENT );
         outStream.write( dataElementBitLen, SMSConsts.VARLEN_BITLEN );
 
         Map<String, List<SMSDataValue>> valMap = groupDataValues( values );
