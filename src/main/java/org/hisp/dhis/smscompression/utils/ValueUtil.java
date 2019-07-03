@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.utils;
 
+import java.text.ParseException;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -38,12 +40,15 @@ import java.util.Map;
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.ValueType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
+import org.hisp.dhis.smscompression.models.SMSValue;
 
 public class ValueUtil
 {
+    // Complex types
 
     // TODO: Add handling to support New UIDs if the id isn't in Metadata
     public static void writeAttributeValues( List<SMSAttributeValue> values, SMSMetadata meta,
@@ -58,7 +63,7 @@ public class ValueUtil
             SMSAttributeValue val = valIter.next();
             int idHash = BinaryUtils.hash( val.getAttribute(), attributeBitLen );
             outStream.write( idHash, attributeBitLen );
-            writeString( val.getValue(), outStream );
+            writeSMSValue( val.getSMSValue(), outStream );
 
             int separator = valIter.hasNext() ? 1 : 0;
             outStream.write( separator, 1 );
@@ -82,52 +87,11 @@ public class ValueUtil
                 System.out.println(
                     "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
 
-            String val = readString( inStream );
-            values.add( new SMSAttributeValue( id, val ) );
+            SMSValue<?> smsValue = readSMSValue( inStream );
+            values.add( new SMSAttributeValue( id, smsValue ) );
         }
 
         return values;
-    }
-
-    public static void writeString( String s, BitOutputStream outStream )
-        throws SMSCompressionException
-    {
-        for ( char c : s.toCharArray() )
-        {
-            outStream.write( c, SMSConsts.CHAR_BITLEN );
-        }
-        // Null terminator
-        outStream.write( 0, SMSConsts.CHAR_BITLEN );
-    }
-
-    public static String readString( BitInputStream inStream )
-        throws SMSCompressionException
-    {
-        String s = "";
-        do
-        {
-            int i = inStream.read( SMSConsts.CHAR_BITLEN );
-            if ( i == 0 )
-                break;
-            s += (char) i;
-        }
-        while ( true );
-        return s;
-    }
-
-    public static void writeDate( Date d, BitOutputStream outStream )
-        throws SMSCompressionException
-    {
-        long epochSecs = d.getTime() / 1000;
-        outStream.write( (int) epochSecs, SMSConsts.EPOCH_DATE_BITLEN );
-    }
-
-    public static Date readDate( BitInputStream inStream )
-        throws SMSCompressionException
-    {
-        long epochSecs = inStream.read( SMSConsts.EPOCH_DATE_BITLEN );
-        Date dateVal = new Date( epochSecs * 1000 );
-        return dateVal;
     }
 
     public static Map<String, List<SMSDataValue>> groupDataValues( List<SMSDataValue> values )
@@ -172,7 +136,7 @@ public class ValueUtil
                 SMSDataValue val = valIter.next();
                 int deHash = BinaryUtils.hash( val.getDataElement(), dataElementBitLen );
                 outStream.write( deHash, dataElementBitLen );
-                writeString( val.getValue(), outStream );
+                writeSMSValue( val.getSMSValue(), outStream );
 
                 int separator = valIter.hasNext() ? 1 : 0;
                 outStream.write( separator, 1 );
@@ -212,11 +176,198 @@ public class ValueUtil
                     System.out.println(
                         "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for data element" );
 
-                String value = readString( inStream );
-                values.add( new SMSDataValue( catOptionCombo, dataElement, value ) );
+                SMSValue<?> smsValue = readSMSValue( inStream );
+                values.add( new SMSDataValue( catOptionCombo, dataElement, smsValue ) );
             }
         }
 
         return values;
+    }
+
+    // Simple types
+
+    public static void writeSMSValue( SMSValue<?> val, BitOutputStream outStream )
+        throws SMSCompressionException
+    {
+        // First write out the value type
+        outStream.write( val.getType().ordinal(), SMSConsts.VALTYPE_BITLEN );
+
+        // Now write out the actual value
+        switch ( val.getType() )
+        {
+        case BOOL:
+            writeBool( (Boolean) val.getValue(), outStream );
+            break;
+        case DATE:
+            writeDate( (Date) val.getValue(), outStream );
+            break;
+        case INT:
+            writeInt( (Integer) val.getValue(), outStream );
+            break;
+        case FLOAT:
+            writeFloat( (Float) val.getValue(), outStream );
+            break;
+        // STRING is the default case
+        default:
+            writeString( (String) val.getValue(), outStream );
+        }
+    }
+
+    public static SMSValue<?> readSMSValue( BitInputStream inStream )
+        throws SMSCompressionException
+    {
+        // First read the value type
+        int typeNum = inStream.read( SMSConsts.VALTYPE_BITLEN );
+        ValueType type = ValueType.values()[typeNum];
+
+        // Now read the actual value
+        switch ( type )
+        {
+        case BOOL:
+            return new SMSValue<Boolean>( readBool( inStream ), type );
+        case DATE:
+            return new SMSValue<Date>( readDate( inStream ), type );
+        case INT:
+            return new SMSValue<Integer>( readInt( inStream ), type );
+        case FLOAT:
+            return new SMSValue<Float>( readFloat( inStream ), type );
+        case STRING:
+            return new SMSValue<String>( readString( inStream ), type );
+        default:
+            throw new SMSCompressionException( "Unknown ValueType: " + type );
+        }
+    }
+
+    public static void writeBool( boolean val, BitOutputStream outStream )
+        throws SMSCompressionException
+    {
+        int intVal = val ? 1 : 0;
+        outStream.write( intVal, 1 );
+    }
+
+    public static boolean readBool( BitInputStream inStream )
+        throws SMSCompressionException
+    {
+        int intVal = inStream.read( 1 );
+        return intVal == 1;
+    }
+
+    public static void writeDate( Date d, BitOutputStream outStream )
+        throws SMSCompressionException
+    {
+        long epochSecs = d.getTime() / 1000;
+        outStream.write( (int) epochSecs, SMSConsts.EPOCH_DATE_BITLEN );
+    }
+
+    public static Date readDate( BitInputStream inStream )
+        throws SMSCompressionException
+    {
+        long epochSecs = inStream.read( SMSConsts.EPOCH_DATE_BITLEN );
+        Date dateVal = new Date( epochSecs * 1000 );
+        return dateVal;
+    }
+
+    public static void writeInt( int val, BitOutputStream outStream )
+        throws SMSCompressionException
+    {
+        // We can't write negative ints so we handle sign separately
+        int isNegative = val < 0 ? 1 : 0;
+        outStream.write( isNegative, 1 );
+        outStream.write( Math.abs( val ), SMSConsts.INT_BITLEN );
+    }
+
+    public static int readInt( BitInputStream inStream )
+        throws SMSCompressionException
+    {
+        // We can't write negative ints so we handle sign separately
+        int setNegative = inStream.read( 1 ) == 1 ? -1 : 1;
+        return setNegative * inStream.read( SMSConsts.INT_BITLEN );
+    }
+
+    public static void writeFloat( float val, BitOutputStream outStream )
+        throws SMSCompressionException
+    {
+        // TODO: We need to handle floats better
+        writeInt( Float.floatToIntBits( val ), outStream );
+    }
+
+    public static float readFloat( BitInputStream inStream )
+        throws SMSCompressionException
+    {
+        // TODO: We need to handle floats better
+        return Float.intBitsToFloat( readInt( inStream ) );
+
+    }
+
+    public static void writeString( String s, BitOutputStream outStream )
+        throws SMSCompressionException
+    {
+        for ( char c : s.toCharArray() )
+        {
+            outStream.write( c, SMSConsts.CHAR_BITLEN );
+        }
+        // Null terminator
+        outStream.write( 0, SMSConsts.CHAR_BITLEN );
+    }
+
+    public static String readString( BitInputStream inStream )
+        throws SMSCompressionException
+    {
+        String s = "";
+        do
+        {
+            int i = inStream.read( SMSConsts.CHAR_BITLEN );
+            if ( i == 0 )
+                break;
+            s += (char) i;
+        }
+        while ( true );
+        return s;
+    }
+
+    public static SMSValue<?> asSMSValue( String value )
+    {
+        // BOOL
+        if ( value.equals( "true" ) || value.equals( "false" ) )
+        {
+            Boolean valBool = value.equals( "true" ) ? true : false;
+            return new SMSValue<Boolean>( valBool, ValueType.BOOL );
+        }
+
+        // DATE
+        try
+        {
+            Date valDate = SMSConsts.SIMPLE_DATE_FORMAT.parse( value );
+            return new SMSValue<Date>( valDate, ValueType.DATE );
+        }
+        catch ( ParseException e )
+        {
+            // not a date
+        }
+
+        // INT
+        try
+        {
+            Integer valInt = Integer.parseInt( value );
+            return new SMSValue<Integer>( valInt, ValueType.INT );
+        }
+        catch ( NumberFormatException e )
+        {
+            // not an integer
+        }
+
+        // FLOAT
+        try
+        {
+            Float valFloat = Float.parseFloat( value );
+            return new SMSValue<Float>( valFloat, ValueType.FLOAT );
+        }
+        catch ( NumberFormatException e )
+        {
+            // not a float
+        }
+
+        // If all else fails we can use String
+        return new SMSValue<String>( value, ValueType.STRING );
     }
 }

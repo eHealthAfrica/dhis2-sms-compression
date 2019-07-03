@@ -124,8 +124,7 @@ public class SMSSubmissionWriter
     public void writeDate( Date date )
         throws SMSCompressionException
     {
-        long epochSecs = date.getTime() / 1000;
-        outStream.write( (int) epochSecs, SMSConsts.EPOCH_DATE_BITLEN );
+        ValueUtil.writeDate( date, outStream );
     }
 
     public void writeNewID( String id )
@@ -155,8 +154,7 @@ public class SMSSubmissionWriter
     public void writeBool( boolean val )
         throws SMSCompressionException
     {
-        int intVal = val ? 1 : 0;
-        outStream.write( intVal, 1 );
+        ValueUtil.writeBool( val, outStream );
     }
 
     // TODO: We should consider a better implementation for period than just

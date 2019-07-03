@@ -122,12 +122,12 @@ public class TestUtils
         subm.setAttributeOptionCombo( "HllvX50cXC0" );
         subm.setPeriod( "2019W16" );
         ArrayList<SMSDataValue> values = new ArrayList<>();
-        values.add( new SMSDataValue( "HllvX50cXC0", "noIzB569hTM", "11" ) ); // Yellow
-                                                                              // Fever
-        values.add( new SMSDataValue( "HllvX50cXC0", "vq2qO3eTrNi", "24" ) ); // Malaria
-        values.add( new SMSDataValue( "HllvX50cXC0", "HS9zqaBdOQ4", "99" ) ); // Plague
-        values.add( new SMSDataValue( "HllvX50cXC0", "YazgqXbizv1", "3" ) ); // Measles
-        values.add( new SMSDataValue( "HllvX50cXC0", "UsSUX0cpKsH", "1" ) ); // Cholera
+        values.add( new SMSDataValue( "HllvX50cXC0", "noIzB569hTM", "12345678" ) ); // Yellow
+        // Fever
+        values.add( new SMSDataValue( "HllvX50cXC0", "vq2qO3eTrNi", "-24.5" ) ); // Malaria
+        values.add( new SMSDataValue( "HllvX50cXC0", "HS9zqaBdOQ4", "-99" ) ); // Plague
+        values.add( new SMSDataValue( "HllvX50cXC0", "YazgqXbizv1", "0.12345678" ) ); // Measles
+        values.add( new SMSDataValue( "HllvX50cXC0", "UsSUX0cpKsH", "0" ) ); // Cholera
         subm.setValues( values );
         subm.setSubmissionID( 1 );
 
