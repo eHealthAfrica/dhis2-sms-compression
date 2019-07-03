@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression;
 
+import java.text.SimpleDateFormat;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -30,21 +32,6 @@ package org.hisp.dhis.smscompression;
 
 public class SMSConsts
 {
-    public static final int VARLEN_BITLEN = 6;
-
-    public static final int CHAR_BITLEN = 8;
-
-    public static final int EPOCH_DATE_BITLEN = 32;
-
-    public static final int SUBM_TYPE_BITLEN = 4;
-
-    public static final int VERSION_BITLEN = 4;
-
-    public static final int CRC_BITLEN = 8;
-
-    public static final int SUBM_ID_BITLEN = 8;
-
-    public static final int ID_LEN = 11;
 
     public enum SubmissionType
     {
@@ -68,4 +55,39 @@ public class SMSConsts
 
         ;
     }
+
+    public enum ValueType
+    {
+        INT, FLOAT, DATE, BOOL, STRING
+    }
+
+    public static final int VARLEN_BITLEN = 6;
+
+    public static final int CHAR_BITLEN = 8;
+
+    public static final int EPOCH_DATE_BITLEN = 32;
+
+    public static final int SUBM_TYPE_BITLEN = 4;
+
+    public static final int VERSION_BITLEN = 4;
+
+    public static final int CRC_BITLEN = 8;
+
+    public static final int SUBM_ID_BITLEN = 8;
+
+    public static final int ID_LEN = 11;
+
+    public static final int VALTYPE_BITLEN = 3;
+
+    // TODO: We should change this to be adjustable depending on largest int
+    public static final int INT_BITLEN = 32;
+
+    // TODO: Consider if we can come up with a better format for floats
+    public static final int FLOAT_BITLEN = 32;
+
+    // As we only store timestamps to the second, this is the format we use
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat( DATE_FORMAT );
+
 }

@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.utils.ValueUtil;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -36,11 +38,23 @@ public class SMSDataValue
 
     protected String value;
 
+    protected SMSValue<?> smsValue;
+
     public SMSDataValue( String categoryOptionCombo, String dataElement, String value )
     {
         this.categoryOptionCombo = categoryOptionCombo;
         this.dataElement = dataElement;
         this.value = value;
+        this.smsValue = ValueUtil.asSMSValue( value );
+    }
+
+    public SMSDataValue( String categoryOptionCombo, String dataElement, SMSValue<?> smsValue )
+    {
+        this.categoryOptionCombo = categoryOptionCombo;
+        this.dataElement = dataElement;
+        this.smsValue = smsValue;
+        // TODO: We probably need better handling than just toString() here
+        this.value = smsValue.getValue().toString();
     }
 
     public String getCategoryOptionCombo()
@@ -56,6 +70,11 @@ public class SMSDataValue
     public String getValue()
     {
         return value;
+    }
+
+    public SMSValue<?> getSMSValue()
+    {
+        return smsValue;
     }
 
     @Override

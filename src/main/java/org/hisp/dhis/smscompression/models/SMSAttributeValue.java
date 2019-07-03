@@ -1,5 +1,8 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.ValueType;
+import org.hisp.dhis.smscompression.utils.ValueUtil;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -34,10 +37,23 @@ public class SMSAttributeValue
 
     protected String value;
 
+    protected SMSValue<?> smsValue;
+
+    protected ValueType type;
+
     public SMSAttributeValue( String attribute, String value )
     {
         this.attribute = attribute;
         this.value = value;
+        this.smsValue = ValueUtil.asSMSValue( value );
+    }
+
+    public SMSAttributeValue( String attribute, SMSValue<?> smsValue )
+    {
+        this.attribute = attribute;
+        this.smsValue = smsValue;
+        // TODO: We probably need better handling than just toString() here
+        this.value = smsValue.getValue().toString();
     }
 
     public String getAttribute()
@@ -48,6 +64,11 @@ public class SMSAttributeValue
     public String getValue()
     {
         return this.value;
+    }
+
+    public SMSValue<?> getSMSValue()
+    {
+        return this.smsValue;
     }
 
     @Override

@@ -153,9 +153,7 @@ public class SMSSubmissionReader
     public Date readDate()
         throws SMSCompressionException
     {
-        long epochSecs = inStream.read( SMSConsts.EPOCH_DATE_BITLEN );
-        Date dateVal = new Date( epochSecs * 1000 );
-        return dateVal;
+        return ValueUtil.readDate( inStream );
     }
 
     public String readNewID()
@@ -185,8 +183,7 @@ public class SMSSubmissionReader
     public boolean readBool()
         throws SMSCompressionException
     {
-        int intVal = inStream.read( 1 );
-        return intVal == 1;
+        return ValueUtil.readBool( inStream );
     }
 
     // TODO: Update this once we have a better impl of period
