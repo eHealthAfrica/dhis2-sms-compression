@@ -125,7 +125,7 @@ public class TestUtils
         values.add( new SMSDataValue( "HllvX50cXC0", "noIzB569hTM", "12345678" ) ); // Yellow
         // Fever
         values.add( new SMSDataValue( "HllvX50cXC0", "vq2qO3eTrNi", "-24.5" ) ); // Malaria
-        values.add( new SMSDataValue( "HllvX50cXC0", "HS9zqaBdOQ4", "-99" ) ); // Plague
+        values.add( new SMSDataValue( "HllvX50cXC0", "HS9zqaBdOQ4", "-65535" ) ); // Plague
         values.add( new SMSDataValue( "HllvX50cXC0", "YazgqXbizv1", "0.12345678" ) ); // Measles
         values.add( new SMSDataValue( "HllvX50cXC0", "UsSUX0cpKsH", "0" ) ); // Cholera
         subm.setValues( values );
