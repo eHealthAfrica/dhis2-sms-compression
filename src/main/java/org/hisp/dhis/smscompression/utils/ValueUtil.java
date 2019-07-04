@@ -412,7 +412,7 @@ public class ValueUtil
         {
             if ( val.getType() == ValueType.INT )
             {
-                int intVal = Math.abs( (int) val.getValue() );
+                int intVal = Math.abs( (Integer) val.getValue() );
                 if ( intVal > SMSConsts.MAX_FIXED_NUM )
                     continue;
                 maxInt = intVal > maxInt ? intVal : maxInt;
