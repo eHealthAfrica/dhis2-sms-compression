@@ -79,6 +79,10 @@ public class SMSConsts
 
     public static final int VALTYPE_BITLEN = 3;
 
+    public static final int FIXED_INT_BITLEN = 4;
+
+    public static final int MAX_FIXED_NUM = (int) Math.pow( 2, Math.pow( 2, FIXED_INT_BITLEN ) ) - 1;
+
     // TODO: We should change this to be adjustable depending on largest int
     public static final int INT_BITLEN = 32;
 

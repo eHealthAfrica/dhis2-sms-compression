@@ -45,7 +45,7 @@ public class IDUtil
         throws SMSCompressionException
     {
         // Start with the shortest length that will fit all IDs
-        int len = BinaryUtils.log2( ids.size() );
+        int len = BinaryUtils.bitlenNeeded( ids.size() );
 
         // Track whether we have a hash collision (duplicate) for this length
         boolean collision = false;
