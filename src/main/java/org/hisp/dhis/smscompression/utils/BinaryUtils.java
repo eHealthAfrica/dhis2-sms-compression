@@ -64,6 +64,14 @@ public class BinaryUtils
     }
 
     /**
+     * @return the minimum bit length needed to represent this int (unsigned)
+     */
+    public static int bitlenNeeded( int n )
+    {
+        return n == 0 ? 1 : log2( n ) + 1;
+    }
+
+    /**
      * @return a unique hash for a string for a given bit length
      */
     public static int hash( String s, int bitlen )

@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
@@ -58,12 +59,18 @@ public class ValueUtil
         int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
             MetadataType.TRACKED_ENTITY_ATTRIBUTE );
         outStream.write( attributeBitLen, SMSConsts.VARLEN_BITLEN );
+
+        List<SMSValue<?>> smsVals = values.stream().map( v -> v.getSMSValue() ).collect( Collectors.toList() );
+        int fixedIntBitLen = getBitlenLargestInt( smsVals );
+        // We shift the bitlen down one to allow the max
+        outStream.write( fixedIntBitLen - 1, SMSConsts.FIXED_INT_BITLEN );
+
         for ( Iterator<SMSAttributeValue> valIter = values.iterator(); valIter.hasNext(); )
         {
             SMSAttributeValue val = valIter.next();
             int idHash = BinaryUtils.hash( val.getAttribute(), attributeBitLen );
             outStream.write( idHash, attributeBitLen );
-            writeSMSValue( val.getSMSValue(), outStream );
+            writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
             int separator = valIter.hasNext() ? 1 : 0;
             outStream.write( separator, 1 );
@@ -75,9 +82,11 @@ public class ValueUtil
     {
         ArrayList<SMSAttributeValue> values = new ArrayList<>();
         int attributeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+
+        int fixedIntBitLen = inStream.read( SMSConsts.FIXED_INT_BITLEN ) + 1;
+
         Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
             attributeBitLen );
-
         for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
         {
             int idHash = inStream.read( attributeBitLen );
@@ -87,7 +96,7 @@ public class ValueUtil
                 System.out.println(
                     "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
 
-            SMSValue<?> smsValue = readSMSValue( inStream );
+            SMSValue<?> smsValue = readSMSValue( fixedIntBitLen, inStream );
             values.add( new SMSAttributeValue( id, smsValue ) );
         }
 
@@ -118,9 +127,15 @@ public class ValueUtil
         int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
             MetadataType.CATEGORY_OPTION_COMBO );
         outStream.write( catOptionComboBitLen, SMSConsts.VARLEN_BITLEN );
+
         int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ),
             MetadataType.DATA_ELEMENT );
         outStream.write( dataElementBitLen, SMSConsts.VARLEN_BITLEN );
+
+        List<SMSValue<?>> smsVals = values.stream().map( v -> v.getSMSValue() ).collect( Collectors.toList() );
+        int fixedIntBitLen = getBitlenLargestInt( smsVals );
+        // We shift the bitlen down one to allow the max
+        outStream.write( fixedIntBitLen - 1, SMSConsts.FIXED_INT_BITLEN );
 
         Map<String, List<SMSDataValue>> valMap = groupDataValues( values );
 
@@ -136,7 +151,7 @@ public class ValueUtil
                 SMSDataValue val = valIter.next();
                 int deHash = BinaryUtils.hash( val.getDataElement(), dataElementBitLen );
                 outStream.write( deHash, dataElementBitLen );
-                writeSMSValue( val.getSMSValue(), outStream );
+                writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
                 int separator = valIter.hasNext() ? 1 : 0;
                 outStream.write( separator, 1 );
@@ -152,6 +167,7 @@ public class ValueUtil
     {
         int catOptionComboBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
         int dataElementBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+        int fixedIntBitLen = inStream.read( SMSConsts.FIXED_INT_BITLEN ) + 1;
         Map<Integer, String> cocIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
             catOptionComboBitLen );
         Map<Integer, String> deIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.DATA_ELEMENT ),
@@ -176,7 +192,7 @@ public class ValueUtil
                     System.out.println(
                         "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for data element" );
 
-                SMSValue<?> smsValue = readSMSValue( inStream );
+                SMSValue<?> smsValue = readSMSValue( fixedIntBitLen, inStream );
                 values.add( new SMSDataValue( catOptionCombo, dataElement, smsValue ) );
             }
         }
@@ -186,7 +202,8 @@ public class ValueUtil
 
     // Simple types
 
-    public static void writeSMSValue( SMSValue<?> val, BitOutputStream outStream )
+    // TODO: Find a better way to pass down fixedIntBitLen
+    public static void writeSMSValue( SMSValue<?> val, int fixedIntBitlen, BitOutputStream outStream )
         throws SMSCompressionException
     {
         // First write out the value type
@@ -202,7 +219,7 @@ public class ValueUtil
             writeDate( (Date) val.getValue(), outStream );
             break;
         case INT:
-            writeInt( (Integer) val.getValue(), outStream );
+            writeInt( (Integer) val.getValue(), fixedIntBitlen, outStream );
             break;
         case FLOAT:
             writeFloat( (Float) val.getValue(), outStream );
@@ -213,7 +230,8 @@ public class ValueUtil
         }
     }
 
-    public static SMSValue<?> readSMSValue( BitInputStream inStream )
+    // TODO: Find a better way to pass down fixedIntBitLen
+    public static SMSValue<?> readSMSValue( int fixedIntBitLen, BitInputStream inStream )
         throws SMSCompressionException
     {
         // First read the value type
@@ -228,7 +246,7 @@ public class ValueUtil
         case DATE:
             return new SMSValue<Date>( readDate( inStream ), type );
         case INT:
-            return new SMSValue<Integer>( readInt( inStream ), type );
+            return new SMSValue<Integer>( readInt( fixedIntBitLen, inStream ), type );
         case FLOAT:
             return new SMSValue<Float>( readFloat( inStream ), type );
         case STRING:
@@ -267,36 +285,52 @@ public class ValueUtil
         return dateVal;
     }
 
-    public static void writeInt( int val, BitOutputStream outStream )
+    public static void writeInt( int val, int fixedIntBitlen, BitOutputStream outStream )
         throws SMSCompressionException
     {
         // We can't write negative ints so we handle sign separately
         int isNegative = val < 0 ? 1 : 0;
         outStream.write( isNegative, 1 );
-        outStream.write( Math.abs( val ), SMSConsts.INT_BITLEN );
+        val = Math.abs( val );
+
+        // If it's bigger than the fixedInt size we need to give its size
+        int isVariable = val > SMSConsts.MAX_FIXED_NUM ? 1 : 0;
+        outStream.write( isVariable, 1 );
+        int intBitlen = BinaryUtils.bitlenNeeded( val );
+
+        if ( isVariable == 1 )
+            outStream.write( intBitlen, SMSConsts.VARLEN_BITLEN );
+
+        int bitLen = isVariable == 1 ? intBitlen : fixedIntBitlen;
+
+        outStream.write( val, bitLen );
     }
 
-    public static int readInt( BitInputStream inStream )
+    public static int readInt( int fixedIntBitlen, BitInputStream inStream )
         throws SMSCompressionException
     {
-        // We can't write negative ints so we handle sign separately
+        // Is this int negative?
         int setNegative = inStream.read( 1 ) == 1 ? -1 : 1;
-        return setNegative * inStream.read( SMSConsts.INT_BITLEN );
+
+        // Is this int fixed or variable size?
+        int isVariable = inStream.read( 1 );
+
+        int bitLen = isVariable == 1 ? inStream.read( SMSConsts.VARLEN_BITLEN ) : fixedIntBitlen;
+        return setNegative * inStream.read( bitLen );
     }
 
     public static void writeFloat( float val, BitOutputStream outStream )
         throws SMSCompressionException
     {
         // TODO: We need to handle floats better
-        writeInt( Float.floatToIntBits( val ), outStream );
+        writeString( Float.toString( val ), outStream );
     }
 
     public static float readFloat( BitInputStream inStream )
         throws SMSCompressionException
     {
         // TODO: We need to handle floats better
-        return Float.intBitsToFloat( readInt( inStream ) );
-
+        return Float.parseFloat( readString( inStream ) );
     }
 
     public static void writeString( String s, BitOutputStream outStream )
@@ -369,5 +403,21 @@ public class ValueUtil
 
         // If all else fails we can use String
         return new SMSValue<String>( value, ValueType.STRING );
+    }
+
+    public static int getBitlenLargestInt( List<SMSValue<?>> values )
+    {
+        int maxInt = 0;
+        for ( SMSValue<?> val : values )
+        {
+            if ( val.getType() == ValueType.INT )
+            {
+                int intVal = Math.abs( (int) val.getValue() );
+                if ( intVal > SMSConsts.MAX_FIXED_NUM )
+                    continue;
+                maxInt = intVal > maxInt ? intVal : maxInt;
+            }
+        }
+        return BinaryUtils.bitlenNeeded( maxInt );
     }
 }
