@@ -33,6 +33,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
@@ -92,7 +93,7 @@ public class TestUtils
         subm.setEventProgram( "lxAQ7Zs9VYR" ); // Antenatal Care Visit
         subm.setAttributeOptionCombo( "HllvX50cXC0" ); // Default catOptionCombo
         subm.setEvent( "l7M1gUFK37v" ); // New UID
-        subm.setComplete( true );
+        subm.setEventStatus( EventStatus.COMPLETED );
         subm.setTimestamp( getNowWithoutMillis() );
         ArrayList<SMSDataValue> values = new ArrayList<>();
         values.add( new SMSDataValue( "HllvX50cXC0", "sWoqcoByYmD", "true" ) ); // WHOMCH
@@ -170,7 +171,7 @@ public class TestUtils
         subm.setAttributeOptionCombo( "HllvX50cXC0" ); // Default catOptionCombo
         subm.setEnrollment( "DacGG5vK1K6" ); // Test Person
         subm.setEvent( "r7M1gUFK37v" ); // New UID
-        subm.setComplete( true );
+        subm.setEventStatus( EventStatus.COMPLETED );
         subm.setTimestamp( getNowWithoutMillis() );
         ArrayList<SMSDataValue> values = new ArrayList<>();
         values.add( new SMSDataValue( "HllvX50cXC0", "a3kGcGDCuk6", "10" ) ); // Apgar

@@ -58,7 +58,17 @@ public class SMSConsts
 
     public enum ValueType
     {
-        INT, FLOAT, DATE, BOOL, STRING
+        INT, FLOAT, DATE, BOOL, STRING,
+
+        ;
+    }
+
+    public enum EventStatus
+    {
+        ACTIVE, COMPLETED, VISITED, SCHEDULE, OVERDUE, SKIPPED,
+
+        ;
+
     }
 
     public static final int VARLEN_BITLEN = 6;
@@ -80,6 +90,8 @@ public class SMSConsts
     public static final int VALTYPE_BITLEN = 3;
 
     public static final int FIXED_INT_BITLEN = 4;
+
+    public static final int EVENT_STATUS_BITLEN = 3;
 
     public static final int MAX_FIXED_NUM = (int) Math.pow( 2, Math.pow( 2, FIXED_INT_BITLEN ) ) - 1;
 

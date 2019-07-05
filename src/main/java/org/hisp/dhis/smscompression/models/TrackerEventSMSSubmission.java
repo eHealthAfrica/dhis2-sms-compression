@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
@@ -46,7 +47,7 @@ public class TrackerEventSMSSubmission
 
     protected String programStage;
 
-    protected boolean complete;
+    protected EventStatus eventStatus;
 
     protected String attributeOptionCombo;
 
@@ -80,14 +81,14 @@ public class TrackerEventSMSSubmission
         this.programStage = programStage;
     }
 
-    public boolean isComplete()
+    public EventStatus getEventStatus()
     {
-        return complete;
+        return eventStatus;
     }
 
-    public void setComplete( boolean complete )
+    public void setEventStatus( EventStatus eventStatus )
     {
-        this.complete = complete;
+        this.eventStatus = eventStatus;
     }
 
     public String getAttributeOptionCombo()
@@ -149,9 +150,10 @@ public class TrackerEventSMSSubmission
         }
         TrackerEventSMSSubmission subm = (TrackerEventSMSSubmission) o;
 
-        return orgUnit.equals( subm.orgUnit ) && programStage.equals( subm.programStage ) && complete == subm.complete
-            && attributeOptionCombo.equals( subm.attributeOptionCombo ) && enrollment.equals( subm.enrollment )
-            && event.equals( subm.event ) && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+        return orgUnit.equals( subm.orgUnit ) && programStage.equals( subm.programStage )
+            && eventStatus == subm.eventStatus && attributeOptionCombo.equals( subm.attributeOptionCombo )
+            && enrollment.equals( subm.enrollment ) && event.equals( subm.event ) && timestamp.equals( subm.timestamp )
+            && values.equals( subm.values );
     }
 
     /* Implementation of abstract methods */
@@ -162,7 +164,7 @@ public class TrackerEventSMSSubmission
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
         writer.writeID( programStage, MetadataType.PROGRAM_STAGE );
-        writer.writeBool( complete );
+        writer.writeEventStatus( eventStatus );
         writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
         writer.writeNewID( enrollment );
         writer.writeNewID( event );
@@ -176,7 +178,7 @@ public class TrackerEventSMSSubmission
     {
         this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
         this.programStage = reader.readID( MetadataType.PROGRAM_STAGE );
-        this.complete = reader.readBool();
+        this.eventStatus = reader.readEventStatus();
         this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
         this.enrollment = reader.readNewID();
         this.event = reader.readNewID();

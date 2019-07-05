@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
@@ -197,5 +198,12 @@ public class SMSSubmissionReader
         throws SMSCompressionException
     {
         return inStream.read( SMSConsts.SUBM_ID_BITLEN );
+    }
+
+    public EventStatus readEventStatus()
+        throws SMSCompressionException
+    {
+        int eventStatusNum = inStream.read( SMSConsts.EVENT_STATUS_BITLEN );
+        return EventStatus.values()[eventStatusNum];
     }
 }
