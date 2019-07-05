@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
@@ -46,7 +47,7 @@ public class SimpleEventSMSSubmission
 
     protected String eventProgram;
 
-    protected boolean complete;
+    protected EventStatus eventStatus;
 
     protected String attributeOptionCombo;
 
@@ -78,14 +79,14 @@ public class SimpleEventSMSSubmission
         this.eventProgram = eventProgram;
     }
 
-    public boolean isComplete()
+    public EventStatus getEventStatus()
     {
-        return complete;
+        return eventStatus;
     }
 
-    public void setComplete( boolean complete )
+    public void setEventStatus( EventStatus eventStatus )
     {
-        this.complete = complete;
+        this.eventStatus = eventStatus;
     }
 
     public String getAttributeOptionCombo()
@@ -137,9 +138,9 @@ public class SimpleEventSMSSubmission
         }
         SimpleEventSMSSubmission subm = (SimpleEventSMSSubmission) o;
 
-        return orgUnit.equals( subm.orgUnit ) && eventProgram.equals( subm.eventProgram ) && complete == subm.complete
-            && attributeOptionCombo.equals( subm.attributeOptionCombo ) && event.equals( subm.event )
-            && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+        return orgUnit.equals( subm.orgUnit ) && eventProgram.equals( subm.eventProgram )
+            && eventStatus == subm.eventStatus && attributeOptionCombo.equals( subm.attributeOptionCombo )
+            && event.equals( subm.event ) && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
     }
 
     /* Implementation of abstract methods */
@@ -150,7 +151,7 @@ public class SimpleEventSMSSubmission
     {
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
         writer.writeID( eventProgram, MetadataType.PROGRAM );
-        writer.writeBool( complete );
+        writer.writeEventStatus( eventStatus );
         writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
         writer.writeNewID( event );
         writer.writeDate( timestamp );
@@ -163,7 +164,7 @@ public class SimpleEventSMSSubmission
     {
         this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
         this.eventProgram = reader.readID( MetadataType.PROGRAM );
-        this.complete = reader.readBool();
+        this.eventStatus = reader.readEventStatus();
         this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
         this.event = reader.readNewID();
         this.timestamp = reader.readDate();
