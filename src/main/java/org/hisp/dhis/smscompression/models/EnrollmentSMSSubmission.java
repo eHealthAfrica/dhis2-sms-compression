@@ -148,8 +148,8 @@ public class EnrollmentSMSSubmission
         writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
         writer.writeID( trackerProgram, MetadataType.PROGRAM );
         writer.writeID( trackedEntityType, MetadataType.TRACKED_ENTITY_TYPE );
-        writer.writeNewID( trackedEntityInstance );
-        writer.writeNewID( enrollment );
+        writer.writeID( trackedEntityInstance, MetadataType.TRACKED_ENTITY_INSTANCE );
+        writer.writeID( enrollment, MetadataType.ENROLLMENT );
         writer.writeDate( timestamp );
         writer.writeAttributeValues( values );
     }
@@ -161,8 +161,8 @@ public class EnrollmentSMSSubmission
         this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
         this.trackerProgram = reader.readID( MetadataType.PROGRAM );
         this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE );
-        this.trackedEntityInstance = reader.readNewID();
-        this.enrollment = reader.readNewID();
+        this.trackedEntityInstance = reader.readID( MetadataType.TRACKED_ENTITY_INSTANCE );
+        this.enrollment = reader.readID( MetadataType.ENROLLMENT );
         this.timestamp = reader.readDate();
         this.values = reader.readAttributeValues();
     }

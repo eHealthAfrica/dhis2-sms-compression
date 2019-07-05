@@ -157,16 +157,16 @@ public class SMSSubmissionReader
         return ValueUtil.readDate( inStream );
     }
 
-    public String readNewID()
-        throws SMSCompressionException
-    {
-        return IDUtil.readNewID( inStream );
-    }
-
     public String readID( MetadataType type )
         throws SMSCompressionException
     {
         return IDUtil.readID( type, meta, inStream );
+    }
+
+    public String readNewID()
+        throws SMSCompressionException
+    {
+        return IDUtil.readNewID( inStream );
     }
 
     public List<SMSAttributeValue> readAttributeValues()

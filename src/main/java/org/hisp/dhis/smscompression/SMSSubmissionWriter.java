@@ -128,16 +128,16 @@ public class SMSSubmissionWriter
         ValueUtil.writeDate( date, outStream );
     }
 
-    public void writeNewID( String id )
-        throws SMSCompressionException
-    {
-        IDUtil.writeNewID( id, outStream );
-    }
-
     public void writeID( String id, MetadataType type )
         throws SMSCompressionException
     {
         IDUtil.writeID( id, type, meta, outStream );
+    }
+
+    public void writeNewID( String id )
+        throws SMSCompressionException
+    {
+        IDUtil.writeNewID( id, outStream );
     }
 
     public void writeAttributeValues( List<SMSAttributeValue> values )

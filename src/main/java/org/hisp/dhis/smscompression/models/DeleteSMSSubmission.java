@@ -30,6 +30,7 @@ package org.hisp.dhis.smscompression.models;
 
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -38,18 +39,18 @@ public class DeleteSMSSubmission
     extends
     SMSSubmission
 {
-    protected String uid;
+    protected String event;
 
     /* Getters and Setters */
 
-    public String getUid()
+    public String getEvent()
     {
-        return uid;
+        return event;
     }
 
-    public void setUid( String uid )
+    public void setUid( String event )
     {
-        this.uid = uid;
+        this.event = event;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class DeleteSMSSubmission
             return false;
         }
         DeleteSMSSubmission subm = (DeleteSMSSubmission) o;
-        return uid.equals( subm.uid );
+        return event.equals( subm.event );
     }
 
     /* Implementation of abstract methods */
@@ -69,14 +70,14 @@ public class DeleteSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeNewID( uid );
+        writer.writeID( event, MetadataType.EVENT );
     }
 
     @Override
     public void readSubm( SMSSubmissionReader reader )
         throws SMSCompressionException
     {
-        this.uid = reader.readNewID();
+        this.event = reader.readID( MetadataType.EVENT );
     }
 
     @Override

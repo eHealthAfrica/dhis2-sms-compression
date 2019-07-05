@@ -166,8 +166,8 @@ public class TrackerEventSMSSubmission
         writer.writeID( programStage, MetadataType.PROGRAM_STAGE );
         writer.writeEventStatus( eventStatus );
         writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
-        writer.writeNewID( enrollment );
-        writer.writeNewID( event );
+        writer.writeID( enrollment, MetadataType.ENROLLMENT );
+        writer.writeID( event, MetadataType.EVENT );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
     }
@@ -180,8 +180,8 @@ public class TrackerEventSMSSubmission
         this.programStage = reader.readID( MetadataType.PROGRAM_STAGE );
         this.eventStatus = reader.readEventStatus();
         this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
-        this.enrollment = reader.readNewID();
-        this.event = reader.readNewID();
+        this.enrollment = reader.readID( MetadataType.ENROLLMENT );
+        this.event = reader.readID( MetadataType.EVENT );
         this.timestamp = reader.readDate();
         this.values = reader.readDataValues();
     }

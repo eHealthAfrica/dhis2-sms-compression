@@ -52,6 +52,11 @@ public class SMSConsts
         CATEGORY_OPTION_COMBO,
         DATASET,
         PROGRAM_STAGE,
+        EVENT,
+        ENROLLMENT,
+        TRACKED_ENTITY_INSTANCE,
+        RELATIONSHIP,
+        RELATIONSHIP_TYPE,
 
         ;
     }

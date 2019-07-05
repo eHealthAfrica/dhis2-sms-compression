@@ -153,7 +153,7 @@ public class SimpleEventSMSSubmission
         writer.writeID( eventProgram, MetadataType.PROGRAM );
         writer.writeEventStatus( eventStatus );
         writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
-        writer.writeNewID( event );
+        writer.writeID( event, MetadataType.EVENT );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
     }
@@ -166,7 +166,7 @@ public class SimpleEventSMSSubmission
         this.eventProgram = reader.readID( MetadataType.PROGRAM );
         this.eventStatus = reader.readEventStatus();
         this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
-        this.event = reader.readNewID();
+        this.event = reader.readID( MetadataType.EVENT );
         this.timestamp = reader.readDate();
         this.values = reader.readDataValues();
     }
