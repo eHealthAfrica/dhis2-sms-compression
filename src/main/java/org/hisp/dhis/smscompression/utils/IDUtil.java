@@ -182,14 +182,15 @@ public class IDUtil
         return idLookup;
     }
 
-    public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream )
+    public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream,
+        boolean hashingEnabled )
         throws SMSCompressionException
     {
         if ( !validID( id ) )
             throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + id );
 
         List<String> idList = meta.getType( type );
-        boolean useHash = idList != null && idList.contains( id );
+        boolean useHash = hashingEnabled && idList != null && idList.contains( id );
         ValueUtil.writeBool( useHash, outStream );
 
         if ( useHash )

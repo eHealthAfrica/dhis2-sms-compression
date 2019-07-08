@@ -54,11 +54,24 @@ public class SMSSubmissionWriter
 
     SMSMetadata meta;
 
+    // By default we enable hashing but it can be disabled
+    boolean hashingEnabled = true;
+
     public SMSSubmissionWriter( SMSMetadata meta )
         throws SMSCompressionException
     {
         meta.validate();
         this.meta = meta;
+    }
+
+    public boolean isHashingEnabled()
+    {
+        return hashingEnabled;
+    }
+
+    public void setHashingEnabled( boolean useHashing )
+    {
+        this.hashingEnabled = useHashing;
     }
 
     public byte[] compress( SMSSubmission subm )
@@ -131,7 +144,7 @@ public class SMSSubmissionWriter
     public void writeID( String id, MetadataType type )
         throws SMSCompressionException
     {
-        IDUtil.writeID( id, type, meta, outStream );
+        IDUtil.writeID( id, type, meta, outStream, hashingEnabled );
     }
 
     public void writeNewID( String id )
