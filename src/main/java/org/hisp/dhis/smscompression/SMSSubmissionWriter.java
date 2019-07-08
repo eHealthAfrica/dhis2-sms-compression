@@ -144,7 +144,7 @@ public class SMSSubmissionWriter
     public void writeID( String id, MetadataType type )
         throws SMSCompressionException
     {
-        IDUtil.writeID( id, type, meta, outStream, hashingEnabled );
+        IDUtil.writeID( id, hashingEnabled, type, meta, outStream );
     }
 
     public void writeNewID( String id )
@@ -156,13 +156,13 @@ public class SMSSubmissionWriter
     public void writeAttributeValues( List<SMSAttributeValue> values )
         throws SMSCompressionException
     {
-        ValueUtil.writeAttributeValues( values, meta, outStream );
+        ValueUtil.writeAttributeValues( values, hashingEnabled, meta, outStream );
     }
 
     public void writeDataValues( List<SMSDataValue> values )
         throws SMSCompressionException
     {
-        ValueUtil.writeDataValues( values, meta, outStream );
+        ValueUtil.writeDataValues( values, hashingEnabled, meta, outStream );
     }
 
     public void writeBool( boolean val )

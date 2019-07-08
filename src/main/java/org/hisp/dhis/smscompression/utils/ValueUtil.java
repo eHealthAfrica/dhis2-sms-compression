@@ -51,14 +51,19 @@ public class ValueUtil
 {
     // Complex types
 
-    // TODO: Add handling to support New UIDs if the id isn't in Metadata
-    public static void writeAttributeValues( List<SMSAttributeValue> values, SMSMetadata meta,
+    public static void writeAttributeValues( List<SMSAttributeValue> values, boolean useHashing, SMSMetadata meta,
         BitOutputStream outStream )
         throws SMSCompressionException
     {
-        int attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
-            MetadataType.TRACKED_ENTITY_ATTRIBUTE );
-        outStream.write( attributeBitLen, SMSConsts.VARLEN_BITLEN );
+        int attributeBitLen = 0;
+
+        writeBool( useHashing, outStream );
+        if ( useHashing )
+        {
+            attributeBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
+                MetadataType.TRACKED_ENTITY_ATTRIBUTE );
+            outStream.write( attributeBitLen, SMSConsts.VARLEN_BITLEN );
+        }
 
         List<SMSValue<?>> smsVals = values.stream().map( v -> v.getSMSValue() ).collect( Collectors.toList() );
         int fixedIntBitLen = getBitlenLargestInt( smsVals );
@@ -68,8 +73,15 @@ public class ValueUtil
         for ( Iterator<SMSAttributeValue> valIter = values.iterator(); valIter.hasNext(); )
         {
             SMSAttributeValue val = valIter.next();
-            int idHash = BinaryUtils.hash( val.getAttribute(), attributeBitLen );
-            outStream.write( idHash, attributeBitLen );
+            if ( useHashing )
+            {
+                int idHash = BinaryUtils.hash( val.getAttribute(), attributeBitLen );
+                outStream.write( idHash, attributeBitLen );
+            }
+            else
+            {
+                writeString( val.getAttribute(), outStream );
+            }
             writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
             int separator = valIter.hasNext() ? 1 : 0;
@@ -81,20 +93,34 @@ public class ValueUtil
         throws SMSCompressionException
     {
         ArrayList<SMSAttributeValue> values = new ArrayList<>();
-        int attributeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+        int attributeBitLen = 0;
+        Map<Integer, String> idLookup = null;
 
+        boolean useHashing = readBool( inStream );
+        if ( useHashing )
+        {
+            attributeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+            idLookup = IDUtil.getIDLookup( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ), attributeBitLen );
+        }
         int fixedIntBitLen = inStream.read( SMSConsts.FIXED_INT_BITLEN ) + 1;
 
-        Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( MetadataType.TRACKED_ENTITY_ATTRIBUTE ),
-            attributeBitLen );
         for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
         {
-            int idHash = inStream.read( attributeBitLen );
-            String id = idLookup.get( idHash );
-            // TODO: Should we be warning and is this the best way to do it?
-            if ( id == null )
-                System.out.println(
-                    "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
+            String id;
+            if ( useHashing )
+            {
+                int idHash = inStream.read( attributeBitLen );
+                id = idLookup.get( idHash );
+                if ( id == null )
+                    // TODO: Should we be warning and is this the best way to do
+                    // it?
+                    System.out.println(
+                        "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
+            }
+            else
+            {
+                id = readString( inStream );
+            }
 
             SMSValue<?> smsValue = readSMSValue( fixedIntBitLen, inStream );
             values.add( new SMSAttributeValue( id, smsValue ) );
@@ -120,17 +146,24 @@ public class ValueUtil
         return map;
     }
 
-    // TODO: Add handling to support New UIDs if the id isn't in Metadata
-    public static void writeDataValues( List<SMSDataValue> values, SMSMetadata meta, BitOutputStream outStream )
+    public static void writeDataValues( List<SMSDataValue> values, boolean useHashing, SMSMetadata meta,
+        BitOutputStream outStream )
         throws SMSCompressionException
     {
-        int catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
-            MetadataType.CATEGORY_OPTION_COMBO );
-        outStream.write( catOptionComboBitLen, SMSConsts.VARLEN_BITLEN );
+        int catOptionComboBitLen = 0;
+        int dataElementBitLen = 0;
 
-        int dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ),
-            MetadataType.DATA_ELEMENT );
-        outStream.write( dataElementBitLen, SMSConsts.VARLEN_BITLEN );
+        writeBool( useHashing, outStream );
+        if ( useHashing )
+        {
+            catOptionComboBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
+                MetadataType.CATEGORY_OPTION_COMBO );
+            outStream.write( catOptionComboBitLen, SMSConsts.VARLEN_BITLEN );
+
+            dataElementBitLen = IDUtil.getBitLengthForList( meta.getType( MetadataType.DATA_ELEMENT ),
+                MetadataType.DATA_ELEMENT );
+            outStream.write( dataElementBitLen, SMSConsts.VARLEN_BITLEN );
+        }
 
         List<SMSValue<?>> smsVals = values.stream().map( v -> v.getSMSValue() ).collect( Collectors.toList() );
         int fixedIntBitLen = getBitlenLargestInt( smsVals );
@@ -142,15 +175,29 @@ public class ValueUtil
         for ( Iterator<String> keyIter = valMap.keySet().iterator(); keyIter.hasNext(); )
         {
             String catOptionCombo = keyIter.next();
-            int catOptionComboHash = BinaryUtils.hash( catOptionCombo, catOptionComboBitLen );
-            outStream.write( catOptionComboHash, catOptionComboBitLen );
+            if ( useHashing )
+            {
+                int catOptionComboHash = BinaryUtils.hash( catOptionCombo, catOptionComboBitLen );
+                outStream.write( catOptionComboHash, catOptionComboBitLen );
+            }
+            else
+            {
+                writeString( catOptionCombo, outStream );
+            }
             List<SMSDataValue> vals = valMap.get( catOptionCombo );
 
             for ( Iterator<SMSDataValue> valIter = vals.iterator(); valIter.hasNext(); )
             {
                 SMSDataValue val = valIter.next();
-                int deHash = BinaryUtils.hash( val.getDataElement(), dataElementBitLen );
-                outStream.write( deHash, dataElementBitLen );
+                if ( useHashing )
+                {
+                    int deHash = BinaryUtils.hash( val.getDataElement(), dataElementBitLen );
+                    outStream.write( deHash, dataElementBitLen );
+                }
+                else
+                {
+                    writeString( val.getDataElement(), outStream );
+                }
                 writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
                 int separator = valIter.hasNext() ? 1 : 0;
@@ -165,32 +212,59 @@ public class ValueUtil
     public static List<SMSDataValue> readDataValues( SMSMetadata meta, BitInputStream inStream )
         throws SMSCompressionException
     {
-        int catOptionComboBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
-        int dataElementBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+        int catOptionComboBitLen = 0;
+        int dataElementBitLen = 0;
+        Map<Integer, String> cocIDLookup = null;
+        Map<Integer, String> deIDLookup = null;
+
+        boolean useHashing = readBool( inStream );
+        if ( useHashing )
+        {
+            catOptionComboBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+            cocIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
+                catOptionComboBitLen );
+
+            dataElementBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+            deIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.DATA_ELEMENT ), dataElementBitLen );
+        }
         int fixedIntBitLen = inStream.read( SMSConsts.FIXED_INT_BITLEN ) + 1;
-        Map<Integer, String> cocIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.CATEGORY_OPTION_COMBO ),
-            catOptionComboBitLen );
-        Map<Integer, String> deIDLookup = IDUtil.getIDLookup( meta.getType( MetadataType.DATA_ELEMENT ),
-            dataElementBitLen );
         ArrayList<SMSDataValue> values = new ArrayList<>();
 
         for ( int cocSep = 1; cocSep == 1; cocSep = inStream.read( 1 ) )
         {
-            int catOptionComboHash = inStream.read( catOptionComboBitLen );
-            String catOptionCombo = cocIDLookup.get( catOptionComboHash );
-            // TODO: Should we be warning and is this the best way to do it?
-            if ( catOptionCombo == null )
-                System.out.println(
-                    "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for category option combo" );
+            String catOptionCombo;
+            if ( useHashing )
+            {
+                int catOptionComboHash = inStream.read( catOptionComboBitLen );
+                catOptionCombo = cocIDLookup.get( catOptionComboHash );
+                if ( catOptionCombo == null )
+                    // TODO: Should we be warning and is this the best way to do
+                    // it?
+                    System.out.println(
+                        "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for category option combo" );
+            }
+            else
+            {
+                catOptionCombo = readString( inStream );
+            }
 
             for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
             {
-                int dataElementHash = inStream.read( dataElementBitLen );
-                String dataElement = deIDLookup.get( dataElementHash );
-                // TODO: Should we be warning and is this the best way to do it?
-                if ( dataElement == null )
-                    System.out.println(
-                        "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for data element" );
+                String dataElement;
+                if ( useHashing )
+                {
+                    int dataElementHash = inStream.read( dataElementBitLen );
+                    dataElement = deIDLookup.get( dataElementHash );
+                    if ( dataElement == null )
+                        // TODO: Should we be warning and is this the best way
+                        // to do it?
+                        System.out.println(
+                            "WARNING: SMSCompression(readDataValues) - Cannot find UID in submission for data element" );
+                }
+                else
+                {
+                    dataElement = readString( inStream );
+                }
 
                 SMSValue<?> smsValue = readSMSValue( fixedIntBitLen, inStream );
                 values.add( new SMSDataValue( catOptionCombo, dataElement, smsValue ) );
