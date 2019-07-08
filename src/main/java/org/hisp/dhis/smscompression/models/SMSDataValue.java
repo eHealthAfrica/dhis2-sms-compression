@@ -1,7 +1,5 @@
 package org.hisp.dhis.smscompression.models;
 
-import org.hisp.dhis.smscompression.utils.ValueUtil;
-
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -45,7 +43,7 @@ public class SMSDataValue
         this.categoryOptionCombo = categoryOptionCombo;
         this.dataElement = dataElement;
         this.value = value;
-        this.smsValue = ValueUtil.asSMSValue( value );
+        this.smsValue = SMSValue.asSMSValue( value );
     }
 
     public SMSDataValue( String categoryOptionCombo, String dataElement, SMSValue<?> smsValue )
