@@ -30,6 +30,7 @@ package org.hisp.dhis.smscompression.models;
 
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -107,8 +108,8 @@ public class RelationshipSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeNewID( relationshipType );
-        writer.writeNewID( relationship );
+        writer.writeID( relationshipType, MetadataType.RELATIONSHIP_TYPE );
+        writer.writeID( relationship, MetadataType.RELATIONSHIP );
         writer.writeNewID( from );
         writer.writeNewID( to );
     }
@@ -117,8 +118,8 @@ public class RelationshipSMSSubmission
     public void readSubm( SMSSubmissionReader reader )
         throws SMSCompressionException
     {
-        this.relationshipType = reader.readNewID();
-        this.relationship = reader.readNewID();
+        this.relationshipType = reader.readID( MetadataType.RELATIONSHIP_TYPE );
+        this.relationship = reader.readID( MetadataType.RELATIONSHIP );
         this.from = reader.readNewID();
         this.to = reader.readNewID();
     }

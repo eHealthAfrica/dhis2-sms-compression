@@ -152,14 +152,23 @@ public class IDUtil
     public static String readID( MetadataType type, SMSMetadata meta, BitInputStream inStream )
         throws SMSCompressionException
     {
-        int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
-        Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
-        int idHash = inStream.read( typeBitLen );
-        String id = idLookup.get( idHash );
-        // TODO: Should we be warning and is this the best way to do it?
-        if ( id == null )
-            System.out.println( "WARNING: SMSCompression(readID) - Cannot find UID in submission for: " + type );
-        return id;
+        boolean useHash = ValueUtil.readBool( inStream );
+
+        if ( useHash )
+        {
+            int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+            Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
+            int idHash = inStream.read( typeBitLen );
+            String id = idLookup.get( idHash );
+            // TODO: Should we be warning and is this the best way to do it?
+            if ( id == null )
+                System.out.println( "WARNING: SMSCompression(readID) - Cannot find UID in submission for: " + type );
+            return id;
+        }
+        else
+        {
+            return readNewID( inStream );
+        }
     }
 
     public static Map<Integer, String> getIDLookup( List<String> idList, int hashLen )
@@ -173,17 +182,27 @@ public class IDUtil
         return idLookup;
     }
 
-    public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream )
+    public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream,
+        boolean hashingEnabled )
         throws SMSCompressionException
     {
         if ( !validID( id ) )
             throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + id );
 
-        // TODO: Add handling to support New UIDs if the id isn't in Metadata
+        List<String> idList = meta.getType( type );
+        boolean useHash = hashingEnabled && idList != null && idList.contains( id );
+        ValueUtil.writeBool( useHash, outStream );
 
-        int typeBitLen = IDUtil.getBitLengthForList( meta.getType( type ), type );
-        outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );
-        int idHash = BinaryUtils.hash( id, typeBitLen );
-        outStream.write( idHash, typeBitLen );
+        if ( useHash )
+        {
+            int typeBitLen = IDUtil.getBitLengthForList( idList, type );
+            outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );
+            int idHash = BinaryUtils.hash( id, typeBitLen );
+            outStream.write( idHash, typeBitLen );
+        }
+        else
+        {
+            IDUtil.writeNewID( id, outStream );
+        }
     }
 }

@@ -69,6 +69,16 @@ public class SMSMetadata
 
     public List<ID> programStages;
 
+    public List<ID> events;
+
+    public List<ID> enrollments;
+
+    public List<ID> trackedEntityInstances;
+
+    public List<ID> relationships;
+
+    public List<ID> relationshipTypes;
+
     public void validate()
         throws SMSCompressionException
     {
@@ -116,6 +126,17 @@ public class SMSMetadata
             return getIDs( dataSets );
         case PROGRAM_STAGE:
             return getIDs( programStages );
+        case EVENT:
+            return getIDs( events );
+        case ENROLLMENT:
+            return getIDs( enrollments );
+        case TRACKED_ENTITY_INSTANCE:
+            return getIDs( trackedEntityInstances );
+        case RELATIONSHIP:
+            return getIDs( relationships );
+        case RELATIONSHIP_TYPE:
+            return getIDs( relationshipTypes );
+
         default:
             return null;
         }
@@ -123,13 +144,16 @@ public class SMSMetadata
 
     private List<String> getIDs( List<ID> ids )
     {
-        if ( ids == null )
-            return null;
         ArrayList<String> idList = new ArrayList<>();
-        for ( ID id : ids )
+
+        if ( ids != null )
         {
-            idList.add( id.id );
+            for ( ID id : ids )
+            {
+                idList.add( id.id );
+            }
         }
+
         return idList;
     }
 }
