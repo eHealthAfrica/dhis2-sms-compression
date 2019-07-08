@@ -37,6 +37,7 @@ import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
+import org.hisp.dhis.smscompression.models.UID;
 
 public class IDUtil
 {
@@ -149,7 +150,7 @@ public class IDUtil
         return id;
     }
 
-    public static String readID( MetadataType type, SMSMetadata meta, BitInputStream inStream )
+    public static UID readID( MetadataType type, SMSMetadata meta, BitInputStream inStream )
         throws SMSCompressionException
     {
         boolean useHash = ValueUtil.readBool( inStream );
@@ -159,15 +160,11 @@ public class IDUtil
             int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
             Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
             int idHash = inStream.read( typeBitLen );
-            String id = idLookup.get( idHash );
-            // TODO: Should we be warning and is this the best way to do it?
-            if ( id == null )
-                System.out.println( "WARNING: SMSCompression(readID) - Cannot find UID in submission for: " + type );
-            return id;
+            return new UID( idLookup.get( idHash ), idHash );
         }
         else
         {
-            return readNewID( inStream );
+            return new UID( readNewID( inStream ) );
         }
     }
 

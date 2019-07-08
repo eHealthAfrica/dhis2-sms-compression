@@ -32,7 +32,7 @@ import org.hisp.dhis.smscompression.SMSConsts.ValueType;
 
 public class SMSAttributeValue
 {
-    protected String attribute;
+    protected UID attribute;
 
     protected String value;
 
@@ -42,12 +42,12 @@ public class SMSAttributeValue
 
     public SMSAttributeValue( String attribute, String value )
     {
-        this.attribute = attribute;
+        this.attribute = new UID( attribute );
         this.value = value;
         this.smsValue = SMSValue.asSMSValue( value );
     }
 
-    public SMSAttributeValue( String attribute, SMSValue<?> smsValue )
+    public SMSAttributeValue( UID attribute, SMSValue<?> smsValue )
     {
         this.attribute = attribute;
         this.smsValue = smsValue;
@@ -55,7 +55,7 @@ public class SMSAttributeValue
         this.value = smsValue.getValue().toString();
     }
 
-    public String getAttribute()
+    public UID getAttribute()
     {
         return this.attribute;
     }

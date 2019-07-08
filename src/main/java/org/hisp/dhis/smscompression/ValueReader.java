@@ -9,6 +9,7 @@ import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.SMSValue;
+import org.hisp.dhis.smscompression.models.UID;
 import org.hisp.dhis.smscompression.utils.BitInputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
 import org.hisp.dhis.smscompression.utils.ValueUtil;
@@ -27,20 +28,16 @@ public class ValueReader
         this.meta = meta;
     }
 
-    public String readValID( int bitLen, Map<Integer, String> idLookup )
+    public UID readValID( int bitLen, Map<Integer, String> idLookup )
         throws SMSCompressionException
     {
         if ( !hashingEnabled )
-            return ValueUtil.readString( inStream );
+            return new UID( ValueUtil.readString( inStream ) );
 
         String id;
         int idHash = inStream.read( bitLen );
         id = idLookup.get( idHash );
-        if ( id == null )
-            // TODO: Return hash of null ids so we can look it up
-            System.out.println(
-                "WARNING: SMSCompression(readAttributeValues) - Cannot find UID in submission for attribute value" );
-        return id;
+        return new UID( id, idHash );
     }
 
     public List<SMSAttributeValue> readAttributeValues()
@@ -60,7 +57,7 @@ public class ValueReader
 
         for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
         {
-            String id = readValID( attributeBitLen, idLookup );
+            UID id = readValID( attributeBitLen, idLookup );
             SMSValue<?> smsValue = ValueUtil.readSMSValue( fixedIntBitLen, inStream );
             values.add( new SMSAttributeValue( id, smsValue ) );
         }
@@ -91,11 +88,11 @@ public class ValueReader
 
         for ( int cocSep = 1; cocSep == 1; cocSep = inStream.read( 1 ) )
         {
-            String catOptionCombo = readValID( catOptionComboBitLen, cocIDLookup );
+            UID catOptionCombo = readValID( catOptionComboBitLen, cocIDLookup );
 
             for ( int valSep = 1; valSep == 1; valSep = inStream.read( 1 ) )
             {
-                String dataElement = readValID( dataElementBitLen, deIDLookup );
+                UID dataElement = readValID( dataElementBitLen, deIDLookup );
                 SMSValue<?> smsValue = ValueUtil.readSMSValue( fixedIntBitLen, inStream );
                 values.add( new SMSDataValue( catOptionCombo, dataElement, smsValue ) );
             }

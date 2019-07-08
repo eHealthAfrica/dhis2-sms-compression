@@ -43,17 +43,17 @@ public class TrackerEventSMSSubmission
     extends
     SMSSubmission
 {
-    protected String orgUnit;
+    protected UID orgUnit;
 
-    protected String programStage;
+    protected UID programStage;
 
     protected EventStatus eventStatus;
 
-    protected String attributeOptionCombo;
+    protected UID attributeOptionCombo;
 
-    protected String enrollment;
+    protected UID enrollment;
 
-    protected String event;
+    protected UID event;
 
     protected Date timestamp;
 
@@ -61,24 +61,24 @@ public class TrackerEventSMSSubmission
 
     /* Getters and Setters */
 
-    public String getOrgUnit()
+    public UID getOrgUnit()
     {
         return orgUnit;
     }
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = orgUnit;
+        this.orgUnit = new UID( orgUnit );
     }
 
-    public String getProgramStage()
+    public UID getProgramStage()
     {
         return programStage;
     }
 
     public void setProgramStage( String programStage )
     {
-        this.programStage = programStage;
+        this.programStage = new UID( programStage );
     }
 
     public EventStatus getEventStatus()
@@ -91,34 +91,34 @@ public class TrackerEventSMSSubmission
         this.eventStatus = eventStatus;
     }
 
-    public String getAttributeOptionCombo()
+    public UID getAttributeOptionCombo()
     {
         return attributeOptionCombo;
     }
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = attributeOptionCombo;
+        this.attributeOptionCombo = new UID( attributeOptionCombo );
     }
 
-    public String getEnrollment()
+    public UID getEnrollment()
     {
         return enrollment;
     }
 
     public void setEnrollment( String enrollment )
     {
-        this.enrollment = enrollment;
+        this.enrollment = new UID( enrollment );
     }
 
-    public String getEvent()
+    public UID getEvent()
     {
         return event;
     }
 
     public void setEvent( String event )
     {
-        this.event = event;
+        this.event = new UID( event );
     }
 
     public Date getTimestamp()
@@ -162,12 +162,12 @@ public class TrackerEventSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( programStage, MetadataType.PROGRAM_STAGE );
+        writer.writeID( orgUnit.uid, MetadataType.ORGANISATION_UNIT );
+        writer.writeID( programStage.uid, MetadataType.PROGRAM_STAGE );
         writer.writeEventStatus( eventStatus );
-        writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
-        writer.writeID( enrollment, MetadataType.ENROLLMENT );
-        writer.writeID( event, MetadataType.EVENT );
+        writer.writeID( attributeOptionCombo.uid, MetadataType.CATEGORY_OPTION_COMBO );
+        writer.writeID( enrollment.uid, MetadataType.ENROLLMENT );
+        writer.writeID( event.uid, MetadataType.EVENT );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
     }

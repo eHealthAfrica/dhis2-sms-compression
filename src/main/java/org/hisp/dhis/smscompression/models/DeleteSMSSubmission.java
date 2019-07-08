@@ -39,18 +39,18 @@ public class DeleteSMSSubmission
     extends
     SMSSubmission
 {
-    protected String event;
+    protected UID event;
 
     /* Getters and Setters */
 
-    public String getEvent()
+    public UID getEvent()
     {
         return event;
     }
 
-    public void setUid( String event )
+    public void setEvent( String event )
     {
-        this.event = event;
+        this.event = new UID( event );
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DeleteSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( event, MetadataType.EVENT );
+        writer.writeID( event.uid, MetadataType.EVENT );
     }
 
     @Override

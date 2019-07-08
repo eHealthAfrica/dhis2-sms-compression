@@ -50,6 +50,7 @@ import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
 import org.hisp.dhis.smscompression.models.SimpleEventSMSSubmission;
 import org.hisp.dhis.smscompression.models.TrackerEventSMSSubmission;
+import org.hisp.dhis.smscompression.models.UID;
 import org.hisp.dhis.smscompression.utils.BitInputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
 import org.hisp.dhis.smscompression.utils.ValueUtil;
@@ -160,7 +161,7 @@ public class SMSSubmissionReader
         return ValueUtil.readDate( inStream );
     }
 
-    public String readID( MetadataType type )
+    public UID readID( MetadataType type )
         throws SMSCompressionException
     {
         return IDUtil.readID( type, meta, inStream );

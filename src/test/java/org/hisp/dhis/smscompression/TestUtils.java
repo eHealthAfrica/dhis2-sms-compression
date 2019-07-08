@@ -63,7 +63,7 @@ public class TestUtils
         DeleteSMSSubmission subm = new DeleteSMSSubmission();
 
         subm.setUserID( "GOLswS44mh8" ); // Tom Wakiki (system)
-        subm.setUid( "Jpr20TLJ7Z1" ); // Generated UID of test event
+        subm.setEvent( "Jpr20TLJ7Z1" ); // Generated UID of test event
         subm.setSubmissionID( 1 );
 
         return subm;

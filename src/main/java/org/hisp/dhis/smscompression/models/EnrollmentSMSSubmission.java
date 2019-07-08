@@ -42,68 +42,68 @@ public class EnrollmentSMSSubmission
     extends
     SMSSubmission
 {
-    protected String orgUnit;
+    protected UID orgUnit;
 
-    protected String trackerProgram;
+    protected UID trackerProgram;
 
-    protected String trackedEntityType;
+    protected UID trackedEntityType;
 
-    protected String trackedEntityInstance;
+    protected UID trackedEntityInstance;
 
-    protected String enrollment;
+    protected UID enrollment;
 
     protected Date timestamp;
 
     protected List<SMSAttributeValue> values;
 
-    public String getOrgUnit()
+    public UID getOrgUnit()
     {
         return orgUnit;
     }
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = orgUnit;
+        this.orgUnit = new UID( orgUnit );
     }
 
-    public String getTrackerProgram()
+    public UID getTrackerProgram()
     {
         return trackerProgram;
     }
 
     public void setTrackerProgram( String trackerProgram )
     {
-        this.trackerProgram = trackerProgram;
+        this.trackerProgram = new UID( trackerProgram );
     }
 
-    public String getTrackedEntityType()
+    public UID getTrackedEntityType()
     {
         return trackedEntityType;
     }
 
     public void setTrackedEntityType( String trackedEntityType )
     {
-        this.trackedEntityType = trackedEntityType;
+        this.trackedEntityType = new UID( trackedEntityType );
     }
 
-    public String getTrackedEntityInstance()
+    public UID getTrackedEntityInstance()
     {
         return trackedEntityInstance;
     }
 
     public void setTrackedEntityInstance( String trackedEntityInstance )
     {
-        this.trackedEntityInstance = trackedEntityInstance;
+        this.trackedEntityInstance = new UID( trackedEntityInstance );
     }
 
-    public String getEnrollment()
+    public UID getEnrollment()
     {
         return enrollment;
     }
 
     public void setEnrollment( String enrollment )
     {
-        this.enrollment = enrollment;
+        this.enrollment = new UID( enrollment );
     }
 
     public Date getTimestamp()
@@ -145,11 +145,11 @@ public class EnrollmentSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( trackerProgram, MetadataType.PROGRAM );
-        writer.writeID( trackedEntityType, MetadataType.TRACKED_ENTITY_TYPE );
-        writer.writeID( trackedEntityInstance, MetadataType.TRACKED_ENTITY_INSTANCE );
-        writer.writeID( enrollment, MetadataType.ENROLLMENT );
+        writer.writeID( orgUnit.uid, MetadataType.ORGANISATION_UNIT );
+        writer.writeID( trackerProgram.uid, MetadataType.PROGRAM );
+        writer.writeID( trackedEntityType.uid, MetadataType.TRACKED_ENTITY_TYPE );
+        writer.writeID( trackedEntityInstance.uid, MetadataType.TRACKED_ENTITY_INSTANCE );
+        writer.writeID( enrollment.uid, MetadataType.ENROLLMENT );
         writer.writeDate( timestamp );
         writer.writeAttributeValues( values );
     }

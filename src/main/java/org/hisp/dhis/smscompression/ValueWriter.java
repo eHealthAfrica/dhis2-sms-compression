@@ -67,7 +67,7 @@ public class ValueWriter
         for ( Iterator<SMSAttributeValue> valIter = values.iterator(); valIter.hasNext(); )
         {
             SMSAttributeValue val = valIter.next();
-            writeValID( val.getAttribute(), attributeBitLen );
+            writeValID( val.getAttribute().uid, attributeBitLen );
             ValueUtil.writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
             int separator = valIter.hasNext() ? 1 : 0;
@@ -80,7 +80,7 @@ public class ValueWriter
         HashMap<String, List<SMSDataValue>> map = new HashMap<>();
         for ( SMSDataValue val : values )
         {
-            String catOptionCombo = val.getCategoryOptionCombo();
+            String catOptionCombo = val.getCategoryOptionCombo().uid;
             if ( !map.containsKey( catOptionCombo ) )
             {
                 ArrayList<SMSDataValue> list = new ArrayList<>();
@@ -115,7 +115,7 @@ public class ValueWriter
             for ( Iterator<SMSDataValue> valIter = vals.iterator(); valIter.hasNext(); )
             {
                 SMSDataValue val = valIter.next();
-                writeValID( val.getDataElement(), dataElementBitLen );
+                writeValID( val.getDataElement().uid, dataElementBitLen );
                 ValueUtil.writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
                 int separator = valIter.hasNext() ? 1 : 0;

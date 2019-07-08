@@ -38,7 +38,7 @@ public abstract class SMSSubmission
 {
     protected SMSSubmissionHeader header;
 
-    protected String userID;
+    protected UID userID;
 
     public abstract int getCurrentVersion();
 
@@ -79,21 +79,21 @@ public abstract class SMSSubmission
         header.setSubmissionID( submissionID );
     }
 
-    public String getUserID()
+    public UID getUserID()
     {
         return userID;
     }
 
     public void setUserID( String userID )
     {
-        this.userID = userID;
+        this.userID = new UID( userID );
     }
 
     public void validateSubmission()
         throws SMSCompressionException
     {
         header.validateHeaer();
-        if ( userID.isEmpty() )
+        if ( userID.uid.isEmpty() )
         {
             throw new SMSCompressionException( "Ensure the UserID is set in the submission" );
         }
@@ -108,7 +108,7 @@ public abstract class SMSSubmission
 
         validateSubmission();
         header.writeHeader( writer );
-        writer.writeID( userID, MetadataType.USER );
+        writer.writeID( userID.uid, MetadataType.USER );
         writeSubm( writer );
     }
 
