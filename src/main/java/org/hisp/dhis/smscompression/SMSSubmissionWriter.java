@@ -54,6 +54,8 @@ public class SMSSubmissionWriter
 
     SMSMetadata meta;
 
+    ValueWriter valueWriter;
+
     // By default we enable hashing but it can be disabled
     boolean hashingEnabled = true;
 
@@ -79,6 +81,7 @@ public class SMSSubmissionWriter
     {
         this.byteStream = new ByteArrayOutputStream();
         this.outStream = new BitOutputStream( byteStream );
+        this.valueWriter = new ValueWriter( outStream, meta, hashingEnabled );
 
         subm.write( meta, this );
 
@@ -144,7 +147,7 @@ public class SMSSubmissionWriter
     public void writeID( String id, MetadataType type )
         throws SMSCompressionException
     {
-        IDUtil.writeID( id, type, meta, outStream, hashingEnabled );
+        IDUtil.writeID( id, hashingEnabled, type, meta, outStream );
     }
 
     public void writeNewID( String id )
@@ -156,13 +159,13 @@ public class SMSSubmissionWriter
     public void writeAttributeValues( List<SMSAttributeValue> values )
         throws SMSCompressionException
     {
-        ValueUtil.writeAttributeValues( values, meta, outStream );
+        valueWriter.writeAttributeValues( values );
     }
 
     public void writeDataValues( List<SMSDataValue> values )
         throws SMSCompressionException
     {
-        ValueUtil.writeDataValues( values, meta, outStream );
+        valueWriter.writeDataValues( values );
     }
 
     public void writeBool( boolean val )

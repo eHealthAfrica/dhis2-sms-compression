@@ -60,6 +60,8 @@ public class SMSSubmissionReader
 
     SMSMetadata meta;
 
+    ValueReader valueReader;
+
     public SMSSubmissionHeader readHeader( byte[] smsBytes )
         throws SMSCompressionException
     {
@@ -82,6 +84,7 @@ public class SMSSubmissionReader
         meta.validate();
         this.meta = meta;
         SMSSubmissionHeader header = readHeader( smsBytes );
+        this.valueReader = new ValueReader( inStream, meta );
         SMSSubmission subm = null;
 
         switch ( header.getType() )
@@ -172,13 +175,13 @@ public class SMSSubmissionReader
     public List<SMSAttributeValue> readAttributeValues()
         throws SMSCompressionException
     {
-        return ValueUtil.readAttributeValues( meta, inStream );
+        return valueReader.readAttributeValues();
     }
 
     public List<SMSDataValue> readDataValues()
         throws SMSCompressionException
     {
-        return ValueUtil.readDataValues( meta, inStream );
+        return valueReader.readDataValues();
     }
 
     public boolean readBool()

@@ -1,7 +1,6 @@
 package org.hisp.dhis.smscompression.models;
 
 import org.hisp.dhis.smscompression.SMSConsts.ValueType;
-import org.hisp.dhis.smscompression.utils.ValueUtil;
 
 /*
  * Copyright (c) 2004-2019, University of Oslo
@@ -45,7 +44,7 @@ public class SMSAttributeValue
     {
         this.attribute = attribute;
         this.value = value;
-        this.smsValue = ValueUtil.asSMSValue( value );
+        this.smsValue = SMSValue.asSMSValue( value );
     }
 
     public SMSAttributeValue( String attribute, SMSValue<?> smsValue )

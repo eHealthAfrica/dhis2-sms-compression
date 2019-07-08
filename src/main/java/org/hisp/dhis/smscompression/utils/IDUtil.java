@@ -182,8 +182,8 @@ public class IDUtil
         return idLookup;
     }
 
-    public static void writeID( String id, MetadataType type, SMSMetadata meta, BitOutputStream outStream,
-        boolean hashingEnabled )
+    public static void writeID( String id, boolean hashingEnabled, MetadataType type, SMSMetadata meta,
+        BitOutputStream outStream )
         throws SMSCompressionException
     {
         if ( !validID( id ) )
