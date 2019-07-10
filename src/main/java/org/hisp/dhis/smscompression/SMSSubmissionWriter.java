@@ -36,12 +36,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
-import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
+import org.hisp.dhis.smscompression.models.UID;
 import org.hisp.dhis.smscompression.utils.BitOutputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
 import org.hisp.dhis.smscompression.utils.ValueUtil;
@@ -144,10 +144,10 @@ public class SMSSubmissionWriter
         ValueUtil.writeDate( date, outStream );
     }
 
-    public void writeID( String id, MetadataType type )
+    public void writeID( UID uid )
         throws SMSCompressionException
     {
-        IDUtil.writeID( id, hashingEnabled, type, meta, outStream );
+        IDUtil.writeID( uid, hashingEnabled, meta, outStream );
     }
 
     public void writeNewID( String id )

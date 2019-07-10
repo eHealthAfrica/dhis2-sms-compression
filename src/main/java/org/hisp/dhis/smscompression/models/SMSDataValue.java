@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -30,9 +32,9 @@ package org.hisp.dhis.smscompression.models;
 
 public class SMSDataValue
 {
-    protected String categoryOptionCombo;
+    protected UID categoryOptionCombo;
 
-    protected String dataElement;
+    protected UID dataElement;
 
     protected String value;
 
@@ -40,13 +42,13 @@ public class SMSDataValue
 
     public SMSDataValue( String categoryOptionCombo, String dataElement, String value )
     {
-        this.categoryOptionCombo = categoryOptionCombo;
-        this.dataElement = dataElement;
+        this.categoryOptionCombo = new UID( categoryOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
+        this.dataElement = new UID( dataElement, MetadataType.DATA_ELEMENT );
         this.value = value;
         this.smsValue = SMSValue.asSMSValue( value );
     }
 
-    public SMSDataValue( String categoryOptionCombo, String dataElement, SMSValue<?> smsValue )
+    public SMSDataValue( UID categoryOptionCombo, UID dataElement, SMSValue<?> smsValue )
     {
         this.categoryOptionCombo = categoryOptionCombo;
         this.dataElement = dataElement;
@@ -55,12 +57,12 @@ public class SMSDataValue
         this.value = smsValue.getValue().toString();
     }
 
-    public String getCategoryOptionCombo()
+    public UID getCategoryOptionCombo()
     {
         return categoryOptionCombo;
     }
 
-    public String getDataElement()
+    public UID getDataElement()
     {
         return dataElement;
     }

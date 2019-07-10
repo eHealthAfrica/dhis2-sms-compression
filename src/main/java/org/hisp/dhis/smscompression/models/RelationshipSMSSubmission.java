@@ -39,54 +39,54 @@ public class RelationshipSMSSubmission
     extends
     SMSSubmission
 {
-    protected String relationshipType;
+    protected UID relationshipType;
 
-    protected String relationship;
+    protected UID relationship;
 
-    protected String from;
+    protected UID from;
 
-    protected String to;
+    protected UID to;
 
     /* Getters and Setters */
 
-    public String getRelationshipType()
+    public UID getRelationshipType()
     {
         return relationshipType;
     }
 
     public void setRelationshipType( String relationshipType )
     {
-        this.relationshipType = relationshipType;
+        this.relationshipType = new UID( relationshipType, MetadataType.RELATIONSHIP_TYPE );
     }
 
-    public String getRelationship()
+    public UID getRelationship()
     {
         return relationship;
     }
 
     public void setRelationship( String relationship )
     {
-        this.relationship = relationship;
+        this.relationship = new UID( relationship, MetadataType.RELATIONSHIP );
     }
 
-    public String getFrom()
+    public UID getFrom()
     {
         return from;
     }
 
     public void setFrom( String from )
     {
-        this.from = from;
+        this.from = new UID( from, null );
     }
 
-    public String getTo()
+    public UID getTo()
     {
         return to;
     }
 
     public void setTo( String to )
     {
-        this.to = to;
+        this.to = new UID( to, null );
     }
 
     @Override
@@ -108,10 +108,10 @@ public class RelationshipSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( relationshipType, MetadataType.RELATIONSHIP_TYPE );
-        writer.writeID( relationship, MetadataType.RELATIONSHIP );
-        writer.writeNewID( from );
-        writer.writeNewID( to );
+        writer.writeID( relationshipType );
+        writer.writeID( relationship );
+        writer.writeNewID( from.uid );
+        writer.writeNewID( to.uid );
     }
 
     @Override
@@ -120,8 +120,8 @@ public class RelationshipSMSSubmission
     {
         this.relationshipType = reader.readID( MetadataType.RELATIONSHIP_TYPE );
         this.relationship = reader.readID( MetadataType.RELATIONSHIP );
-        this.from = reader.readNewID();
-        this.to = reader.readNewID();
+        this.from = new UID( reader.readNewID(), null );
+        this.to = new UID( reader.readNewID(), null );
     }
 
     @Override

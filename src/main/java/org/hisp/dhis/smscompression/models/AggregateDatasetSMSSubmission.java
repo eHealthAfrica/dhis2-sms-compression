@@ -41,13 +41,13 @@ public class AggregateDatasetSMSSubmission
     extends
     SMSSubmission
 {
-    protected String orgUnit;
+    protected UID orgUnit;
 
-    protected String dataSet;
+    protected UID dataSet;
 
     protected boolean complete;
 
-    protected String attributeOptionCombo;
+    protected UID attributeOptionCombo;
 
     protected String period;
 
@@ -55,24 +55,24 @@ public class AggregateDatasetSMSSubmission
 
     /* Getters and Setters */
 
-    public String getOrgUnit()
+    public UID getOrgUnit()
     {
         return orgUnit;
     }
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = orgUnit;
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
-    public String getDataSet()
+    public UID getDataSet()
     {
         return dataSet;
     }
 
     public void setDataSet( String dataSet )
     {
-        this.dataSet = dataSet;
+        this.dataSet = new UID( dataSet, MetadataType.DATASET );
     }
 
     public boolean isComplete()
@@ -85,14 +85,14 @@ public class AggregateDatasetSMSSubmission
         this.complete = complete;
     }
 
-    public String getAttributeOptionCombo()
+    public UID getAttributeOptionCombo()
     {
         return attributeOptionCombo;
     }
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = attributeOptionCombo;
+        this.attributeOptionCombo = new UID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
     }
 
     public String getPeriod()
@@ -137,10 +137,10 @@ public class AggregateDatasetSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( dataSet, MetadataType.DATASET );
+        writer.writeID( orgUnit );
+        writer.writeID( dataSet );
         writer.writeBool( complete );
-        writer.writeID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
+        writer.writeID( attributeOptionCombo );
         writer.writePeriod( period );
         writer.writeDataValues( values );
     }
