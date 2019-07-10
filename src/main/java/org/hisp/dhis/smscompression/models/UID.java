@@ -30,6 +30,14 @@ public class UID
     }
 
     @Override
+    public String toString()
+    {
+        if ( uid == null )
+            return getHash();
+        return uid;
+    }
+
+    @Override
     public boolean equals( Object o )
     {
         if ( this == o )
