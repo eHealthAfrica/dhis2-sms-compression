@@ -1,5 +1,6 @@
 package org.hisp.dhis.smscompression.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /*
@@ -45,7 +46,7 @@ import org.hisp.dhis.smscompression.models.UID;
 public class IDUtil
 {
 
-    public static int getBitLengthForList( List<String> ids, MetadataType type )
+    public static int getBitLengthForList( List<String> ids )
         throws SMSCompressionException
     {
         // Start with the shortest length that will fit all IDs
@@ -194,7 +195,7 @@ public class IDUtil
 
         if ( useHash )
         {
-            int typeBitLen = IDUtil.getBitLengthForList( idList, uid.type );
+            int typeBitLen = getBitLengthForList( idList );
             outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );
             int idHash = BinaryUtils.hash( uid.uid, typeBitLen );
             outStream.write( idHash, typeBitLen );
@@ -224,5 +225,31 @@ public class IDUtil
         }
 
         return Base64.getEncoder().encodeToString( byteStream.toByteArray() );
+    }
+
+    public static UID getUIDFromHash( String hashStr, SMSMetadata meta )
+    {
+        byte[] hashBytes = Base64.getDecoder().decode( hashStr.replace( "#", "" ) );
+        ByteArrayInputStream byteStream = new ByteArrayInputStream( hashBytes );
+        BitInputStream inStream = new BitInputStream( byteStream );
+
+        try
+        {
+            int typeID = inStream.read( SMSConsts.METADATA_TYPE_BITLEN );
+            MetadataType type = MetadataType.values()[typeID];
+            int bitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
+            int hash = inStream.read( bitLen );
+            inStream.close();
+
+            List<String> ids = meta.getType( type );
+            Map<Integer, String> idMap = getIDLookup( ids, getBitLengthForList( ids ) );
+            String uidStr = idMap.get( hash );
+            return new UID( uidStr, hash, type );
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

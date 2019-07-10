@@ -38,7 +38,7 @@ public class ValueWriter
         if ( !hashingEnabled )
             return 0;
 
-        int hashBitLen = IDUtil.getBitLengthForList( meta.getType( type ), type );
+        int hashBitLen = IDUtil.getBitLengthForList( meta.getType( type ) );
         outStream.write( hashBitLen, SMSConsts.VARLEN_BITLEN );
         return hashBitLen;
     }
