@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hisp.dhis.smscompression.models.UID;
+
 public enum SMSResponse
 {
     SUCCESS( 0, "Submission has been processed successfully" ),
@@ -77,23 +79,23 @@ public enum SMSResponse
 
     private String description;
 
-    private List<String> uids;
+    private List<UID> uids;
 
     private SMSResponse( int code, String description )
     {
         this.code = code;
         this.description = description;
-        this.uids = new ArrayList<String>();
+        this.uids = new ArrayList<UID>();
     }
 
-    public SMSResponse set( String... uids )
+    public SMSResponse set( UID... uids )
     {
         this.uids = Arrays.asList( uids );
         this.description = String.format( description, (Object[]) uids );
         return this;
     }
 
-    public SMSResponse set( List<String> uids )
+    public SMSResponse set( List<UID> uids )
     {
         this.uids = uids;
         this.description = String.format( description, uids );
@@ -113,7 +115,7 @@ public enum SMSResponse
     @Override
     public String toString()
     {
-        String uidDelim = uids.stream().collect( Collectors.joining( "," ) );
+        String uidDelim = uids.stream().map( uid -> uid.toString() ).collect( Collectors.joining( "," ) );
         return code + ":" + uidDelim + ":" + description;
     }
 }
