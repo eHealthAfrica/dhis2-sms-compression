@@ -35,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
+import org.hisp.dhis.smscompression.SMSConsts.SMSEventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
@@ -188,7 +188,7 @@ public class SMSSubmissionWriter
         outStream.write( submissionID, SMSConsts.SUBM_ID_BITLEN );
     }
 
-    public void writeEventStatus( EventStatus eventStatus )
+    public void writeEventStatus( SMSEventStatus eventStatus )
         throws SMSCompressionException
     {
         outStream.write( eventStatus.ordinal(), SMSConsts.EVENT_STATUS_BITLEN );

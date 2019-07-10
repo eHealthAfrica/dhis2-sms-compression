@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
-import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
+import org.hisp.dhis.smscompression.SMSConsts.SMSEventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
@@ -47,7 +47,7 @@ public class SimpleEventSMSSubmission
 
     protected UID eventProgram;
 
-    protected EventStatus eventStatus;
+    protected SMSEventStatus eventStatus;
 
     protected UID attributeOptionCombo;
 
@@ -79,12 +79,12 @@ public class SimpleEventSMSSubmission
         this.eventProgram = new UID( eventProgram, MetadataType.PROGRAM );
     }
 
-    public EventStatus getEventStatus()
+    public SMSEventStatus getEventStatus()
     {
         return eventStatus;
     }
 
-    public void setEventStatus( EventStatus eventStatus )
+    public void setEventStatus( SMSEventStatus eventStatus )
     {
         this.eventStatus = eventStatus;
     }

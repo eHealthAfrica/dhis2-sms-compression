@@ -68,7 +68,7 @@ public class SMSConsts
         ;
     }
 
-    public enum EventStatus
+    public enum SMSEventStatus
     {
         ACTIVE, COMPLETED, VISITED, SCHEDULE, OVERDUE, SKIPPED,
 
