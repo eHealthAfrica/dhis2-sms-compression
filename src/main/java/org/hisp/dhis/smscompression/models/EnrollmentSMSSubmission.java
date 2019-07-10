@@ -155,7 +155,7 @@ public class EnrollmentSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSSubmissionReader reader )
+    public void readSubm( SMSSubmissionReader reader, int version )
         throws SMSCompressionException
     {
         this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );

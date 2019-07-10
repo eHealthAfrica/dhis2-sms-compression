@@ -47,7 +47,7 @@ public abstract class SMSSubmission
     public abstract void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException;
 
-    public abstract void readSubm( SMSSubmissionReader reader )
+    public abstract void readSubm( SMSSubmissionReader reader, int version )
         throws SMSCompressionException;
 
     public SMSSubmission()
@@ -117,6 +117,6 @@ public abstract class SMSSubmission
     {
         this.header = header;
         this.userID = reader.readID( MetadataType.USER );
-        readSubm( reader );
+        readSubm( reader, this.header.getVersion() );
     }
 }

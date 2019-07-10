@@ -115,7 +115,7 @@ public class RelationshipSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSSubmissionReader reader )
+    public void readSubm( SMSSubmissionReader reader, int version )
         throws SMSCompressionException
     {
         this.relationshipType = reader.readID( MetadataType.RELATIONSHIP_TYPE );
