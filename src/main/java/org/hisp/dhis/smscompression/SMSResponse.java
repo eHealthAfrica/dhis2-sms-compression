@@ -33,8 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hisp.dhis.smscompression.models.UID;
-
 public enum SMSResponse
 {
     SUCCESS( 0, "Submission has been processed successfully" ),
@@ -79,26 +77,26 @@ public enum SMSResponse
 
     private String description;
 
-    private List<UID> uids;
+    private List<Object> errorElems;
 
     private SMSResponse( int code, String description )
     {
         this.code = code;
         this.description = description;
-        this.uids = new ArrayList<UID>();
+        this.errorElems = new ArrayList<Object>();
     }
 
-    public SMSResponse set( UID... uids )
+    public SMSResponse set( Object... elems )
     {
-        this.uids = Arrays.asList( uids );
-        this.description = String.format( description, (Object[]) uids );
+        this.errorElems = Arrays.asList( elems );
+        this.description = String.format( description, errorElems );
         return this;
     }
 
-    public SMSResponse set( List<UID> uids )
+    public SMSResponse set( List<Object> elems )
     {
-        this.uids = uids;
-        this.description = String.format( description, uids );
+        this.errorElems = elems;
+        this.description = String.format( description, errorElems );
         return this;
     }
 
@@ -115,7 +113,7 @@ public enum SMSResponse
     @Override
     public String toString()
     {
-        String uidDelim = uids.stream().map( uid -> uid.toString() ).collect( Collectors.joining( "," ) );
+        String uidDelim = errorElems.stream().map( uid -> uid.toString() ).collect( Collectors.joining( "," ) );
         return code + ":" + uidDelim + ":" + description;
     }
 }
