@@ -35,11 +35,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
+import org.hisp.dhis.smscompression.models.UID;
 import org.hisp.dhis.smscompression.utils.BitOutputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
 import org.hisp.dhis.smscompression.utils.ValueUtil;
@@ -52,23 +54,34 @@ public class SMSSubmissionWriter
 
     SMSMetadata meta;
 
+    ValueWriter valueWriter;
+
+    // By default we enable hashing but it can be disabled
+    boolean hashingEnabled = true;
+
     public SMSSubmissionWriter( SMSMetadata meta )
+        throws SMSCompressionException
     {
-        // TODO: Check metadata looks valid here
+        meta.validate();
         this.meta = meta;
     }
 
-    public void setMetadata( SMSMetadata meta )
+    public boolean isHashingEnabled()
     {
-        // TODO: Check metadata looks valid here
-        this.meta = meta;
+        return hashingEnabled;
+    }
+
+    public void setHashingEnabled( boolean useHashing )
+    {
+        this.hashingEnabled = useHashing;
     }
 
     public byte[] compress( SMSSubmission subm )
-        throws Exception
+        throws SMSCompressionException
     {
         this.byteStream = new ByteArrayOutputStream();
         this.outStream = new BitOutputStream( byteStream );
+        this.valueWriter = new ValueWriter( outStream, meta, hashingEnabled );
 
         subm.write( meta, this );
 
@@ -76,12 +89,19 @@ public class SMSSubmissionWriter
     }
 
     public byte[] toByteArray()
-        throws IOException
+        throws SMSCompressionException
     {
-        outStream.close();
-        byte[] subm = byteStream.toByteArray();
-        byte[] crcSubm = writeCRC( subm );
-        return crcSubm;
+        try
+        {
+            outStream.close();
+            byte[] subm = byteStream.toByteArray();
+            byte[] crcSubm = writeCRC( subm );
+            return crcSubm;
+        }
+        catch ( IOException e )
+        {
+            throw new SMSCompressionException( e );
+        }
     }
 
     public byte[] writeCRC( byte[] subm )
@@ -107,60 +127,70 @@ public class SMSSubmissionWriter
     }
 
     public void writeType( SubmissionType type )
-        throws IOException
+        throws SMSCompressionException
     {
         outStream.write( type.ordinal(), SMSConsts.SUBM_TYPE_BITLEN );
     }
 
     public void writeVersion( int version )
-        throws IOException
+        throws SMSCompressionException
     {
         outStream.write( version, SMSConsts.VERSION_BITLEN );
     }
 
     public void writeDate( Date date )
-        throws IOException
+        throws SMSCompressionException
     {
-        long epochSecs = date.getTime() / 1000;
-        outStream.write( (int) epochSecs, SMSConsts.EPOCH_DATE_BITLEN );
+        ValueUtil.writeDate( date, outStream );
+    }
+
+    public void writeID( UID uid )
+        throws SMSCompressionException
+    {
+        IDUtil.writeID( uid, hashingEnabled, meta, outStream );
     }
 
     public void writeNewID( String id )
-        throws Exception
+        throws SMSCompressionException
     {
         IDUtil.writeNewID( id, outStream );
     }
 
     public void writeAttributeValues( List<SMSAttributeValue> values )
-        throws IOException
+        throws SMSCompressionException
     {
-        ValueUtil.writeAttributeValues( values, meta, outStream );
+        valueWriter.writeAttributeValues( values );
     }
 
     public void writeDataValues( List<SMSDataValue> values )
-        throws IOException
+        throws SMSCompressionException
     {
-        ValueUtil.writeDataValues( values, meta, outStream );
+        valueWriter.writeDataValues( values );
     }
 
     public void writeBool( boolean val )
-        throws IOException
+        throws SMSCompressionException
     {
-        int intVal = val ? 1 : 0;
-        outStream.write( intVal, 1 );
+        ValueUtil.writeBool( val, outStream );
     }
 
     // TODO: We should consider a better implementation for period than just
     // String
     public void writePeriod( String period )
-        throws IOException
+        throws SMSCompressionException
     {
         ValueUtil.writeString( period, outStream );
     }
 
     public void writeSubmissionID( int submissionID )
-        throws IOException
+        throws SMSCompressionException
     {
         outStream.write( submissionID, SMSConsts.SUBM_ID_BITLEN );
+    }
+
+    public void writeEventStatus( EventStatus eventStatus )
+        throws SMSCompressionException
+    {
+        outStream.write( eventStatus.ordinal(), SMSConsts.EVENT_STATUS_BITLEN );
     }
 }

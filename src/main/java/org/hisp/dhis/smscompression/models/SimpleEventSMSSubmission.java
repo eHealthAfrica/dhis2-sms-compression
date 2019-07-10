@@ -31,7 +31,10 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -40,15 +43,15 @@ public class SimpleEventSMSSubmission
     extends
     SMSSubmission
 {
-    protected String orgUnit;
+    protected UID orgUnit;
 
-    protected String eventProgram;
+    protected UID eventProgram;
 
-    protected boolean complete;
+    protected EventStatus eventStatus;
 
-    protected String attributeOptionCombo;
+    protected UID attributeOptionCombo;
 
-    protected String event;
+    protected UID event;
 
     protected Date timestamp;
 
@@ -56,54 +59,54 @@ public class SimpleEventSMSSubmission
 
     /* Getters and Setters */
 
-    public String getOrgUnit()
+    public UID getOrgUnit()
     {
         return orgUnit;
     }
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = orgUnit;
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
-    public String getEventProgram()
+    public UID getEventProgram()
     {
         return eventProgram;
     }
 
     public void setEventProgram( String eventProgram )
     {
-        this.eventProgram = eventProgram;
+        this.eventProgram = new UID( eventProgram, MetadataType.PROGRAM );
     }
 
-    public boolean isComplete()
+    public EventStatus getEventStatus()
     {
-        return complete;
+        return eventStatus;
     }
 
-    public void setComplete( boolean complete )
+    public void setEventStatus( EventStatus eventStatus )
     {
-        this.complete = complete;
+        this.eventStatus = eventStatus;
     }
 
-    public String getAttributeOptionCombo()
+    public UID getAttributeOptionCombo()
     {
         return attributeOptionCombo;
     }
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = attributeOptionCombo;
+        this.attributeOptionCombo = new UID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
     }
 
-    public String getEvent()
+    public UID getEvent()
     {
         return event;
     }
 
     public void setEvent( String event )
     {
-        this.event = event;
+        this.event = new UID( event, MetadataType.EVENT );
     }
 
     public Date getTimestamp()
@@ -126,37 +129,55 @@ public class SimpleEventSMSSubmission
         this.values = values;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        SimpleEventSMSSubmission subm = (SimpleEventSMSSubmission) o;
+
+        return orgUnit.equals( subm.orgUnit ) && eventProgram.equals( subm.eventProgram )
+            && eventStatus == subm.eventStatus && attributeOptionCombo.equals( subm.attributeOptionCombo )
+            && event.equals( subm.event ) && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+    }
+
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
-        writer.writeNewID( orgUnit );
-        writer.writeNewID( eventProgram );
-        writer.writeBool( complete );
-        writer.writeNewID( attributeOptionCombo );
-        writer.writeNewID( event );
+        writer.writeID( orgUnit );
+        writer.writeID( eventProgram );
+        writer.writeEventStatus( eventStatus );
+        writer.writeID( attributeOptionCombo );
+        writer.writeID( event );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader, int version )
+        throws SMSCompressionException
     {
-        this.orgUnit = reader.readNewID();
-        this.eventProgram = reader.readNewID();
-        this.complete = reader.readBool();
-        this.attributeOptionCombo = reader.readNewID();
-        this.event = reader.readNewID();
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.eventProgram = reader.readID( MetadataType.PROGRAM );
+        this.eventStatus = reader.readEventStatus();
+        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
+        this.event = reader.readID( MetadataType.EVENT );
         this.timestamp = reader.readDate();
-        this.values = reader.readDataValues( meta );
+        this.values = reader.readDataValues();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.SIMPLE_EVENT;

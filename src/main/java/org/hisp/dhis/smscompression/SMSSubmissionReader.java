@@ -36,6 +36,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSConsts.EventStatus;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
@@ -48,19 +50,24 @@ import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
 import org.hisp.dhis.smscompression.models.SimpleEventSMSSubmission;
 import org.hisp.dhis.smscompression.models.TrackerEventSMSSubmission;
+import org.hisp.dhis.smscompression.models.UID;
 import org.hisp.dhis.smscompression.utils.BitInputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
 import org.hisp.dhis.smscompression.utils.ValueUtil;
 
 public class SMSSubmissionReader
 {
-    protected BitInputStream inStream;
+    BitInputStream inStream;
+
+    SMSMetadata meta;
+
+    ValueReader valueReader;
 
     public SMSSubmissionHeader readHeader( byte[] smsBytes )
-        throws Exception
+        throws SMSCompressionException
     {
         if ( !checkCRC( smsBytes ) )
-            throw new Exception( "Invalid CRC" );
+            throw new SMSCompressionException( "Invalid CRC - CRC in header does not match submission" );
 
         ByteArrayInputStream byteStream = new ByteArrayInputStream( smsBytes );
         this.inStream = new BitInputStream( byteStream );
@@ -73,9 +80,12 @@ public class SMSSubmissionReader
     }
 
     public SMSSubmission readSubmission( byte[] smsBytes, SMSMetadata meta )
-        throws Exception
+        throws SMSCompressionException
     {
+        meta.validate();
+        this.meta = meta;
         SMSSubmissionHeader header = readHeader( smsBytes );
+        this.valueReader = new ValueReader( inStream, meta );
         SMSSubmission subm = null;
 
         switch ( header.getType() )
@@ -99,11 +109,18 @@ public class SMSSubmissionReader
             subm = new TrackerEventSMSSubmission();
             break;
         default:
-            throw new Exception( "Unknown SMS Submission Type" );
+            throw new SMSCompressionException( "Unknown SMS Submission Type: " + header.getType() );
         }
 
-        subm.read( meta, this, header );
-        inStream.close();
+        subm.read( this, header );
+        try
+        {
+            inStream.close();
+        }
+        catch ( IOException e )
+        {
+            throw new SMSCompressionException( e );
+        }
         return subm;
     }
 
@@ -126,61 +143,71 @@ public class SMSSubmissionReader
     }
 
     public SubmissionType readType()
-        throws IOException
+        throws SMSCompressionException
     {
         int submType = inStream.read( SMSConsts.SUBM_TYPE_BITLEN );
         return SMSConsts.SubmissionType.values()[submType];
     }
 
     public int readVersion()
-        throws IOException
+        throws SMSCompressionException
     {
         return inStream.read( SMSConsts.VERSION_BITLEN );
     }
 
     public Date readDate()
-        throws IOException
+        throws SMSCompressionException
     {
-        long epochSecs = inStream.read( SMSConsts.EPOCH_DATE_BITLEN );
-        Date dateVal = new Date( epochSecs * 1000 );
-        return dateVal;
+        return ValueUtil.readDate( inStream );
+    }
+
+    public UID readID( MetadataType type )
+        throws SMSCompressionException
+    {
+        return IDUtil.readID( type, meta, inStream );
     }
 
     public String readNewID()
-        throws Exception
+        throws SMSCompressionException
     {
         return IDUtil.readNewID( inStream );
     }
 
-    public List<SMSAttributeValue> readAttributeValues( SMSMetadata meta )
-        throws IOException
+    public List<SMSAttributeValue> readAttributeValues()
+        throws SMSCompressionException
     {
-        return ValueUtil.readAttributeValues( meta, inStream );
+        return valueReader.readAttributeValues();
     }
 
-    public List<SMSDataValue> readDataValues( SMSMetadata meta )
-        throws IOException
+    public List<SMSDataValue> readDataValues()
+        throws SMSCompressionException
     {
-        return ValueUtil.readDataValues( meta, inStream );
+        return valueReader.readDataValues();
     }
 
     public boolean readBool()
-        throws IOException
+        throws SMSCompressionException
     {
-        int intVal = inStream.read( 1 );
-        return intVal == 1;
+        return ValueUtil.readBool( inStream );
     }
 
     // TODO: Update this once we have a better impl of period
     public String readPeriod()
-        throws IOException
+        throws SMSCompressionException
     {
         return ValueUtil.readString( inStream );
     }
 
     public int readSubmissionID()
-        throws IOException
+        throws SMSCompressionException
     {
         return inStream.read( SMSConsts.SUBM_ID_BITLEN );
+    }
+
+    public EventStatus readEventStatus()
+        throws SMSCompressionException
+    {
+        int eventStatusNum = inStream.read( SMSConsts.EVENT_STATUS_BITLEN );
+        return EventStatus.values()[eventStatusNum];
     }
 }

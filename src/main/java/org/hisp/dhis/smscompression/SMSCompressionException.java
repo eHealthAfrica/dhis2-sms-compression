@@ -1,4 +1,4 @@
-package org.hisp.dhis.smscompression.utils;
+package org.hisp.dhis.smscompression;
 
 /*
  * Copyright (c) 2004-2019, University of Oslo
@@ -28,54 +28,28 @@ package org.hisp.dhis.smscompression.utils;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-public class BinaryUtils
+public class SMSCompressionException
+    extends
+    Exception
 {
 
     /**
-     * @return an array of bytes as a binary string
+     * 
      */
-    public static String print( byte[] byteArray )
-    {
-        String output = "";
-        for ( byte b : byteArray )
-        {
-            output += print( b );
-        }
+    private static final long serialVersionUID = 1L;
 
-        return output;
+    public SMSCompressionException( String message )
+    {
+        super( message );
     }
 
-    /**
-     * @return a single byte as a binary string
-     */
-    public static String print( byte b )
+    public SMSCompressionException( String message, Throwable error )
     {
-        return Integer.toBinaryString( (b & 0xFF) + 0x100 ).substring( 1 );
+        super( message, error );
     }
 
-    /**
-     * @return the log2 of n
-     */
-    public static int log2( int n )
+    public SMSCompressionException( Throwable error )
     {
-        if ( n <= 0 )
-            throw new IllegalArgumentException();
-        return 31 - Integer.numberOfLeadingZeros( n );
-    }
-
-    /**
-     * @return the minimum bit length needed to represent this int (unsigned)
-     */
-    public static int bitlenNeeded( int n )
-    {
-        return n == 0 ? 1 : log2( n ) + 1;
-    }
-
-    /**
-     * @return a unique hash for a string for a given bit length
-     */
-    public static int hash( String s, int bitlen )
-    {
-        return Math.abs( s.hashCode() ) % (int) Math.pow( 2, bitlen );
+        super( error );
     }
 }

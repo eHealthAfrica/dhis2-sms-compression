@@ -30,7 +30,9 @@ package org.hisp.dhis.smscompression.models;
 
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -39,13 +41,13 @@ public class AggregateDatasetSMSSubmission
     extends
     SMSSubmission
 {
-    protected String orgUnit;
+    protected UID orgUnit;
 
-    protected String dataSet;
+    protected UID dataSet;
 
     protected boolean complete;
 
-    protected String attributeOptionCombo;
+    protected UID attributeOptionCombo;
 
     protected String period;
 
@@ -53,24 +55,24 @@ public class AggregateDatasetSMSSubmission
 
     /* Getters and Setters */
 
-    public String getOrgUnit()
+    public UID getOrgUnit()
     {
         return orgUnit;
     }
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = orgUnit;
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
-    public String getDataSet()
+    public UID getDataSet()
     {
         return dataSet;
     }
 
     public void setDataSet( String dataSet )
     {
-        this.dataSet = dataSet;
+        this.dataSet = new UID( dataSet, MetadataType.DATASET );
     }
 
     public boolean isComplete()
@@ -83,14 +85,14 @@ public class AggregateDatasetSMSSubmission
         this.complete = complete;
     }
 
-    public String getAttributeOptionCombo()
+    public UID getAttributeOptionCombo()
     {
         return attributeOptionCombo;
     }
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = attributeOptionCombo;
+        this.attributeOptionCombo = new UID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
     }
 
     public String getPeriod()
@@ -113,35 +115,55 @@ public class AggregateDatasetSMSSubmission
         this.values = values;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        AggregateDatasetSMSSubmission subm = (AggregateDatasetSMSSubmission) o;
+
+        values.equals( subm.values );
+
+        return orgUnit.equals( subm.orgUnit ) && dataSet.equals( subm.dataSet ) && complete == subm.complete
+            && attributeOptionCombo.equals( subm.attributeOptionCombo ) && period.equals( subm.period )
+            && values.equals( subm.values );
+    }
+
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
-        writer.writeNewID( orgUnit );
-        writer.writeNewID( dataSet );
+        writer.writeID( orgUnit );
+        writer.writeID( dataSet );
         writer.writeBool( complete );
-        writer.writeNewID( attributeOptionCombo );
+        writer.writeID( attributeOptionCombo );
         writer.writePeriod( period );
         writer.writeDataValues( values );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader, int version )
+        throws SMSCompressionException
     {
-        this.orgUnit = reader.readNewID();
-        this.dataSet = reader.readNewID();
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.dataSet = reader.readID( MetadataType.DATASET );
         this.complete = reader.readBool();
-        this.attributeOptionCombo = reader.readNewID();
+        this.attributeOptionCombo = reader.readID( MetadataType.CATEGORY_OPTION_COMBO );
         this.period = reader.readPeriod();
-        this.values = reader.readDataValues( meta );
+        this.values = reader.readDataValues();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.AGGREGATE_DATASET;

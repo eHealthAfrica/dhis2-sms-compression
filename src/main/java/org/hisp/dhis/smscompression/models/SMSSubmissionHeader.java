@@ -30,6 +30,7 @@ package org.hisp.dhis.smscompression.models;
 
 import java.util.Date;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -84,18 +85,34 @@ public class SMSSubmissionHeader
         this.lastSyncDate = lastSyncDate;
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSSubmissionHeader hdr = (SMSSubmissionHeader) o;
+        return type.equals( hdr.type ) && version == hdr.version && lastSyncDate.equals( hdr.lastSyncDate )
+            && submissionID == hdr.submissionID;
+    }
+
     public void validateHeaer()
-        throws Exception
+        throws SMSCompressionException
     {
         // TODO: More validation here
         if ( submissionID < 0 || submissionID > 255 )
         {
-            throw new Exception( "Ensure the Submission ID has been set for this submission" );
+            throw new SMSCompressionException( "Ensure the Submission ID has been set for this submission" );
         }
     }
 
     public void writeHeader( SMSSubmissionWriter writer )
-        throws Exception
+        throws SMSCompressionException
     {
         writer.writeType( type );
         writer.writeVersion( version );
@@ -104,7 +121,7 @@ public class SMSSubmissionHeader
     }
 
     public void readHeader( SMSSubmissionReader reader )
-        throws Exception
+        throws SMSCompressionException
     {
         this.type = reader.readType();
         this.version = reader.readVersion();

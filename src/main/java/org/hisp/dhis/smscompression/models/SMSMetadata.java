@@ -30,7 +30,12 @@ package org.hisp.dhis.smscompression.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+
+import org.hisp.dhis.smscompression.SMSCompressionException;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+import org.hisp.dhis.smscompression.utils.IDUtil;
 
 public class SMSMetadata
 {
@@ -60,50 +65,95 @@ public class SMSMetadata
 
     public List<ID> categoryOptionCombos;
 
-    public List<String> getUsers()
+    public List<ID> dataSets;
+
+    public List<ID> programStages;
+
+    public List<ID> events;
+
+    public List<ID> enrollments;
+
+    public List<ID> trackedEntityInstances;
+
+    public List<ID> relationships;
+
+    public List<ID> relationshipTypes;
+
+    public void validate()
+        throws SMSCompressionException
     {
-        return getIDs( users );
+        for ( MetadataType type : MetadataType.values() )
+        {
+            checkIDList( getType( type ), type );
+        }
     }
 
-    public List<String> getTrackedEntityTypes()
+    public static boolean checkIDList( List<String> ids, MetadataType type )
+        throws SMSCompressionException
     {
-        return getIDs( trackedEntityTypes );
+        String typeMsg = "Metadata error[" + type + "]:";
+        HashSet<String> set = new HashSet<>();
+        for ( String id : ids )
+        {
+            if ( !set.add( id ) )
+                throw new SMSCompressionException( typeMsg + "List of UIDs in Metadata contains duplicate: " + id );
+            if ( !IDUtil.validID( id ) )
+                throw new SMSCompressionException( typeMsg + "Invalid format UID found in Metadata UID List: " + id );
+        }
+
+        return true;
     }
 
-    public List<String> getTrackedEntityAttributes()
+    public List<String> getType( MetadataType type )
     {
-        return getIDs( trackedEntityAttributes );
-    }
+        switch ( type )
+        {
+        case USER:
+            return getIDs( users );
+        case TRACKED_ENTITY_TYPE:
+            return getIDs( trackedEntityTypes );
+        case TRACKED_ENTITY_ATTRIBUTE:
+            return getIDs( trackedEntityAttributes );
+        case PROGRAM:
+            return getIDs( programs );
+        case ORGANISATION_UNIT:
+            return getIDs( organisationUnits );
+        case DATA_ELEMENT:
+            return getIDs( dataElements );
+        case CATEGORY_OPTION_COMBO:
+            return getIDs( categoryOptionCombos );
+        case DATASET:
+            return getIDs( dataSets );
+        case PROGRAM_STAGE:
+            return getIDs( programStages );
+        case EVENT:
+            return getIDs( events );
+        case ENROLLMENT:
+            return getIDs( enrollments );
+        case TRACKED_ENTITY_INSTANCE:
+            return getIDs( trackedEntityInstances );
+        case RELATIONSHIP:
+            return getIDs( relationships );
+        case RELATIONSHIP_TYPE:
+            return getIDs( relationshipTypes );
 
-    public List<String> getPrograms()
-    {
-        return getIDs( programs );
-    }
-
-    public List<String> getOrganisationUnits()
-    {
-        return getIDs( organisationUnits );
-    }
-
-    public List<String> getDataElements()
-    {
-        return getIDs( dataElements );
-    }
-
-    public List<String> getCategoryOptionCombos()
-    {
-        return getIDs( categoryOptionCombos );
+        default:
+            return null;
+        }
     }
 
     private List<String> getIDs( List<ID> ids )
     {
-        if ( ids == null )
-            return null;
         ArrayList<String> idList = new ArrayList<>();
-        for ( ID id : ids )
+
+        if ( ids != null )
         {
-            idList.add( id.id );
+            for ( ID id : ids )
+            {
+                idList.add( id.id );
+            }
         }
+
         return idList;
     }
 }

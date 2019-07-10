@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -30,25 +32,37 @@ package org.hisp.dhis.smscompression.models;
 
 public class SMSDataValue
 {
-    protected String categoryOptionCombo;
+    protected UID categoryOptionCombo;
 
-    protected String dataElement;
+    protected UID dataElement;
 
     protected String value;
 
+    protected SMSValue<?> smsValue;
+
     public SMSDataValue( String categoryOptionCombo, String dataElement, String value )
+    {
+        this.categoryOptionCombo = new UID( categoryOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
+        this.dataElement = new UID( dataElement, MetadataType.DATA_ELEMENT );
+        this.value = value;
+        this.smsValue = SMSValue.asSMSValue( value );
+    }
+
+    public SMSDataValue( UID categoryOptionCombo, UID dataElement, SMSValue<?> smsValue )
     {
         this.categoryOptionCombo = categoryOptionCombo;
         this.dataElement = dataElement;
-        this.value = value;
+        this.smsValue = smsValue;
+        // TODO: We probably need better handling than just toString() here
+        this.value = smsValue.getValue().toString();
     }
 
-    public String getCategoryOptionCombo()
+    public UID getCategoryOptionCombo()
     {
         return categoryOptionCombo;
     }
 
-    public String getDataElement()
+    public UID getDataElement()
     {
         return dataElement;
     }
@@ -56,5 +70,33 @@ public class SMSDataValue
     public String getValue()
     {
         return value;
+    }
+
+    public SMSValue<?> getSMSValue()
+    {
+        return smsValue;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSDataValue dv = (SMSDataValue) o;
+
+        return categoryOptionCombo.equals( dv.categoryOptionCombo ) && dataElement.equals( dv.dataElement )
+            && value.equals( dv.value );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 0;
     }
 }

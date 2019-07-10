@@ -28,7 +28,9 @@ package org.hisp.dhis.smscompression.models;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -37,39 +39,54 @@ public class DeleteSMSSubmission
     extends
     SMSSubmission
 {
-    protected String uid;
+    protected UID event;
 
     /* Getters and Setters */
 
-    public String getUid()
+    public UID getEvent()
     {
-        return uid;
+        return event;
     }
 
-    public void setUid( String uid )
+    public void setEvent( String event )
     {
-        this.uid = uid;
+        this.event = new UID( event, MetadataType.EVENT );
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        DeleteSMSSubmission subm = (DeleteSMSSubmission) o;
+        return event.equals( subm.event );
     }
 
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
-        writer.writeNewID( uid );
+        writer.writeID( event );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader, int version )
+        throws SMSCompressionException
     {
-        this.uid = reader.readNewID();
+        this.event = reader.readID( MetadataType.EVENT );
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.DELETE;

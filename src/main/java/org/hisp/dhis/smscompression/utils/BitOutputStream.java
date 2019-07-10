@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
+
 /**
  * A stream where bits can be written to. Because they are written to an
  * underlying byte stream, the end of the stream is padded with 0's up to a
@@ -88,17 +90,24 @@ public final class BitOutputStream
      * @throws IOException if an I/O exception occurred
      */
     public void write( int i, int n )
-        throws IOException
+        throws SMSCompressionException
     {
-        if ( i < 0 )
-            throw new NumberFormatException( "Cannot write negative ints" );
-        int mask = 1 << (n - 1);
-        while ( n > 0 )
+        try
         {
-            int nextBit = (mask & i) > 0 ? 1 : 0;
-            writeBit( nextBit );
-            mask >>>= 1;
-            n--;
+            if ( i < 0 )
+                throw new NumberFormatException( "Cannot write negative ints" );
+            int mask = 1 << (n - 1);
+            while ( n > 0 )
+            {
+                int nextBit = (mask & i) > 0 ? 1 : 0;
+                writeBit( nextBit );
+                mask >>>= 1;
+                n--;
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new SMSCompressionException( e );
         }
     }
 
@@ -110,6 +119,7 @@ public final class BitOutputStream
      * 
      * @throws IOException if an I/O exception occurred
      */
+    @Override
     public void close()
         throws IOException
     {

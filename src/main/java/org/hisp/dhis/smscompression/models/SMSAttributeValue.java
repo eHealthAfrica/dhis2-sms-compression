@@ -1,5 +1,8 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.ValueType;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -30,17 +33,30 @@ package org.hisp.dhis.smscompression.models;
 
 public class SMSAttributeValue
 {
-    protected String attribute;
+    protected UID attribute;
 
     protected String value;
 
+    protected SMSValue<?> smsValue;
+
+    protected ValueType type;
+
     public SMSAttributeValue( String attribute, String value )
     {
-        this.attribute = attribute;
+        this.attribute = new UID( attribute, MetadataType.TRACKED_ENTITY_ATTRIBUTE );
         this.value = value;
+        this.smsValue = SMSValue.asSMSValue( value );
     }
 
-    public String getAttribute()
+    public SMSAttributeValue( UID attribute, SMSValue<?> smsValue )
+    {
+        this.attribute = attribute;
+        this.smsValue = smsValue;
+        // TODO: We probably need better handling than just toString() here
+        this.value = smsValue.getValue().toString();
+    }
+
+    public UID getAttribute()
     {
         return this.attribute;
     }
@@ -48,5 +64,32 @@ public class SMSAttributeValue
     public String getValue()
     {
         return this.value;
+    }
+
+    public SMSValue<?> getSMSValue()
+    {
+        return this.smsValue;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        SMSAttributeValue dv = (SMSAttributeValue) o;
+
+        return attribute.equals( dv.attribute ) && value.equals( dv.value );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 0;
     }
 }

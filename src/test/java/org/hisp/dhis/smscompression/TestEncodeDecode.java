@@ -29,65 +29,77 @@ package org.hisp.dhis.smscompression;
  */
 
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Base64;
 
 import org.apache.commons.io.IOUtils;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
 import org.hisp.dhis.smscompression.models.EnrollmentSMSSubmission;
 import org.hisp.dhis.smscompression.models.RelationshipSMSSubmission;
-import org.hisp.dhis.smscompression.models.SMSAttributeValue;
-import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.SMSSubmission;
 import org.hisp.dhis.smscompression.models.SMSSubmissionHeader;
 import org.hisp.dhis.smscompression.models.SimpleEventSMSSubmission;
 import org.hisp.dhis.smscompression.models.TrackerEventSMSSubmission;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class TestEncodeDecode
 {
+    SMSMetadata meta;
 
-    public void printDecoded( String subm64, SMSMetadata meta )
+    SMSSubmissionWriter writer;
+
+    SMSSubmissionReader reader;
+
+    public String compressSubm( SMSSubmission subm )
         throws Exception
     {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        SMSSubmissionReader reader = new SMSSubmissionReader();
-        byte[] smsBytes = Base64.getDecoder().decode( subm64 );
-        SMSSubmissionHeader header = reader.readHeader( smsBytes );
-        System.out.println( "Decoded header is: " + gson.toJson( header ) );
+        byte[] compressSubm = writer.compress( subm );
+        String comp64 = TestUtils.encBase64( compressSubm );
+        TestUtils.printBase64Subm( comp64, subm.getClass() );
+        return comp64;
+    }
 
-        SMSSubmission decodedSubm = reader.readSubmission( smsBytes, meta );
-        System.out.println( "Decoded submission is: " + gson.toJson( decodedSubm ) );
+    public SMSSubmission decompressSubm( String comp64 )
+        throws Exception
+    {
+        byte[] decSubmBytes = TestUtils.decBase64( comp64 );
+        SMSSubmissionHeader header = reader.readHeader( decSubmBytes );
+        Assert.assertNotNull( header );
+        return reader.readSubmission( decSubmBytes, meta );
+    }
+
+    @Before
+    public void init()
+        throws Exception
+    {
+        Gson gson = new Gson();
+        String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
+        meta = gson.fromJson( metadataJson, SMSMetadata.class );
+        writer = new SMSSubmissionWriter( meta );
+        reader = new SMSSubmissionReader();
+    }
+
+    @After
+    public void cleanup()
+    {
+
     }
 
     @Test
-    public void testEncodeDelete()
+    public void testEncodeDecodeRelationship()
     {
-        Gson gson = new Gson();
         try
         {
-            String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
-            SMSMetadata meta = gson.fromJson( metadataJson, SMSMetadata.class );
-            DeleteSMSSubmission subm = new DeleteSMSSubmission();
+            RelationshipSMSSubmission origSubm = TestUtils.createRelationshipSubmission();
+            String comp64 = compressSubm( origSubm );
+            RelationshipSMSSubmission decSubm = (RelationshipSMSSubmission) decompressSubm( comp64 );
 
-            // Tom Wakiki (system)
-            subm.setUserID( "GOLswS44mh8" );
-            // Generated UID of test event
-            subm.setUid( "Jpr20TLJ7Z1" );
-            subm.setSubmissionID( 1 );
-
-            SMSSubmissionWriter writer = new SMSSubmissionWriter( meta );
-            byte[] compressSubm = writer.compress( subm );
-            String subm64 = Base64.getEncoder().encodeToString( compressSubm );
-            System.out.println( "Delete submission in Base64 is: " + subm64 );
-
-            printDecoded( subm64, meta );
+            TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
         {
@@ -97,33 +109,15 @@ public class TestEncodeDecode
     }
 
     @Test
-    public void testEncodeRelationship()
+    public void testEncodeDecodeDelete()
     {
-        Gson gson = new Gson();
         try
         {
-            String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
-            SMSMetadata meta = gson.fromJson( metadataJson, SMSMetadata.class );
-            RelationshipSMSSubmission subm = new RelationshipSMSSubmission();
+            DeleteSMSSubmission origSubm = TestUtils.createDeleteSubmission();
+            String comp64 = compressSubm( origSubm );
+            DeleteSMSSubmission decSubm = (DeleteSMSSubmission) decompressSubm( comp64 );
 
-            // Tom Wakiki (system)
-            subm.setUserID( "GOLswS44mh8" );
-            // Sibling_a-to-b_(Person-Person)
-            subm.setRelationshipType( "XdP5nraLPZ0" );
-            // Generated UID for new relationship
-            subm.setRelationship( "uf3svrmpzOj" );
-            // Gloria Murray (Person)
-            subm.setFrom( "qv0j4JBXQX0" );
-            // Jerald Wilson (Person)
-            subm.setTo( "LSEjy8nA3kY" );
-            subm.setSubmissionID( 1 );
-
-            SMSSubmissionWriter writer = new SMSSubmissionWriter( meta );
-            byte[] compressSubm = writer.compress( subm );
-            String subm64 = Base64.getEncoder().encodeToString( compressSubm );
-            System.out.println( "Relationship submission in Base64 is: " + subm64 );
-
-            printDecoded( subm64, meta );
+            TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
         {
@@ -133,43 +127,15 @@ public class TestEncodeDecode
     }
 
     @Test
-    public void testEncodeSimpleEvent()
+    public void testEncodeDecodeSimpleEvent()
     {
-        Gson gson = new Gson();
         try
         {
-            String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
-            SMSMetadata meta = gson.fromJson( metadataJson, SMSMetadata.class );
-            SimpleEventSMSSubmission subm = new SimpleEventSMSSubmission();
+            SimpleEventSMSSubmission origSubm = TestUtils.createSimpleEventSubmission();
+            String comp64 = compressSubm( origSubm );
+            SimpleEventSMSSubmission decSubm = (SimpleEventSMSSubmission) decompressSubm( comp64 );
 
-            // Tom Wakiki (system)
-            subm.setUserID( "GOLswS44mh8" );
-            // Ngelehun CHC
-            subm.setOrgUnit( "DiszpKrYNg8" );
-            // Antenatal Care Visit
-            subm.setEventProgram( "lxAQ7Zs9VYR" );
-            // Default catOptionCombo
-            subm.setAttributeOptionCombo( "HllvX50cXC0" );
-            // New UID
-            subm.setEvent( "l7M1gUFK37v" );
-            subm.setComplete( true );
-            subm.setTimestamp( meta.lastSyncDate );
-            ArrayList<SMSDataValue> values = new ArrayList<>();
-            // WHOMCH Smoking
-            values.add( new SMSDataValue( "HllvX50cXC0", "sWoqcoByYmD", "true" ) );
-            // WHOMCH Smoking cessation counselling provided
-            values.add( new SMSDataValue( "HllvX50cXC0", "Ok9OQpitjQr", "false" ) );
-            // WHOMCH Hemoglobin value
-            values.add( new SMSDataValue( "HllvX50cXC0", "vANAXwtLwcT", "14" ) );
-            subm.setValues( values );
-            subm.setSubmissionID( 1 );
-
-            SMSSubmissionWriter writer = new SMSSubmissionWriter( meta );
-            byte[] compressSubm = writer.compress( subm );
-            String subm64 = Base64.getEncoder().encodeToString( compressSubm );
-            System.out.println( "Simple Event submission in Base64 is: " + subm64 );
-
-            printDecoded( subm64, meta );
+            TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
         {
@@ -181,45 +147,13 @@ public class TestEncodeDecode
     @Test
     public void testEncodeAggregateDataset()
     {
-        Gson gson = new Gson();
         try
         {
-            String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
-            SMSMetadata meta = gson.fromJson( metadataJson, SMSMetadata.class );
-            AggregateDatasetSMSSubmission subm = new AggregateDatasetSMSSubmission();
+            AggregateDatasetSMSSubmission origSubm = TestUtils.createAggregateDatasetSubmission();
+            String comp64 = compressSubm( origSubm );
+            AggregateDatasetSMSSubmission decSubm = (AggregateDatasetSMSSubmission) decompressSubm( comp64 );
 
-            // Tom Wakiki (system)
-            subm.setUserID( "GOLswS44mh8" );
-            // Ngelehun CHC
-            subm.setOrgUnit( "DiszpKrYNg8" );
-            // IDSR Weekly
-            subm.setDataSet( "Nyh6laLdBEJ" );
-            subm.setComplete( true );
-            subm.setAttributeOptionCombo( "HllvX50cXC0" );
-            subm.setPeriod( "2019W16" );
-            ArrayList<SMSDataValue> values = new ArrayList<>();
-            // Yellow Fever
-            values.add( new SMSDataValue( "HllvX50cXC0", "noIzB569hTM", "11" ) );
-            // Malaria
-            values.add( new SMSDataValue( "HllvX50cXC0", "vq2qO3eTrNi", "24" ) );
-            // Plague
-            values.add( new SMSDataValue( "HllvX50cXC0", "HS9zqaBdOQ4", "99" ) );
-            // Measles
-            values.add( new SMSDataValue( "HllvX50cXC0", "YazgqXbizv1", "3" ) );
-            // Cholera
-            values.add( new SMSDataValue( "HllvX50cXC0", "UsSUX0cpKsH", "1" ) );
-            // Fake Data Element, doesn't exist server side
-            values.add( new SMSDataValue( "HllvX50cXC0", "xxxxxxxxxxx", "1" ) );
-
-            subm.setValues( values );
-            subm.setSubmissionID( 1 );
-
-            SMSSubmissionWriter writer = new SMSSubmissionWriter( meta );
-            byte[] compressSubm = writer.compress( subm );
-            String subm64 = Base64.getEncoder().encodeToString( compressSubm );
-            System.out.println( "Aggregate Dataset submission in Base64 is: " + subm64 );
-
-            printDecoded( subm64, meta );
+            TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
         {
@@ -231,48 +165,13 @@ public class TestEncodeDecode
     @Test
     public void testEncodeEnrollment()
     {
-        Gson gson = new Gson();
         try
         {
-            String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
-            SMSMetadata meta = gson.fromJson( metadataJson, SMSMetadata.class );
-            EnrollmentSMSSubmission subm = new EnrollmentSMSSubmission();
+            EnrollmentSMSSubmission origSubm = TestUtils.createEnrollmentSubmission();
+            String comp64 = compressSubm( origSubm );
+            EnrollmentSMSSubmission decSubm = (EnrollmentSMSSubmission) decompressSubm( comp64 );
 
-            // Tom Wakiki (system)
-            subm.setUserID( "GOLswS44mh8" );
-            // Ngelehun CHC
-            subm.setOrgUnit( "DiszpKrYNg8" );
-            // Child Programme
-            subm.setTrackerProgram( "IpHINAT79UW" );
-            // Person
-            subm.setTrackedEntityType( "nEenWmSyUEp" );
-            // Newly generated UID
-            subm.setTrackedEntityInstance( "T2bRuLEGoVN" );
-            // Newly generated UID
-            subm.setEnrollment( "p7M1gUFK37W" );
-            subm.setTimestamp( meta.lastSyncDate );
-
-            ArrayList<SMSAttributeValue> values = new ArrayList<>();
-            // First Name
-            values.add( new SMSAttributeValue( "w75KJ2mc4zz", "Harold" ) );
-            // Last Name
-            values.add( new SMSAttributeValue( "zDhUuAYrxNC", "Smith" ) );
-            // City
-            values.add( new SMSAttributeValue( "FO4sWYJ64LQ", "Sydney" ) );
-            // Address
-            values.add( new SMSAttributeValue( "VqEFza8wbwA", "The Opera House" ) );
-            // Unique ID
-            values.add( new SMSAttributeValue( "lZGmxYbs97q", "987123" ) );
-            subm.setValues( values );
-
-            subm.setSubmissionID( 1 );
-
-            SMSSubmissionWriter writer = new SMSSubmissionWriter( meta );
-            byte[] compressSubm = writer.compress( subm );
-            String subm64 = Base64.getEncoder().encodeToString( compressSubm );
-            System.out.println( "Enrollment submission in Base64 is: " + subm64 );
-
-            printDecoded( subm64, meta );
+            TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
         {
@@ -284,45 +183,13 @@ public class TestEncodeDecode
     @Test
     public void testEncodeTrackerEvent()
     {
-        Gson gson = new Gson();
         try
         {
-            String metadataJson = IOUtils.toString( new FileReader( "src/test/resources/metadata.json" ) );
-            SMSMetadata meta = gson.fromJson( metadataJson, SMSMetadata.class );
-            TrackerEventSMSSubmission subm = new TrackerEventSMSSubmission();
+            TrackerEventSMSSubmission origSubm = TestUtils.createTrackerEventSubmission();
+            String comp64 = compressSubm( origSubm );
+            TrackerEventSMSSubmission decSubm = (TrackerEventSMSSubmission) decompressSubm( comp64 );
 
-            // Jasper Timm
-            subm.setUserID( "V3qn98bKsr6" );
-            // Ngelehun CHC
-            subm.setOrgUnit( "DiszpKrYNg8" );
-            // Birth
-            subm.setProgramStage( "A03MvHHogjR" );
-            // Default catOptionCombo
-            subm.setAttributeOptionCombo( "HllvX50cXC0" );
-            // Test Person
-            subm.setEnrollment( "DacGG5vK1K6" );
-            // New UID
-            subm.setEvent( "r7M1gUFK37v" );
-            subm.setComplete( true );
-            subm.setTimestamp( meta.lastSyncDate );
-            ArrayList<SMSDataValue> values = new ArrayList<>();
-            // Apgar score
-            values.add( new SMSDataValue( "HllvX50cXC0", "a3kGcGDCuk6", "10" ) );
-            // Weight (g)
-            values.add( new SMSDataValue( "HllvX50cXC0", "UXz7xuGCEhU", "500" ) );
-            // ARV at birth"
-            values.add( new SMSDataValue( "HllvX50cXC0", "wQLfBvPrXqq", "Others" ) );
-            // Infant feeding
-            values.add( new SMSDataValue( "HllvX50cXC0", "X8zyunlgUfM", "Exclusive" ) );
-            subm.setValues( values );
-            subm.setSubmissionID( 1 );
-
-            SMSSubmissionWriter writer = new SMSSubmissionWriter( meta );
-            byte[] compressSubm = writer.compress( subm );
-            String subm64 = Base64.getEncoder().encodeToString( compressSubm );
-            System.out.println( "Tracker Event submission in Base64 is: " + subm64 );
-
-            printDecoded( subm64, meta );
+            TestUtils.checkSubmissionsAreEqual( origSubm, decSubm );
         }
         catch ( Exception e )
         {

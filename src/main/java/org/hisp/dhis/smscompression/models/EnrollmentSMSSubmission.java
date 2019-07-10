@@ -31,7 +31,9 @@ package org.hisp.dhis.smscompression.models;
 import java.util.Date;
 import java.util.List;
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -40,68 +42,68 @@ public class EnrollmentSMSSubmission
     extends
     SMSSubmission
 {
-    protected String orgUnit;
+    protected UID orgUnit;
 
-    protected String trackerProgram;
+    protected UID trackerProgram;
 
-    protected String trackedEntityType;
+    protected UID trackedEntityType;
 
-    protected String trackedEntityInstance;
+    protected UID trackedEntityInstance;
 
-    protected String enrollment;
+    protected UID enrollment;
 
     protected Date timestamp;
 
     protected List<SMSAttributeValue> values;
 
-    public String getOrgUnit()
+    public UID getOrgUnit()
     {
         return orgUnit;
     }
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = orgUnit;
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
-    public String getTrackerProgram()
+    public UID getTrackerProgram()
     {
         return trackerProgram;
     }
 
     public void setTrackerProgram( String trackerProgram )
     {
-        this.trackerProgram = trackerProgram;
+        this.trackerProgram = new UID( trackerProgram, MetadataType.PROGRAM );
     }
 
-    public String getTrackedEntityType()
+    public UID getTrackedEntityType()
     {
         return trackedEntityType;
     }
 
     public void setTrackedEntityType( String trackedEntityType )
     {
-        this.trackedEntityType = trackedEntityType;
+        this.trackedEntityType = new UID( trackedEntityType, MetadataType.TRACKED_ENTITY_TYPE );
     }
 
-    public String getTrackedEntityInstance()
+    public UID getTrackedEntityInstance()
     {
         return trackedEntityInstance;
     }
 
     public void setTrackedEntityInstance( String trackedEntityInstance )
     {
-        this.trackedEntityInstance = trackedEntityInstance;
+        this.trackedEntityInstance = new UID( trackedEntityInstance, MetadataType.TRACKED_ENTITY_INSTANCE );
     }
 
-    public String getEnrollment()
+    public UID getEnrollment()
     {
         return enrollment;
     }
 
     public void setEnrollment( String enrollment )
     {
-        this.enrollment = enrollment;
+        this.enrollment = new UID( enrollment, MetadataType.ENROLLMENT );
     }
 
     public Date getTimestamp()
@@ -124,35 +126,54 @@ public class EnrollmentSMSSubmission
         this.values = values;
     }
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public boolean equals( Object o )
     {
-        writer.writeNewID( orgUnit );
-        writer.writeNewID( trackerProgram );
-        writer.writeNewID( trackedEntityType );
-        writer.writeNewID( trackedEntityInstance );
-        writer.writeNewID( enrollment );
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        EnrollmentSMSSubmission subm = (EnrollmentSMSSubmission) o;
+
+        return orgUnit.equals( subm.orgUnit ) && trackerProgram.equals( subm.trackerProgram )
+            && trackedEntityType.equals( subm.trackedEntityType )
+            && trackedEntityInstance.equals( subm.trackedEntityInstance ) && enrollment.equals( subm.enrollment )
+            && timestamp.equals( subm.timestamp ) && values.equals( subm.values );
+    }
+
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
+    {
+        writer.writeID( orgUnit );
+        writer.writeID( trackerProgram );
+        writer.writeID( trackedEntityType );
+        writer.writeID( trackedEntityInstance );
+        writer.writeID( enrollment );
         writer.writeDate( timestamp );
         writer.writeAttributeValues( values );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader, int version )
+        throws SMSCompressionException
     {
-        this.orgUnit = reader.readNewID();
-        this.trackerProgram = reader.readNewID();
-        this.trackedEntityType = reader.readNewID();
-        this.trackedEntityInstance = reader.readNewID();
-        this.enrollment = reader.readNewID();
+        this.orgUnit = reader.readID( MetadataType.ORGANISATION_UNIT );
+        this.trackerProgram = reader.readID( MetadataType.PROGRAM );
+        this.trackedEntityType = reader.readID( MetadataType.TRACKED_ENTITY_TYPE );
+        this.trackedEntityInstance = reader.readID( MetadataType.TRACKED_ENTITY_INSTANCE );
+        this.enrollment = reader.readID( MetadataType.ENROLLMENT );
         this.timestamp = reader.readDate();
-        this.values = reader.readAttributeValues( meta );
+        this.values = reader.readAttributeValues();
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.ENROLLMENT;

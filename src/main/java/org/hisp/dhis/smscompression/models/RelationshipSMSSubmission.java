@@ -28,7 +28,9 @@ package org.hisp.dhis.smscompression.models;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.smscompression.SMSCompressionException;
 import org.hisp.dhis.smscompression.SMSConsts;
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.SMSSubmissionReader;
 import org.hisp.dhis.smscompression.SMSSubmissionWriter;
@@ -37,81 +39,98 @@ public class RelationshipSMSSubmission
     extends
     SMSSubmission
 {
-    protected String relationshipType;
+    protected UID relationshipType;
 
-    protected String relationship;
+    protected UID relationship;
 
-    protected String from;
+    protected UID from;
 
-    protected String to;
+    protected UID to;
 
     /* Getters and Setters */
 
-    public String getRelationshipType()
+    public UID getRelationshipType()
     {
         return relationshipType;
     }
 
     public void setRelationshipType( String relationshipType )
     {
-        this.relationshipType = relationshipType;
+        this.relationshipType = new UID( relationshipType, MetadataType.RELATIONSHIP_TYPE );
     }
 
-    public String getRelationship()
+    public UID getRelationship()
     {
         return relationship;
     }
 
     public void setRelationship( String relationship )
     {
-        this.relationship = relationship;
+        this.relationship = new UID( relationship, MetadataType.RELATIONSHIP );
     }
 
-    public String getFrom()
+    public UID getFrom()
     {
         return from;
     }
 
     public void setFrom( String from )
     {
-        this.from = from;
+        this.from = new UID( from, null );
     }
 
-    public String getTo()
+    public UID getTo()
     {
         return to;
     }
 
     public void setTo( String to )
     {
-        this.to = to;
+        this.to = new UID( to, null );
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        RelationshipSMSSubmission subm = (RelationshipSMSSubmission) o;
+
+        return relationshipType.equals( subm.relationshipType ) && relationship.equals( subm.relationship )
+            && from.equals( subm.from ) && to.equals( subm.to );
     }
 
     /* Implementation of abstract methods */
 
-    public void writeSubm( SMSMetadata meta, SMSSubmissionWriter writer )
-        throws Exception
+    @Override
+    public void writeSubm( SMSSubmissionWriter writer )
+        throws SMSCompressionException
     {
-        writer.writeNewID( relationshipType );
-        writer.writeNewID( relationship );
-        writer.writeNewID( from );
-        writer.writeNewID( to );
+        writer.writeID( relationshipType );
+        writer.writeID( relationship );
+        writer.writeNewID( from.uid );
+        writer.writeNewID( to.uid );
     }
 
-    public void readSubm( SMSMetadata meta, SMSSubmissionReader reader )
-        throws Exception
+    @Override
+    public void readSubm( SMSSubmissionReader reader, int version )
+        throws SMSCompressionException
     {
-        this.relationshipType = reader.readNewID();
-        this.relationship = reader.readNewID();
-        this.from = reader.readNewID();
-        this.to = reader.readNewID();
+        this.relationshipType = reader.readID( MetadataType.RELATIONSHIP_TYPE );
+        this.relationship = reader.readID( MetadataType.RELATIONSHIP );
+        this.from = new UID( reader.readNewID(), null );
+        this.to = new UID( reader.readNewID(), null );
     }
 
+    @Override
     public int getCurrentVersion()
     {
         return 1;
     }
 
+    @Override
     public SubmissionType getType()
     {
         return SMSConsts.SubmissionType.RELATIONSHIP;
