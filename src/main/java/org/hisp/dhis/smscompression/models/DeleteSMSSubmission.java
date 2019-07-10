@@ -74,7 +74,7 @@ public class DeleteSMSSubmission
     }
 
     @Override
-    public void readSubm( SMSSubmissionReader reader )
+    public void readSubm( SMSSubmissionReader reader, int version )
         throws SMSCompressionException
     {
         this.event = reader.readID( MetadataType.EVENT );
