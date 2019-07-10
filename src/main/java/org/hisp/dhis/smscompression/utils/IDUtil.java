@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.utils;
 
+import java.io.ByteArrayOutputStream;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -29,6 +31,7 @@ package org.hisp.dhis.smscompression.utils;
  */
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,11 +163,11 @@ public class IDUtil
             int typeBitLen = inStream.read( SMSConsts.VARLEN_BITLEN );
             Map<Integer, String> idLookup = IDUtil.getIDLookup( meta.getType( type ), typeBitLen );
             int idHash = inStream.read( typeBitLen );
-            return new UID( idLookup.get( idHash ), idHash );
+            return new UID( idLookup.get( idHash ), idHash, type );
         }
         else
         {
-            return new UID( readNewID( inStream ) );
+            return new UID( readNewID( inStream ), type );
         }
     }
 
@@ -179,27 +182,47 @@ public class IDUtil
         return idLookup;
     }
 
-    public static void writeID( String id, boolean hashingEnabled, MetadataType type, SMSMetadata meta,
-        BitOutputStream outStream )
+    public static void writeID( UID uid, boolean hashingEnabled, SMSMetadata meta, BitOutputStream outStream )
         throws SMSCompressionException
     {
-        if ( !validID( id ) )
-            throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + id );
+        if ( !validID( uid.uid ) )
+            throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + uid.uid );
 
-        List<String> idList = meta.getType( type );
-        boolean useHash = hashingEnabled && idList != null && idList.contains( id );
+        List<String> idList = meta.getType( uid.type );
+        boolean useHash = hashingEnabled && idList != null && idList.contains( uid.uid );
         ValueUtil.writeBool( useHash, outStream );
 
         if ( useHash )
         {
-            int typeBitLen = IDUtil.getBitLengthForList( idList, type );
+            int typeBitLen = IDUtil.getBitLengthForList( idList, uid.type );
             outStream.write( typeBitLen, SMSConsts.VARLEN_BITLEN );
-            int idHash = BinaryUtils.hash( id, typeBitLen );
+            int idHash = BinaryUtils.hash( uid.uid, typeBitLen );
             outStream.write( idHash, typeBitLen );
         }
         else
         {
-            IDUtil.writeNewID( id, outStream );
+            IDUtil.writeNewID( uid.uid, outStream );
         }
+    }
+
+    public static String hashAsBase64( UID uid )
+    {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        BitOutputStream outStream = new BitOutputStream( byteStream );
+        int bitLen = BinaryUtils.bitlenNeeded( uid.hash );
+
+        try
+        {
+            outStream.write( uid.type.ordinal(), SMSConsts.METADATA_TYPE_BITLEN );
+            outStream.write( bitLen, SMSConsts.VARLEN_BITLEN );
+            outStream.write( uid.hash, bitLen );
+            outStream.close();
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }
+
+        return Base64.getEncoder().encodeToString( byteStream.toByteArray() );
     }
 }

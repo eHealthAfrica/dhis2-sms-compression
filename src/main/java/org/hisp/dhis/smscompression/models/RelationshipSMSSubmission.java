@@ -56,7 +56,7 @@ public class RelationshipSMSSubmission
 
     public void setRelationshipType( String relationshipType )
     {
-        this.relationshipType = new UID( relationshipType );
+        this.relationshipType = new UID( relationshipType, MetadataType.RELATIONSHIP_TYPE );
     }
 
     public UID getRelationship()
@@ -66,7 +66,7 @@ public class RelationshipSMSSubmission
 
     public void setRelationship( String relationship )
     {
-        this.relationship = new UID( relationship );
+        this.relationship = new UID( relationship, MetadataType.RELATIONSHIP );
     }
 
     public UID getFrom()
@@ -76,7 +76,7 @@ public class RelationshipSMSSubmission
 
     public void setFrom( String from )
     {
-        this.from = new UID( from );
+        this.from = new UID( from, null );
     }
 
     public UID getTo()
@@ -86,7 +86,7 @@ public class RelationshipSMSSubmission
 
     public void setTo( String to )
     {
-        this.to = new UID( to );
+        this.to = new UID( to, null );
     }
 
     @Override
@@ -108,8 +108,8 @@ public class RelationshipSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( relationshipType.uid, MetadataType.RELATIONSHIP_TYPE );
-        writer.writeID( relationship.uid, MetadataType.RELATIONSHIP );
+        writer.writeID( relationshipType );
+        writer.writeID( relationship );
         writer.writeNewID( from.uid );
         writer.writeNewID( to.uid );
     }
@@ -120,8 +120,8 @@ public class RelationshipSMSSubmission
     {
         this.relationshipType = reader.readID( MetadataType.RELATIONSHIP_TYPE );
         this.relationship = reader.readID( MetadataType.RELATIONSHIP );
-        this.from = new UID( reader.readNewID() );
-        this.to = new UID( reader.readNewID() );
+        this.from = new UID( reader.readNewID(), null );
+        this.to = new UID( reader.readNewID(), null );
     }
 
     @Override

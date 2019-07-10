@@ -1,5 +1,6 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.SMSConsts.ValueType;
 
 /*
@@ -42,7 +43,7 @@ public class SMSAttributeValue
 
     public SMSAttributeValue( String attribute, String value )
     {
-        this.attribute = new UID( attribute );
+        this.attribute = new UID( attribute, MetadataType.TRACKED_ENTITY_ATTRIBUTE );
         this.value = value;
         this.smsValue = SMSValue.asSMSValue( value );
     }

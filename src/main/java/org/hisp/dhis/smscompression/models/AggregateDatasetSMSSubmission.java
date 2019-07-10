@@ -62,7 +62,7 @@ public class AggregateDatasetSMSSubmission
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = new UID( orgUnit );
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
     public UID getDataSet()
@@ -72,7 +72,7 @@ public class AggregateDatasetSMSSubmission
 
     public void setDataSet( String dataSet )
     {
-        this.dataSet = new UID( dataSet );
+        this.dataSet = new UID( dataSet, MetadataType.DATASET );
     }
 
     public boolean isComplete()
@@ -92,7 +92,7 @@ public class AggregateDatasetSMSSubmission
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = new UID( attributeOptionCombo );
+        this.attributeOptionCombo = new UID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
     }
 
     public String getPeriod()
@@ -137,10 +137,10 @@ public class AggregateDatasetSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit.uid, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( dataSet.uid, MetadataType.DATASET );
+        writer.writeID( orgUnit );
+        writer.writeID( dataSet );
         writer.writeBool( complete );
-        writer.writeID( attributeOptionCombo.uid, MetadataType.CATEGORY_OPTION_COMBO );
+        writer.writeID( attributeOptionCombo );
         writer.writePeriod( period );
         writer.writeDataValues( values );
     }

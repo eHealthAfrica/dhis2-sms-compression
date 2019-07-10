@@ -50,7 +50,7 @@ public class DeleteSMSSubmission
 
     public void setEvent( String event )
     {
-        this.event = new UID( event );
+        this.event = new UID( event, MetadataType.EVENT );
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DeleteSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( event.uid, MetadataType.EVENT );
+        writer.writeID( event );
     }
 
     @Override

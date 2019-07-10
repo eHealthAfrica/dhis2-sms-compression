@@ -98,6 +98,10 @@ public class SMSConsts
 
     public static final int EVENT_STATUS_BITLEN = 3;
 
+    public static final int METADATA_TYPE_BITLEN = 5; // Keeping this large (32)
+                                                      // to support more types
+                                                      // in future
+
     public static final int MAX_FIXED_NUM = (int) Math.pow( 2, Math.pow( 2, FIXED_INT_BITLEN ) ) - 1;
 
     // TODO: We should change this to be adjustable depending on largest int

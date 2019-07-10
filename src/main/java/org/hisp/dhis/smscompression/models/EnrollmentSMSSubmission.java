@@ -63,7 +63,7 @@ public class EnrollmentSMSSubmission
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = new UID( orgUnit );
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
     public UID getTrackerProgram()
@@ -73,7 +73,7 @@ public class EnrollmentSMSSubmission
 
     public void setTrackerProgram( String trackerProgram )
     {
-        this.trackerProgram = new UID( trackerProgram );
+        this.trackerProgram = new UID( trackerProgram, MetadataType.PROGRAM );
     }
 
     public UID getTrackedEntityType()
@@ -83,7 +83,7 @@ public class EnrollmentSMSSubmission
 
     public void setTrackedEntityType( String trackedEntityType )
     {
-        this.trackedEntityType = new UID( trackedEntityType );
+        this.trackedEntityType = new UID( trackedEntityType, MetadataType.TRACKED_ENTITY_TYPE );
     }
 
     public UID getTrackedEntityInstance()
@@ -93,7 +93,7 @@ public class EnrollmentSMSSubmission
 
     public void setTrackedEntityInstance( String trackedEntityInstance )
     {
-        this.trackedEntityInstance = new UID( trackedEntityInstance );
+        this.trackedEntityInstance = new UID( trackedEntityInstance, MetadataType.TRACKED_ENTITY_INSTANCE );
     }
 
     public UID getEnrollment()
@@ -103,7 +103,7 @@ public class EnrollmentSMSSubmission
 
     public void setEnrollment( String enrollment )
     {
-        this.enrollment = new UID( enrollment );
+        this.enrollment = new UID( enrollment, MetadataType.ENROLLMENT );
     }
 
     public Date getTimestamp()
@@ -145,11 +145,11 @@ public class EnrollmentSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit.uid, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( trackerProgram.uid, MetadataType.PROGRAM );
-        writer.writeID( trackedEntityType.uid, MetadataType.TRACKED_ENTITY_TYPE );
-        writer.writeID( trackedEntityInstance.uid, MetadataType.TRACKED_ENTITY_INSTANCE );
-        writer.writeID( enrollment.uid, MetadataType.ENROLLMENT );
+        writer.writeID( orgUnit );
+        writer.writeID( trackerProgram );
+        writer.writeID( trackedEntityType );
+        writer.writeID( trackedEntityInstance );
+        writer.writeID( enrollment );
         writer.writeDate( timestamp );
         writer.writeAttributeValues( values );
     }

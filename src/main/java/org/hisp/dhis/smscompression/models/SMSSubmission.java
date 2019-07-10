@@ -86,7 +86,7 @@ public abstract class SMSSubmission
 
     public void setUserID( String userID )
     {
-        this.userID = new UID( userID );
+        this.userID = new UID( userID, MetadataType.USER );
     }
 
     public void validateSubmission()
@@ -108,7 +108,7 @@ public abstract class SMSSubmission
 
         validateSubmission();
         header.writeHeader( writer );
-        writer.writeID( userID.uid, MetadataType.USER );
+        writer.writeID( userID );
         writeSubm( writer );
     }
 

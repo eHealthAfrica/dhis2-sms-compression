@@ -66,7 +66,7 @@ public class SimpleEventSMSSubmission
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = new UID( orgUnit );
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
     public UID getEventProgram()
@@ -76,7 +76,7 @@ public class SimpleEventSMSSubmission
 
     public void setEventProgram( String eventProgram )
     {
-        this.eventProgram = new UID( eventProgram );
+        this.eventProgram = new UID( eventProgram, MetadataType.PROGRAM );
     }
 
     public EventStatus getEventStatus()
@@ -96,7 +96,7 @@ public class SimpleEventSMSSubmission
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = new UID( attributeOptionCombo );
+        this.attributeOptionCombo = new UID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
     }
 
     public UID getEvent()
@@ -106,7 +106,7 @@ public class SimpleEventSMSSubmission
 
     public void setEvent( String event )
     {
-        this.event = new UID( event );
+        this.event = new UID( event, MetadataType.EVENT );
     }
 
     public Date getTimestamp()
@@ -149,11 +149,11 @@ public class SimpleEventSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit.uid, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( eventProgram.uid, MetadataType.PROGRAM );
+        writer.writeID( orgUnit );
+        writer.writeID( eventProgram );
         writer.writeEventStatus( eventStatus );
-        writer.writeID( attributeOptionCombo.uid, MetadataType.CATEGORY_OPTION_COMBO );
-        writer.writeID( event.uid, MetadataType.EVENT );
+        writer.writeID( attributeOptionCombo );
+        writer.writeID( event );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
     }

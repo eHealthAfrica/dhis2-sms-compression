@@ -68,7 +68,7 @@ public class TrackerEventSMSSubmission
 
     public void setOrgUnit( String orgUnit )
     {
-        this.orgUnit = new UID( orgUnit );
+        this.orgUnit = new UID( orgUnit, MetadataType.ORGANISATION_UNIT );
     }
 
     public UID getProgramStage()
@@ -78,7 +78,7 @@ public class TrackerEventSMSSubmission
 
     public void setProgramStage( String programStage )
     {
-        this.programStage = new UID( programStage );
+        this.programStage = new UID( programStage, MetadataType.PROGRAM_STAGE );
     }
 
     public EventStatus getEventStatus()
@@ -98,7 +98,7 @@ public class TrackerEventSMSSubmission
 
     public void setAttributeOptionCombo( String attributeOptionCombo )
     {
-        this.attributeOptionCombo = new UID( attributeOptionCombo );
+        this.attributeOptionCombo = new UID( attributeOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
     }
 
     public UID getEnrollment()
@@ -108,7 +108,7 @@ public class TrackerEventSMSSubmission
 
     public void setEnrollment( String enrollment )
     {
-        this.enrollment = new UID( enrollment );
+        this.enrollment = new UID( enrollment, MetadataType.ENROLLMENT );
     }
 
     public UID getEvent()
@@ -118,7 +118,7 @@ public class TrackerEventSMSSubmission
 
     public void setEvent( String event )
     {
-        this.event = new UID( event );
+        this.event = new UID( event, MetadataType.EVENT );
     }
 
     public Date getTimestamp()
@@ -162,12 +162,12 @@ public class TrackerEventSMSSubmission
     public void writeSubm( SMSSubmissionWriter writer )
         throws SMSCompressionException
     {
-        writer.writeID( orgUnit.uid, MetadataType.ORGANISATION_UNIT );
-        writer.writeID( programStage.uid, MetadataType.PROGRAM_STAGE );
+        writer.writeID( orgUnit );
+        writer.writeID( programStage );
         writer.writeEventStatus( eventStatus );
-        writer.writeID( attributeOptionCombo.uid, MetadataType.CATEGORY_OPTION_COMBO );
-        writer.writeID( enrollment.uid, MetadataType.ENROLLMENT );
-        writer.writeID( event.uid, MetadataType.EVENT );
+        writer.writeID( attributeOptionCombo );
+        writer.writeID( enrollment );
+        writer.writeID( event );
         writer.writeDate( timestamp );
         writer.writeDataValues( values );
     }

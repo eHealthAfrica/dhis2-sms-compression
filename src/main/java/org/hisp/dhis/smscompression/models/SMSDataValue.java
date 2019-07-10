@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -40,8 +42,8 @@ public class SMSDataValue
 
     public SMSDataValue( String categoryOptionCombo, String dataElement, String value )
     {
-        this.categoryOptionCombo = new UID( categoryOptionCombo );
-        this.dataElement = new UID( dataElement );
+        this.categoryOptionCombo = new UID( categoryOptionCombo, MetadataType.CATEGORY_OPTION_COMBO );
+        this.dataElement = new UID( dataElement, MetadataType.DATA_ELEMENT );
         this.value = value;
         this.smsValue = SMSValue.asSMSValue( value );
     }
