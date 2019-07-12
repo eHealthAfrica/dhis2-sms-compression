@@ -62,7 +62,8 @@ public class SMSSubmissionWriter
     public SMSSubmissionWriter( SMSMetadata meta )
         throws SMSCompressionException
     {
-        meta.validate();
+        if ( meta != null )
+            meta.validate();
         this.meta = meta;
     }
 

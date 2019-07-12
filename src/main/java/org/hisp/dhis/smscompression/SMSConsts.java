@@ -112,7 +112,7 @@ public class SMSConsts
     public static final int FLOAT_BITLEN = 32;
 
     // As we only store timestamps to the second, this is the format we use
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat( DATE_FORMAT );
 

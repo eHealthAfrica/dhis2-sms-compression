@@ -36,8 +36,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.hisp.dhis.smscompression.SMSConsts.SMSEventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
+import org.hisp.dhis.smscompression.SMSConsts.SMSEventStatus;
 import org.hisp.dhis.smscompression.SMSConsts.SubmissionType;
 import org.hisp.dhis.smscompression.models.AggregateDatasetSMSSubmission;
 import org.hisp.dhis.smscompression.models.DeleteSMSSubmission;
@@ -82,7 +82,8 @@ public class SMSSubmissionReader
     public SMSSubmission readSubmission( byte[] smsBytes, SMSMetadata meta )
         throws SMSCompressionException
     {
-        meta.validate();
+        if ( meta != null )
+            meta.validate();
         this.meta = meta;
         SMSSubmissionHeader header = readHeader( smsBytes );
         this.valueReader = new ValueReader( inStream, meta );

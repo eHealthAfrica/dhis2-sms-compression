@@ -1,5 +1,7 @@
 package org.hisp.dhis.smscompression.models;
 
+import java.util.Date;
+
 /*
  * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
@@ -104,7 +106,7 @@ public abstract class SMSSubmission
         throws SMSCompressionException
     {
         // Ensure we set the lastSyncDate in the subm header
-        header.setLastSyncDate( meta.lastSyncDate );
+        header.setLastSyncDate( meta != null ? meta.lastSyncDate : new Date( 0 ) );
 
         validateSubmission();
         header.writeHeader( writer );

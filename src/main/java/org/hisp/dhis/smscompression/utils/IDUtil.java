@@ -189,7 +189,7 @@ public class IDUtil
         if ( !validID( uid.uid ) )
             throw new SMSCompressionException( "Attempting to write out ID with invalid format: " + uid.uid );
 
-        List<String> idList = meta.getType( uid.type );
+        List<String> idList = meta != null ? meta.getType( uid.type ) : null;
         boolean useHash = hashingEnabled && idList != null && idList.contains( uid.uid );
         ValueUtil.writeBool( useHash, outStream );
 
