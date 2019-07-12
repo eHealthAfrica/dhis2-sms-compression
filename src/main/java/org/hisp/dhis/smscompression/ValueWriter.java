@@ -29,7 +29,7 @@ public class ValueWriter
     {
         this.outStream = outStream;
         this.meta = meta;
-        this.hashingEnabled = hashingEnabled;
+        this.hashingEnabled = meta == null ? false : hashingEnabled;
     }
 
     public int writeHashBitLen( MetadataType type )
