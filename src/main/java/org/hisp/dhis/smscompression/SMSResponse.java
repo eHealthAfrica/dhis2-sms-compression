@@ -30,8 +30,8 @@ package org.hisp.dhis.smscompression;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public enum SMSResponse
 {
@@ -113,7 +113,15 @@ public enum SMSResponse
     @Override
     public String toString()
     {
-        String uidDelim = errorElems.stream().map( uid -> uid.toString() ).collect( Collectors.joining( "," ) );
-        return code + ":" + uidDelim + ":" + description;
+        String objDelim = "";
+
+        for ( Iterator<Object> iter = errorElems.iterator(); iter.hasNext(); )
+        {
+            objDelim += iter.next().toString();
+            if ( iter.hasNext() )
+                objDelim += ",";
+        }
+
+        return code + ":" + objDelim + ":" + description;
     }
 }
