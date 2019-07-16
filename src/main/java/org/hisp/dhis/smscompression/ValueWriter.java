@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.hisp.dhis.smscompression.SMSConsts.MetadataType;
 import org.hisp.dhis.smscompression.models.SMSAttributeValue;
@@ -59,7 +58,11 @@ public class ValueWriter
         ValueUtil.writeBool( hashingEnabled, outStream );
         int attributeBitLen = writeHashBitLen( MetadataType.TRACKED_ENTITY_ATTRIBUTE );
 
-        List<SMSValue<?>> smsVals = values.stream().map( v -> v.getSMSValue() ).collect( Collectors.toList() );
+        List<SMSValue<?>> smsVals = new ArrayList<>();
+        for ( SMSAttributeValue val : values )
+        {
+            smsVals.add( val.getSMSValue() );
+        }
         int fixedIntBitLen = ValueUtil.getBitlenLargestInt( smsVals );
         // We shift the bitlen down one to allow the max
         outStream.write( fixedIntBitLen - 1, SMSConsts.FIXED_INT_BITLEN );
@@ -99,7 +102,11 @@ public class ValueWriter
         int catOptionComboBitLen = writeHashBitLen( MetadataType.CATEGORY_OPTION_COMBO );
         int dataElementBitLen = writeHashBitLen( MetadataType.DATA_ELEMENT );
 
-        List<SMSValue<?>> smsVals = values.stream().map( v -> v.getSMSValue() ).collect( Collectors.toList() );
+        List<SMSValue<?>> smsVals = new ArrayList<>();
+        for ( SMSDataValue val : values )
+        {
+            smsVals.add( val.getSMSValue() );
+        }
         int fixedIntBitLen = ValueUtil.getBitlenLargestInt( smsVals );
         // We shift the bitlen down one to allow the max
         outStream.write( fixedIntBitLen - 1, SMSConsts.FIXED_INT_BITLEN );
