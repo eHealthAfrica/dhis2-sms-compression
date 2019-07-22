@@ -89,14 +89,14 @@ public enum SMSResponse
     public SMSResponse set( Object... elems )
     {
         this.errorElems = Arrays.asList( elems );
-        this.description = String.format( description, errorElems );
+        this.description = String.format( description, elems );
         return this;
     }
 
-    public SMSResponse set( List<Object> elems )
+    public SMSResponse setList( List<Object> elems )
     {
         this.errorElems = elems;
-        this.description = String.format( description, errorElems );
+        this.description = String.format( description, errorElems.toArray() );
         return this;
     }
 
