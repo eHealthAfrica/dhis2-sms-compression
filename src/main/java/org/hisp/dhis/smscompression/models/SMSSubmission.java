@@ -106,7 +106,8 @@ public abstract class SMSSubmission
         throws SMSCompressionException
     {
         // Ensure we set the lastSyncDate in the subm header
-        header.setLastSyncDate( meta != null ? meta.lastSyncDate : new Date( 0 ) );
+        Date lastSyncDate = meta != null && meta.lastSyncDate != null ? meta.lastSyncDate : new Date( 0 );
+        header.setLastSyncDate( lastSyncDate );
 
         validateSubmission();
         header.writeHeader( writer );
