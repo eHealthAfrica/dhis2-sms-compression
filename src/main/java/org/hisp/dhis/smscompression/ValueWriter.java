@@ -11,6 +11,7 @@ import org.hisp.dhis.smscompression.models.SMSAttributeValue;
 import org.hisp.dhis.smscompression.models.SMSDataValue;
 import org.hisp.dhis.smscompression.models.SMSMetadata;
 import org.hisp.dhis.smscompression.models.SMSValue;
+import org.hisp.dhis.smscompression.models.UID;
 import org.hisp.dhis.smscompression.utils.BinaryUtils;
 import org.hisp.dhis.smscompression.utils.BitOutputStream;
 import org.hisp.dhis.smscompression.utils.IDUtil;
@@ -28,13 +29,13 @@ public class ValueWriter
     {
         this.outStream = outStream;
         this.meta = meta;
-        this.hashingEnabled = meta == null ? false : hashingEnabled;
+        this.hashingEnabled = hashingEnabled;
     }
 
-    public int writeHashBitLen( MetadataType type )
+    public int writeHashBitLen( MetadataType type, boolean useHashing )
         throws SMSCompressionException
     {
-        if ( !hashingEnabled )
+        if ( !useHashing )
             return 0;
 
         int hashBitLen = IDUtil.getBitLengthForList( meta.getType( type ) );
@@ -42,21 +43,33 @@ public class ValueWriter
         return hashBitLen;
     }
 
-    public void writeValID( String id, int bitLen )
+    public void writeValID( UID uid, int bitLen, boolean useHashing )
         throws SMSCompressionException
     {
-        if ( !hashingEnabled )
-            ValueUtil.writeString( id, outStream );
+        if ( !useHashing )
+        {
+            ValueUtil.writeString( uid.uid, outStream );
+            return;
+        }
 
-        int idHash = BinaryUtils.hash( id, bitLen );
+        // We have a non-empty list of UIDs in our metadata with hashing
+        // enabled, we expect to find all UIDs in the metadata for this type
+        if ( !meta.getType( uid.type ).contains( uid.uid ) )
+            throw new SMSCompressionException(
+                String.format( "Error hashing UID [%s] not found in [%s]", uid.uid, uid.type ) );
+
+        int idHash = BinaryUtils.hash( uid.uid, bitLen );
         outStream.write( idHash, bitLen );
     }
 
     public void writeAttributeValues( List<SMSAttributeValue> values )
         throws SMSCompressionException
     {
-        ValueUtil.writeBool( hashingEnabled, outStream );
-        int attributeBitLen = writeHashBitLen( MetadataType.TRACKED_ENTITY_ATTRIBUTE );
+        MetadataType attrType = MetadataType.TRACKED_ENTITY_ATTRIBUTE;
+        boolean useHashing = hashingEnabled && meta != null && meta.getType( attrType ) != null
+            && !meta.getType( attrType ).isEmpty();
+        ValueUtil.writeBool( useHashing, outStream );
+        int attributeBitLen = writeHashBitLen( attrType, useHashing );
 
         List<SMSValue<?>> smsVals = new ArrayList<>();
         for ( SMSAttributeValue val : values )
@@ -70,7 +83,7 @@ public class ValueWriter
         for ( Iterator<SMSAttributeValue> valIter = values.iterator(); valIter.hasNext(); )
         {
             SMSAttributeValue val = valIter.next();
-            writeValID( val.getAttribute().uid, attributeBitLen );
+            writeValID( val.getAttribute(), attributeBitLen, useHashing );
             ValueUtil.writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
             int separator = valIter.hasNext() ? 1 : 0;
@@ -78,12 +91,12 @@ public class ValueWriter
         }
     }
 
-    public Map<String, List<SMSDataValue>> groupDataValues( List<SMSDataValue> values )
+    public Map<UID, List<SMSDataValue>> groupDataValues( List<SMSDataValue> values )
     {
-        HashMap<String, List<SMSDataValue>> map = new HashMap<>();
+        HashMap<UID, List<SMSDataValue>> map = new HashMap<>();
         for ( SMSDataValue val : values )
         {
-            String catOptionCombo = val.getCategoryOptionCombo().uid;
+            UID catOptionCombo = val.getCategoryOptionCombo();
             if ( !map.containsKey( catOptionCombo ) )
             {
                 ArrayList<SMSDataValue> list = new ArrayList<>();
@@ -98,9 +111,15 @@ public class ValueWriter
     public void writeDataValues( List<SMSDataValue> values )
         throws SMSCompressionException
     {
-        ValueUtil.writeBool( hashingEnabled, outStream );
-        int catOptionComboBitLen = writeHashBitLen( MetadataType.CATEGORY_OPTION_COMBO );
-        int dataElementBitLen = writeHashBitLen( MetadataType.DATA_ELEMENT );
+        MetadataType cocType = MetadataType.CATEGORY_OPTION_COMBO;
+        MetadataType deType = MetadataType.DATA_ELEMENT;
+        boolean useHashing = hashingEnabled && meta != null && meta.getType( cocType ) != null
+            && !meta.getType( cocType ).isEmpty() && meta.getType( deType ) != null
+            && !meta.getType( deType ).isEmpty();
+
+        ValueUtil.writeBool( useHashing, outStream );
+        int catOptionComboBitLen = writeHashBitLen( cocType, useHashing );
+        int dataElementBitLen = writeHashBitLen( deType, useHashing );
 
         List<SMSValue<?>> smsVals = new ArrayList<>();
         for ( SMSDataValue val : values )
@@ -111,18 +130,18 @@ public class ValueWriter
         // We shift the bitlen down one to allow the max
         outStream.write( fixedIntBitLen - 1, SMSConsts.FIXED_INT_BITLEN );
 
-        Map<String, List<SMSDataValue>> valMap = groupDataValues( values );
+        Map<UID, List<SMSDataValue>> valMap = groupDataValues( values );
 
-        for ( Iterator<String> keyIter = valMap.keySet().iterator(); keyIter.hasNext(); )
+        for ( Iterator<UID> keyIter = valMap.keySet().iterator(); keyIter.hasNext(); )
         {
-            String catOptionCombo = keyIter.next();
-            writeValID( catOptionCombo, catOptionComboBitLen );
+            UID catOptionCombo = keyIter.next();
+            writeValID( catOptionCombo, catOptionComboBitLen, useHashing );
             List<SMSDataValue> vals = valMap.get( catOptionCombo );
 
             for ( Iterator<SMSDataValue> valIter = vals.iterator(); valIter.hasNext(); )
             {
                 SMSDataValue val = valIter.next();
-                writeValID( val.getDataElement().uid, dataElementBitLen );
+                writeValID( val.getDataElement(), dataElementBitLen, useHashing );
                 ValueUtil.writeSMSValue( val.getSMSValue(), fixedIntBitLen, outStream );
 
                 int separator = valIter.hasNext() ? 1 : 0;
