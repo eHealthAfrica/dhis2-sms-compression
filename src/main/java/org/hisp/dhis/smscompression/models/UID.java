@@ -51,4 +51,11 @@ public class UID
         UID u = (UID) o;
         return uid.equals( u.uid ) && (type == u.type);
     }
+
+    @Override
+    public int hashCode()
+    {
+        return uid.hashCode();
+    }
+
 }
